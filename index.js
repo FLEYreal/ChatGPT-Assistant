@@ -1,38 +1,18 @@
+// Configs
 require('dotenv').config()
+const config = require('./config')
 
-const OpenAIApi = require('openai')
+console.log('[INFO] : Setting up...')
 
-const readline = require('readline')
+// Console application
+const { consoleApplication } = require('./console')
+consoleApplication(config.locations.console)
 
-// Initializing openai class
-const openAi = new OpenAIApi({
-    apiKey: process.env.OPENAI_API_KEY
-})
+// API routes
+require('./api')
 
-// Creating console interface
-const userInterface = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-})
+// Discord bot
+require('./discord')
 
-// Start a conversation
-userInterface.prompt();
-
-// Event works when message from console is sent
-userInterface.on('line', async (line) => {
-
-    // Get a response from ChatGPT
-    const response = await openAi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [{
-            role: 'user',
-            content: line
-        }]
-    })
-
-    // Send response in console
-    console.log('ChatGPT >', response.choices[0].message.content, '\n')
-
-    // Continue a conversation
-    userInterface.prompt()
-})
+// Telegram bot
+require('./telegram')
