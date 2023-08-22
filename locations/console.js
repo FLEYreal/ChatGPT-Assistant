@@ -41,7 +41,8 @@ function consoleApplication(config) {
             // Get a response from ChatGPT
             const response = await openAi.chat.completions.create({
                 model: config.gpt_version,
-                messages: history
+                messages: history,
+                max_tokens: config.max_tokens
             })
 
             // Send response in console

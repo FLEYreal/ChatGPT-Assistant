@@ -6,7 +6,8 @@ const config = require('./config')
 console.log('[\u001b[1;36mINFO\u001b[0m] : Setting up...')
 
 console.table({
-    "GPT-version": config.gpt_version
+    "GPT-Version": config.gpt_version,
+    "Max-Tokens": config.max_tokens
 })
 
 // Display location status from config
