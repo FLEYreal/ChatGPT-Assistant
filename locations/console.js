@@ -12,12 +12,12 @@ const openAi = new OpenAIApi({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-function consoleApplication(activate) {
+function consoleApplication(config) {
 
-    if (!activate) {
-        console.log('[OFF] : Console Application')
+    // Checks if it's off in config
+    if (!config.locations.console) {
+        return;
     } else {
-        console.log('[ON] : Console Application')
 
         // Creating console interface
         const userInterface = readline.createInterface({
@@ -40,7 +40,7 @@ function consoleApplication(activate) {
 
             // Get a response from ChatGPT
             const response = await openAi.chat.completions.create({
-                model: 'gpt-3.5-turbo',
+                model: config.gpt_version,
                 messages: history
             })
 
