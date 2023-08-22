@@ -45,7 +45,7 @@ function consoleApplication(activate) {
             })
 
             // Send response in console
-            console.log('\nChatGPT >', response.choices[0].message.content)
+            console.log('\n\u001b[1;32mChatGPT >', response.choices[0].message.content, '\u001b[0m')
 
             // Continue a conversation
             userInterface.prompt()
