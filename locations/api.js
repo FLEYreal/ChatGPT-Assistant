@@ -105,7 +105,7 @@ function apiApplication(config) {
             if (!id) id = req.cookies['CUC-ID']
             if (!id) {
                 console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-                return res.status(404).json({error: 'No ID / CUC-ID found'})
+                return res.status(404).json({ error: 'No ID / CUC-ID found' })
             }
 
             // Get History of the conversation by ID
@@ -113,15 +113,20 @@ function apiApplication(config) {
                 id: id
             })
                 .then(res => res.data.history)
-                .catch(err => console.error('[\u001b[1;31mERROR\u001b[0m] :', err))
 
 
             // Add new prompt and get newHistory
             let newHistory = JSON.parse(history)
-            
+
             newHistory.push({
                 role: 'user',
                 content: prompt
+            })
+
+            // Update history in database
+            await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
+                id: id,
+                prompt: prompt
             })
 
             // Get response of chatGPT
@@ -129,7 +134,6 @@ function apiApplication(config) {
                 history: JSON.stringify(newHistory)
             })
                 .then(res => res.data)
-                .catch(err => console.error('[\u001b[1;31mERROR\u001b[0m] :', err))
 
             // Return result
             return res.status(200).json({
@@ -151,7 +155,7 @@ function apiApplication(config) {
                 if (!id) id = req.cookies['CUC-ID']
                 if (!id) {
                     console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-                    return res.status(404).json({error: 'No ID / CUC-ID found'})
+                    return res.status(404).json({ error: 'No ID / CUC-ID found' })
                 }
 
                 // Find a row by ID
@@ -203,7 +207,7 @@ function apiApplication(config) {
                 if (!id) id = req.cookies['CUC-ID']
                 if (!id) {
                     console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-                    return res.status(404).json({error: 'No ID / CUC-ID found'})
+                    return res.status(404).json({ error: 'No ID / CUC-ID found' })
                 }
 
                 // Find a row by ID
@@ -226,6 +230,58 @@ function apiApplication(config) {
 
                 // Return result
                 return res.status(200).json({ history: row[0].history })
+
+            } catch (error) {
+                console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
+                return res.status(500).json({ error: error })
+            }
+        })
+
+        app.post('/chat/save-history', async (req, res) => {
+            try {
+                // Log that route worked
+                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
+
+                // Get ID from request body
+                let { id, prompt } = req.body
+                if (!id) id = req.cookies['CUC-ID']
+                if (!id) {
+                    console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
+                    return res.status(404).json({ error: 'No ID / CUC-ID found' })
+                }
+
+                // Find a row by ID
+                const row = await new Promise((resolve, reject) => {
+                    db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
+                        if (error) {
+                            console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
+                            reject(error);
+                        } else {
+                            resolve(row);
+                        }
+                    });
+                });
+
+                if (row.length <= 0) {
+                    // No row found
+                    console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
+                    return res.status(404).json({ message: "Row not found!" });
+                }
+
+                // Get newHistory and push existing prompt to it
+                const newHistory = JSON.parse(row[0].history)
+                newHistory.push({
+                    role: 'user',
+                    content: prompt
+                })
+
+                // Insert updated history to DB
+                db.run('UPDATE conversations SET history = ? WHERE id = ?', [JSON.stringify(newHistory), id], (err) => {
+                    if(err) console.error('[\u001b[1;33mWARN\u001b[0m] :', err)
+                })
+
+                // Return result
+                return res.status(200).json({ message: 'History saved!' })
 
             } catch (error) {
                 console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
