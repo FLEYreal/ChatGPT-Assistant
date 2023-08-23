@@ -18,7 +18,8 @@ let sql;
 const sqlite3 = require('sqlite3').verbose()
 
 // Utils
-const { transformPrompts } = require('../utils/transform_prompts')
+const { transformPrompts } = require('../utils/transform_prompts');
+const axios = require('axios');
 
 function apiApplication(config) {
 
@@ -54,7 +55,7 @@ function apiApplication(config) {
 
                 const response = await openAI.chat.completions.create({
                     model: config.gpt_version,
-                    messages: req.body.prompts || req.body.history,
+                    messages: JSON.parse(req.body.history),
                     max_tokens: config.max_tokens
                 })
 
@@ -97,8 +98,46 @@ function apiApplication(config) {
             }
         })
 
-        app.get('/chat/conversation', async (req, res) => {
-            // Chat between user and chatGPT with API
+        app.post('/chat/conversation', async (req, res) => {
+
+            // Get ID from query
+            let { id, prompt } = req.body
+            if (!id) id = req.cookies['CUC-ID']
+            if (!id) {
+                console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
+                return res.status(404).json({error: 'No ID / CUC-ID found'})
+            }
+
+            // Get History of the conversation by ID
+            let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
+                id: id
+            })
+                .then(res => res.data.history)
+                .catch(err => console.error('[\u001b[1;31mERROR\u001b[0m] :', err))
+
+
+            // Add new prompt and get newHistory
+            let newHistory = JSON.parse(history)
+            
+            newHistory.push({
+                role: 'user',
+                content: prompt
+            })
+
+            // Get response of chatGPT
+            const gpt_response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/message/create`, {
+                history: JSON.stringify(newHistory)
+            })
+                .then(res => res.data)
+                .catch(err => console.error('[\u001b[1;31mERROR\u001b[0m] :', err))
+
+            // Return result
+            return res.status(200).json({
+                history: history,
+                prompt: prompt,
+                gpt_response
+            })
+
         })
 
         // Delete a conversation from DB
@@ -109,7 +148,11 @@ function apiApplication(config) {
 
                 // Get ID from request body
                 let { id } = req.body
-                if(!id) id = req.cookies['CUC-ID']
+                if (!id) id = req.cookies['CUC-ID']
+                if (!id) {
+                    console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
+                    return res.status(404).json({error: 'No ID / CUC-ID found'})
+                }
 
                 // Find a row by ID
                 const row = await new Promise((resolve, reject) => {
@@ -157,7 +200,11 @@ function apiApplication(config) {
 
                 // Get ID from request body
                 let { id } = req.body
-                if(!id) id = req.cookies['CUC-ID']
+                if (!id) id = req.cookies['CUC-ID']
+                if (!id) {
+                    console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
+                    return res.status(404).json({error: 'No ID / CUC-ID found'})
+                }
 
                 // Find a row by ID
                 const row = await new Promise((resolve, reject) => {

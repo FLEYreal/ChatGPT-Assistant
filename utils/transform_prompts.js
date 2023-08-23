@@ -1,14 +1,13 @@
 function transformPrompts(role, prompts) {
 
-    // Transformation
-    const result = prompts.filter(i => {
+    const filteredPrompts = prompts.filter(i => i.length > 0)
 
-        if (i.length > 0) {
+    // Transformation
+    const result = filteredPrompts.map(i => {
             return {
                 role: role,
                 content: i
             }
-        }
     })
 
     // Return result
