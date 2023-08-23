@@ -1,6 +1,12 @@
 // Configs
 require('dotenv').config()
 
+// Basics
+const express = require('express')
+const app = express()
+const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
+
 // OpenAI
 const OpenAIApi = require('openai')
 const openAI = new OpenAIApi({
@@ -10,11 +16,6 @@ const openAI = new OpenAIApi({
 // Database SQLite
 let sql;
 const sqlite3 = require('sqlite3').verbose()
-
-// Basics
-const express = require('express')
-const app = express()
-const crypto = require('crypto');
 
 // Utils
 const { transformPrompts } = require('../utils/transform_prompts')
@@ -41,7 +42,8 @@ function apiApplication(config) {
         db.run(create_table);
 
         // Middlewares
-        app.use(express.json())
+        app.use(express.json());
+        app.use(cookieParser());
 
         // API Routes:
 
@@ -83,6 +85,9 @@ function apiApplication(config) {
                     }
                 })
 
+                // Set id in cookie
+                res.cookie('CUC-ID', id) // CUC-ID stands for ChatGPT-Unique-Conversation-ID
+
                 // Return result
                 return res.status(200).json({ id: id })
 
@@ -103,7 +108,8 @@ function apiApplication(config) {
                 console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
 
                 // Get ID from request body
-                const { id } = req.body
+                let { id } = req.body
+                if(!id) id = req.cookies['CUC-ID']
 
                 // Find a row by ID
                 const row = await new Promise((resolve, reject) => {
@@ -123,15 +129,16 @@ function apiApplication(config) {
                     return res.status(404).json({ message: "Row not found!" });
                 }
 
-                // Continue with your code here
-                console.log('row: ', row);
-
                 // Delete ID from database
                 db.run('DELETE FROM conversations WHERE id = ?', [id], (error) => {
                     if (error) {
                         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                         return res.status(500).json({ error: error })
                     } else {
+
+                        // Clear cookie
+                        res.clearCookie('CUC-ID');
+
                         // Return success
                         return res.status(200).json({ message: 'row successfully deleted' })
                     }
@@ -149,7 +156,8 @@ function apiApplication(config) {
                 console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
 
                 // Get ID from request body
-                const { id } = req.body
+                let { id } = req.body
+                if(!id) id = req.cookies['CUC-ID']
 
                 // Find a row by ID
                 const row = await new Promise((resolve, reject) => {
