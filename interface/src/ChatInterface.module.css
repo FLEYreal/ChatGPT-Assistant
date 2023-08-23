@@ -154,27 +154,11 @@ body {
 }
 
 .burger_menu_button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    right: 16px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    transition: all 0.1s;
-    -webkit-transition: all 0.1s;
-    -moz-transition: all 0.1s;
-    -ms-transition: all 0.1s;
-    -o-transition: all 0.1s;
+    position: absolute !important;
+    right: 3%;
 }
-
-.burger_menu_button:active {
-    transform: scale(0.96);
-    -webkit-transform: scale(0.96);
-    -moz-transform: scale(0.96);
-    -ms-transform: scale(0.96);
-    -o-transform: scale(0.96);
+.burger_menu_icon {
+    color: #D1D1D1;
 }
 
 .burger_menu_icon {
