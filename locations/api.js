@@ -1,5 +1,6 @@
 // Configs
 require('dotenv').config()
+const config_style = require('../config.styles')
 
 // Basics
 const path = require('path')
@@ -296,7 +297,7 @@ function apiApplication(config) {
 
         // Get configurable styles
         app.get('/styles/config', async (req, res) => {
-            res.sendFile(path.resolve(__dirname, '..', 'config.styles.css'))
+            res.json(config_style)
         })
 
 
