@@ -2,6 +2,7 @@
 require('dotenv').config()
 
 // Basics
+const path = require('path')
 const express = require('express')
 const app = express()
 const crypto = require('crypto');
@@ -45,6 +46,10 @@ function apiApplication(config) {
         // Middlewares
         app.use(express.json());
         app.use(cookieParser());
+        app.use(express.static('public'));
+
+        app.set('view engine', 'ejs');
+        app.set('views', path.join(__dirname, '..', 'interfaces'));
 
         // API Routes:
 
@@ -98,6 +103,7 @@ function apiApplication(config) {
             }
         })
 
+        // A full conversation with chatGPT
         app.post('/chat/conversation', async (req, res) => {
 
             // Get ID from query
@@ -197,6 +203,7 @@ function apiApplication(config) {
             }
         })
 
+        // Get conversation history by ID
         app.post('/chat/get-history', async (req, res) => {
             try {
                 // Log that route worked
@@ -237,6 +244,7 @@ function apiApplication(config) {
             }
         })
 
+        // Save history
         app.post('/chat/save-history', async (req, res) => {
             try {
                 // Log that route worked
@@ -289,8 +297,14 @@ function apiApplication(config) {
             }
         })
 
+        // Actual HTML interface for conversations
         app.get('/chat/interface', async (req, res) => {
-            // actual HTML interface for conversaytions
+            res.render('chat_interface', {});
+        })
+
+        // Get configurable styles
+        app.get('/styles/config', async (req, res) => {
+            res.sendFile(path.resolve(__dirname, '..', 'config.styles.css'))
         })
 
 
