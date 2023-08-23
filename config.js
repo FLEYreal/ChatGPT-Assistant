@@ -7,7 +7,7 @@ module.exports = {
     locations: {
 
         // In console
-        console: true,
+        console: false,
 
         // With API, lets you access chat in browser or add it to your existing website
         api: true,
@@ -27,6 +27,8 @@ module.exports = {
 
     // Type what you need chatGPT to know and what chatGPT needs to do
     system_prompts: [
+
+        // The list of the messages, by comma
         '',
         '',
         ''
