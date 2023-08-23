@@ -1,15 +1,54 @@
+// CONFIG OF THIS PROJECT
+// SET UP THE PROJECT THE WAY YOU NEED TO!
+
 module.exports = {
+
+    // Locations where GPT will work
     locations: {
-        console: false,
+
+        // In console
+        console: true,
+
+        // With API, lets you access chat in browser or add it to your existing website
         api: true,
+
+        // Discord bot
         discord: false,
+
+        // Telegram bot
         telegram: false
     },
+
+    // Version of chatGPT
     gpt_version: 'gpt-3.5-turbo',
+
+    // Max amount of tokens per conversation
     max_tokens: 150,
+
+    // Type what you need chatGPT to know and what chatGPT needs to do
     system_prompts: [
-        'Ты находишься в дискорд сервере StormShop. Это магазин по продаже разнообразных подписок и не только. Nitro, Netflix Gift Cards и так далее',
-        'Основной язык этого проекта - русский, но также могут быть клиенты, говорящие на английском. Ты будешь общаться именно с клиентами проекта, как тех.поддержка',
-        'Не отвечай на вопросы, которые не относятся к проблемам клиентов проекта. Говори в стиле тех.поддержки и всегда будь самым вежливым. Сейчас 2023 год и в России (как и в беларуси) массовые блокировки сервисов из-за санкций.'
-    ]
+        '',
+        '',
+        ''
+    ],
+
+    // Params for Console Application
+    console_app: {
+        user_name: 'User',
+        gpt_name: 'ChatGPT'
+    },
+
+    // Params for Discord Bot
+    discord: {
+
+        // API token to connect to the bot.
+        api_token: ''
+    },
+
+    // Params for Telegram bot
+    telegram: {
+
+        // API token to connect to the bot
+        api_token: ''
+    }
 }

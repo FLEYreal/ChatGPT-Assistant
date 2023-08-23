@@ -16,5 +16,5 @@ require('./locations/discord')
 require('./locations/telegram')
 
 // Console application
-const { consoleApplication } = require('./locations/console')
+const { consoleApplication } = require('./locations/console_app')
 consoleApplication(config)

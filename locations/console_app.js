@@ -4,6 +4,9 @@ require('dotenv').config()
 // OpenAI
 const OpenAIApi = require('openai')
 
+// Utils
+const { transformPrompts } = require('../utils/transform_prompts')
+
 // Basics
 const readline = require('readline')
 
@@ -19,18 +22,21 @@ function consoleApplication(config) {
         return;
     } else {
 
+        // A Conversation History
+        const history = [];
+
+        // Messages from system so GPT understood the context and what it needs to do
+        history.push(...transformPrompts('system', config.system_prompts))
+
         // Creating console interface
         const userInterface = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: '\nUser > '
+            prompt: `\n${config.console_app.user_name || 'User'} > `
         })
 
         // Start a conversation
         userInterface.prompt();
-
-        // A Conversation History
-        const history = [];
 
         // Event works when message from console is sent
         userInterface.on('line', async (line) => {
@@ -46,7 +52,7 @@ function consoleApplication(config) {
             })
 
             // Send response in console
-            console.log('\n\u001b[1;32mChatGPT >', response.choices[0].message.content, '\u001b[0m')
+            console.log(`\n\u001b[1;32m${config.console_app.gpt_name || 'ChatGPT'} >`, response.choices[0].message.content, '\u001b[0m')
 
             // Continue a conversation
             userInterface.prompt()
