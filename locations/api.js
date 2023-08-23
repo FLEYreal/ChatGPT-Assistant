@@ -8,6 +8,7 @@ const express = require('express')
 const app = express()
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
+const cors = require('cors')
 
 // OpenAI
 const OpenAIApi = require('openai')
@@ -47,7 +48,7 @@ function apiApplication(config) {
         // Middlewares
         app.use(express.json());
         app.use(cookieParser());
-        app.use(express.static('public'));
+        app.use(cors())
 
         // API Routes:
 
@@ -299,7 +300,6 @@ function apiApplication(config) {
         app.get('/styles/config', async (req, res) => {
             res.json(config_style)
         })
-
 
         app.listen(process.env.API_PORT | 3000, () => {
             console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')
