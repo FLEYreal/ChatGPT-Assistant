@@ -76,7 +76,7 @@ function apiApplication(config) {
                 const id = crypto.randomUUID()
 
                 // Insert new data to database
-                db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, transformPrompts('system', config.system_prompts)], (error) => {
+                db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.system_prompts))], (error) => {
                     if (error) {
                         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                         return res.status(500).json({ error: error })
@@ -144,7 +144,38 @@ function apiApplication(config) {
         })
 
         app.post('/chat/get-history', async (req, res) => {
-            // Get a conversation history by ID
+            try {
+                // Log that route worked
+                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
+
+                // Get ID from request body
+                const { id } = req.body
+
+                // Find a row by ID
+                const row = await new Promise((resolve, reject) => {
+                    db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
+                        if (error) {
+                            console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
+                            reject(error);
+                        } else {
+                            resolve(row);
+                        }
+                    });
+                });
+
+                if (row.length <= 0) {
+                    // No row found
+                    console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
+                    return res.status(404).json({ message: "Row not found!" });
+                }
+
+                // Return result
+                return res.status(200).json({ history: row[0].history })
+
+            } catch (error) {
+                console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
+                return res.status(500).json({ error: error })
+            }
         })
 
         app.get('/chat/interface', async (req, res) => {
