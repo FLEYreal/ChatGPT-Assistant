@@ -48,9 +48,6 @@ function apiApplication(config) {
         app.use(cookieParser());
         app.use(express.static('public'));
 
-        app.set('view engine', 'ejs');
-        app.set('views', path.join(__dirname, '..', 'interfaces'));
-
         // API Routes:
 
         // Create message and send it in response
@@ -295,11 +292,6 @@ function apiApplication(config) {
                 console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                 return res.status(500).json({ error: error })
             }
-        })
-
-        // Actual HTML interface for conversations
-        app.get('/chat/interface', async (req, res) => {
-            res.render('chat_interface', {});
         })
 
         // Get configurable styles
