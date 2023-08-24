@@ -59,16 +59,21 @@ function apiApplication(config) {
         app.set('view engine', 'ejs');
         app.set('views', path.join(__dirname, '..', 'interfaces'));
 
+        // Socket events
         let connections = [];
         io.sockets.on('connection', (socket) => {
             console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
             connections.push(socket)
 
-            socket.on('disconnect', (data) => {
+            socket.on('disconnect', () => {
 
                 connections.splice(connections.indexOf(socket), 1)
                 console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
 
+            })
+
+            socket.on('message_sent', value => {
+                io.sockets.emit('get_gpt_response', {msg: value})
             })
         })
 

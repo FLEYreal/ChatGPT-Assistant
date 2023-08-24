@@ -61,13 +61,12 @@
         </section>
 
         <section class="input">
-            <form class="form">
-                <input class="send-message" placeholder="Send Message..." />
-                <button></button>
+            <form class="send-message-form">
+                <textarea autocomplete="off" autocorrect="on" required autofocus class="send-message-input" placeholder="Send Message..."></textarea>
+                <button class="send-message-button"><img src="/icons/send_icon.svg" alt="send-icon"/></button>
             </form>
             <div class="small-message">
-                Embedded <a href="https://chat.openai.com/">ChatGPT</a> chat by <a
-                    href="https://nitro-storm.ru">StormShop</a>
+                Embedded <a href="https://chat.openai.com/">ChatGPT</a> chat by <a href="https://nitro-storm.ru">StormShop</a>
             </div>
         </section>
     </section>
@@ -77,6 +76,58 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io.connect();
+
+        const form = document.querySelector('.send-message-form')
+        const input = document.querySelector('.send-message-input')
+        const chat_box = document.querySelector('.chat')
+
+        function handleSubmit(e) {
+            e.preventDefault()
+            const lastChild = chat_box.lastElementChild
+
+            if (lastChild && lastChild.classList.contains('user-message')) {
+                // IF LAST MESSAGE ALREADY WAS FROM USER
+                return;
+            } else {
+
+                const message_box = document.createElement('div')
+                const profile_picture_section = document.createElement('div')
+                const profile_picture = document.createElement('div')
+                const text_section = document.createElement('div')
+
+                message_box.classList.add('user-message')
+                message_box.classList.add('message')
+
+                profile_picture_section.classList.add('section-user-profile-picture')
+                profile_picture_section.classList.add('section-profile-picture')
+
+                profile_picture.classList.add('user-profile-picture')
+                profile_picture.classList.add('profile-picture')
+
+                text_section.classList.add('section-user-message-text')
+                text_section.classList.add('section-message-text')
+                
+                profile_picture.innerHTML = 'User'
+
+                profile_picture_section.append(profile_picture)
+
+                text_section.innerHTML = String(input.value)
+
+                message_box.append(profile_picture_section)
+                message_box.append(text_section)
+
+                chat_box.append(message_box)
+
+                socket.emit('message_sent', input.value);
+                input.value = ''
+            }
+        }
+
+        document.addEventListener('submit', handleSubmit)
+
+        socket.on('get_gpt_response', function() {
+
+        })
     </script>
 </body>
 
