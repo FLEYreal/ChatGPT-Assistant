@@ -81,7 +81,7 @@
         const input = document.querySelector('.send-message-input')
         const chat_box = document.querySelector('.chat')
 
-        function createMessage(type = 'user') {
+        function createMessage(type = 'user', text = '') {
             const message_box = document.createElement('div')
             const profile_picture_section = document.createElement('div')
             const profile_picture = document.createElement('div')
@@ -103,7 +103,7 @@
 
             profile_picture_section.append(profile_picture)
 
-            text_section.innerHTML = String(input.value)
+            text_section.innerHTML = String(text)
 
             message_box.append(profile_picture_section)
             message_box.append(text_section)
@@ -120,7 +120,7 @@
                 return;
             } else {
 
-                createMessage()
+                createMessage('user', input.value)
 
                 const cookies = document.cookie.split(';');
                 let cucId = '';
@@ -139,11 +139,12 @@
         document.addEventListener('submit', handleSubmit)
 
         socket.on('get_gpt_response', (data) => {
+            console.log('Got Response!')
             if(data.error) {
                 // ERROR OCCURED NEEDS TO BE DISPLAYED
                 return;
             } else {
-                data.gpt_response
+                createMessage('gpt', data.gpt_response)
             }
         })
     </script>

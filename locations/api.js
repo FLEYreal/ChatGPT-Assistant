@@ -74,6 +74,8 @@ function apiApplication(config) {
 
             socket.on('message_sent', async (data) => {
 
+                console.log('Message Sent!')
+
                 // Get History of the conversation by ID
                 let response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/conversation`, {
                     id: data.id,
