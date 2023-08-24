@@ -13,12 +13,12 @@
 </head>
 
 <body>
-    <section class="component">
+    <section class="component" style="width: <%= config_style.width %>; height: <%= config_style.height %>">
         <header class="header">
             ChatGPT 3.5
         </header>
 
-        <section class="chat">
+        <section class="chat" style="height: calc(<%= config_style.height %> - (75px + 110px))">
 
             <% chat.forEach(msg => { %>
                 <% if(msg.role !== 'system') { %>
@@ -58,12 +58,13 @@
     
         </section>
 
-        <button class="restart-chat-button">
-            <img src="/icons/restart_icon.svg" alt="restart-icon"/>
-            Restart Conversation
-        </button>
-
         <section class="input">
+            <section class="button-bar">
+                <button class="restart-chat-button">
+                    <img src="/icons/restart_icon.svg" alt="restart-icon"/>
+                    Restart Conversation
+                </button>
+            </section>
             <form class="send-message-form">
                 <textarea autocomplete="off" autocorrect="on" required autofocus class="send-message-input" placeholder="Send Message..."></textarea>
                 <button class="send-message-button"><img src="/icons/send_icon.svg" alt="send-icon"/></button>

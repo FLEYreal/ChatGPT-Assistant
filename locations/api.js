@@ -346,12 +346,6 @@ function apiApplication(config) {
             }
         })
 
-        // Get configurable styles
-        app.get('/config/styles', async (req, res) => {
-            res.setHeader({ 'Content-Type': 'text/javascript' })
-            res.json(config_style)
-        })
-
         // Get config
         app.get('/config/all', async (req, res) => {
             res.setHeader({ 'Content-Type': 'text/javascript' })
@@ -380,7 +374,7 @@ function apiApplication(config) {
                     .catch(err => res.json({ error: err }))
 
                 // Send file
-                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), { conversation_history: history })
+                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), { conversation_history: history, config_style: config_style })
 
             } catch (error) {
                 console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
