@@ -50,6 +50,8 @@ function apiApplication(config) {
         const create_table = 'CREATE TABLE IF NOT EXISTS conversations( id CHAR(36) PRIMARY KEY, history JSON DEFAULT [] )'
         db.run(create_table);
 
+        db.run('DELETE FROM conversations')
+
         // Middlewares
         app.use(express.json());
         app.use(cookieParser());
@@ -65,6 +67,7 @@ function apiApplication(config) {
         app.post('/message/create', async (req, res) => {
             try {
                 console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/message/create" worked')
+                console.log(JSON.parse(req.body.history))
 
                 const response = await openAI.chat.completions.create({
                     model: config.gpt_version,
@@ -127,6 +130,7 @@ function apiApplication(config) {
                 id: id
             })
                 .then(res => res.data.history)
+                .catch(err => res.json({ error: err }))
 
 
             // Add new prompt and get newHistory
@@ -137,23 +141,26 @@ function apiApplication(config) {
                 content: prompt
             })
 
-            // Update history in database
-            await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
-                id: id,
-                prompt: prompt
-            })
-
             // Get response of chatGPT
             const gpt_response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/message/create`, {
                 history: JSON.stringify(newHistory)
             })
                 .then(res => res.data)
+                .catch(err => res.json({ error: err }))
+
+            // Update history in database
+            await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
+                id: id,
+                prompt: prompt,
+                gpt_response: gpt_response.response
+            })
+                .catch(err => res.json({ error: err }))
 
             // Return result
             return res.status(200).json({
                 history: history,
                 prompt: prompt,
-                gpt_response
+                got_response: gpt_response.response
             })
 
         })
@@ -259,7 +266,7 @@ function apiApplication(config) {
                 console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
 
                 // Get ID from request body
-                let { id, prompt } = req.body
+                let { id, prompt, gpt_response } = req.body
                 if (!id) id = req.cookies['CUC-ID']
                 if (!id) {
                     console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
@@ -286,14 +293,22 @@ function apiApplication(config) {
 
                 // Get newHistory and push existing prompt to it
                 const newHistory = JSON.parse(row[0].history)
+
+                // Save a prompt to history
                 newHistory.push({
                     role: 'user',
                     content: prompt
                 })
 
+                // Save a response of chatGPT to history
+                newHistory.push({
+                    role: 'assistant',
+                    content: gpt_response
+                })
+
                 // Insert updated history to DB
                 db.run('UPDATE conversations SET history = ? WHERE id = ?', [JSON.stringify(newHistory), id], (err) => {
-                    if(err) console.error('[\u001b[1;33mWARN\u001b[0m] :', err)
+                    if (err) console.error('[\u001b[1;33mWARN\u001b[0m] :', err)
                 })
 
                 // Return result
