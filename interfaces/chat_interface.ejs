@@ -16,8 +16,6 @@
     <section class="component">
         <header class="header">
             ChatGPT 3.5
-            <button class="burger-menu-button"><img class="burger-menu-icon" alt="burger-menu-icon"
-                    src="/icons/burger_menu_icon.svg" /></button>
         </header>
 
         <section class="chat">
@@ -60,6 +58,11 @@
     
         </section>
 
+        <button class="restart-chat-button">
+            <img src="/icons/restart_icon.svg" alt="restart-icon"/>
+            Restart Conversation
+        </button>
+
         <section class="input">
             <form class="send-message-form">
                 <textarea autocomplete="off" autocorrect="on" required autofocus class="send-message-input" placeholder="Send Message..."></textarea>
@@ -70,9 +73,6 @@
             </div>
         </section>
     </section>
-    <aside class="drawer">
-
-    </aside>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io.connect();
