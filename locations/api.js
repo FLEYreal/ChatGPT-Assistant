@@ -1,20 +1,25 @@
 // Configs
-require('dotenv').config()
-const config_style = require('../config.styles')
+require('dotenv').config();
+const config_style = require('../config.styles');
 
 // Basics
-const path = require('path')
-const express = require('express')
-const app = express()
-const crypto = require('crypto');
+const path = require('path');
+const express = require('express');
+const app = express();
+
+// Libraries
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const cors = require('cors')
+const crypto = require('crypto');
+
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 // OpenAI
-const OpenAIApi = require('openai')
+const OpenAIApi = require('openai');
 const openAI = new OpenAIApi({
     apiKey: process.env.OPENAI_API_KEY
-})
+});
 
 // Database SQLite
 let sql;
@@ -49,6 +54,10 @@ function apiApplication(config) {
         app.use(express.json());
         app.use(cookieParser());
         app.use(cors())
+        app.use(express.static('public'));
+
+        app.set('view engine', 'ejs');
+        app.set('views', path.join(__dirname, '..', 'interfaces'));
 
         // API Routes:
 
@@ -297,11 +306,21 @@ function apiApplication(config) {
         })
 
         // Get configurable styles
-        app.get('/styles/config', async (req, res) => {
+        app.get('/config/styles', async (req, res) => {
             res.json(config_style)
         })
 
-        app.listen(process.env.API_PORT | 3000, () => {
+        // Get config
+        app.get('/config/all', async (req, res) => {
+            res.json(config)
+        })
+
+        // Get configurable styles
+        app.get('/chat/interface', async (req, res) => {
+            res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'))
+        })
+
+        server.listen(process.env.API_PORT | 3000, () => {
             console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')
         })
     }
