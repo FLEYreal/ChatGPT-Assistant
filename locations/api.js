@@ -50,8 +50,6 @@ function apiApplication(config) {
         const create_table = 'CREATE TABLE IF NOT EXISTS conversations( id CHAR(36) PRIMARY KEY, history JSON DEFAULT [] )'
         db.run(create_table);
 
-        db.run('DELETE FROM conversations')
-
         // Middlewares
         app.use(express.json());
         app.use(cookieParser());
@@ -61,13 +59,25 @@ function apiApplication(config) {
         app.set('view engine', 'ejs');
         app.set('views', path.join(__dirname, '..', 'interfaces'));
 
+        let connections = [];
+        io.sockets.on('connection', (socket) => {
+            console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
+            connections.push(socket)
+
+            socket.on('disconnect', (data) => {
+
+                connections.splice(connections.indexOf(socket), 1)
+                console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
+
+            })
+        })
+
         // API Routes:
 
         // Create message and send it in response
         app.post('/message/create', async (req, res) => {
             try {
                 console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/message/create" worked')
-                console.log(JSON.parse(req.body.history))
 
                 const response = await openAI.chat.completions.create({
                     model: config.gpt_version,
@@ -322,17 +332,44 @@ function apiApplication(config) {
 
         // Get configurable styles
         app.get('/config/styles', async (req, res) => {
+            res.setHeader({'Content-Type': 'text/javascript'})
             res.json(config_style)
         })
 
         // Get config
         app.get('/config/all', async (req, res) => {
+            res.setHeader({'Content-Type': 'text/javascript'})
             res.json(config)
         })
 
         // Get configurable styles
         app.get('/chat/interface', async (req, res) => {
-            res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'))
+
+            try {
+
+                // Get ID from request body
+                let { id } = req.query
+                if (!id && req.cookies['CUC-ID']) id = req.cookies['CUC-ID']
+                if (!id && !req.cookies['CUC-ID']) {
+                    const result = await axios.get(`${process.env.API_IP}:${process.env.API_PORT}/chat/create`)
+                    id = result.data.id
+                    res.cookie('CUC-ID', id)
+                }
+
+                // Get History of the conversation by ID
+                let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
+                    id: id
+                })
+                    .then(res => res.data.history)
+                    .catch(err => res.json({ error: err }))
+
+                // Send file
+                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), { conversation_history: history })
+
+            } catch (error) {
+                console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
+                return res.status(500).json({ error: error })
+            }
         })
 
         server.listen(process.env.API_PORT | 3000, () => {
