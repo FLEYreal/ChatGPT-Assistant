@@ -72,8 +72,17 @@ function apiApplication(config) {
 
             })
 
-            socket.on('message_sent', value => {
-                io.sockets.emit('get_gpt_response', {msg: value})
+            socket.on('message_sent', async (data) => {
+
+                // Get History of the conversation by ID
+                let response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/conversation`, {
+                    id: data.id,
+                    prompt: data.value
+                })
+                    .then(res => res.data.gpt_response)
+                    .catch(err => res.json({ error: err }))
+
+                io.sockets.emit('get_gpt_response', { gpt_response: response })
             })
         })
 
@@ -175,7 +184,7 @@ function apiApplication(config) {
             return res.status(200).json({
                 history: history,
                 prompt: prompt,
-                got_response: gpt_response.response
+                gpt_response: gpt_response.response
             })
 
         })
@@ -337,13 +346,13 @@ function apiApplication(config) {
 
         // Get configurable styles
         app.get('/config/styles', async (req, res) => {
-            res.setHeader({'Content-Type': 'text/javascript'})
+            res.setHeader({ 'Content-Type': 'text/javascript' })
             res.json(config_style)
         })
 
         // Get config
         app.get('/config/all', async (req, res) => {
-            res.setHeader({'Content-Type': 'text/javascript'})
+            res.setHeader({ 'Content-Type': 'text/javascript' })
             res.json(config)
         })
 

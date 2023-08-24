@@ -81,6 +81,36 @@
         const input = document.querySelector('.send-message-input')
         const chat_box = document.querySelector('.chat')
 
+        function createMessage(type = 'user') {
+            const message_box = document.createElement('div')
+            const profile_picture_section = document.createElement('div')
+            const profile_picture = document.createElement('div')
+            const text_section = document.createElement('div')
+
+            message_box.classList.add(`${type}-message`)
+            message_box.classList.add(`message`)
+
+            profile_picture_section.classList.add(`section-${type}-profile-picture`)
+            profile_picture_section.classList.add(`section-profile-picture`)
+
+            profile_picture.classList.add(`${type}-profile-picture`)
+            profile_picture.classList.add(`profile-picture`)
+
+            text_section.classList.add(`section-${type}-message-text`)
+            text_section.classList.add(`section-message-text`)
+                
+            profile_picture.innerHTML = type === 'user' ? 'User' : 'GPT'
+
+            profile_picture_section.append(profile_picture)
+
+            text_section.innerHTML = String(input.value)
+
+            message_box.append(profile_picture_section)
+            message_box.append(text_section)
+
+            chat_box.append(message_box)
+        }
+
         function handleSubmit(e) {
             e.preventDefault()
             const lastChild = chat_box.lastElementChild
@@ -90,43 +120,31 @@
                 return;
             } else {
 
-                const message_box = document.createElement('div')
-                const profile_picture_section = document.createElement('div')
-                const profile_picture = document.createElement('div')
-                const text_section = document.createElement('div')
+                createMessage()
 
-                message_box.classList.add('user-message')
-                message_box.classList.add('message')
+                const cookies = document.cookie.split(';');
+                let cucId = '';
 
-                profile_picture_section.classList.add('section-user-profile-picture')
-                profile_picture_section.classList.add('section-profile-picture')
+                cookies.forEach(i => {
+                    if(i.includes('CUC-ID')) {
+                        cucId = i.split('=')[1]
+                    }
+                })
 
-                profile_picture.classList.add('user-profile-picture')
-                profile_picture.classList.add('profile-picture')
-
-                text_section.classList.add('section-user-message-text')
-                text_section.classList.add('section-message-text')
-                
-                profile_picture.innerHTML = 'User'
-
-                profile_picture_section.append(profile_picture)
-
-                text_section.innerHTML = String(input.value)
-
-                message_box.append(profile_picture_section)
-                message_box.append(text_section)
-
-                chat_box.append(message_box)
-
-                socket.emit('message_sent', input.value);
+                socket.emit('message_sent', {value: input.value, id: cucId });
                 input.value = ''
             }
         }
 
         document.addEventListener('submit', handleSubmit)
 
-        socket.on('get_gpt_response', function() {
-
+        socket.on('get_gpt_response', (data) => {
+            if(data.error) {
+                // ERROR OCCURED NEEDS TO BE DISPLAYED
+                return;
+            } else {
+                data.gpt_response
+            }
         })
     </script>
 </body>
