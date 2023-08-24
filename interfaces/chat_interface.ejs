@@ -81,6 +81,7 @@
         const form = document.querySelector('.send-message-form')
         const input = document.querySelector('.send-message-input')
         const chat_box = document.querySelector('.chat')
+        const restart_button = document.querySelector('.restart-chat-button')
 
         function createMessage(type = 'user', text = '') {
             const message_box = document.createElement('div')
@@ -137,7 +138,15 @@
             }
         }
 
-        document.addEventListener('submit', handleSubmit)
+        function handleRestart(e) {
+            e.preventDefault()
+
+            document.cookie = "CUC-ID" + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.reload();
+        }
+
+        form.addEventListener('submit', handleSubmit)
+        restart_button.addEventListener('click', handleRestart)
 
         socket.on('get_gpt_response', (data) => {
             console.log('Got Response!')
