@@ -22,6 +22,18 @@ module.exports = {
     // Version of chatGPT
     gpt_version: 'gpt-3.5-turbo',
 
+    // Name for user
+    user_name: '', // Default Value is "User"
+
+    // Short name for user to use it on profile picture (example)
+    short_user_name: '', // Default Value is "User"
+
+    // Name for chatGPT
+    gpt_name: '', // Default Value is "ChatGPT <version>"
+
+    // Short name for chatGPT to use it on profile picture (example)
+    short_gpt_name: '', // Default Value is "GPT"
+
     // Max amount of tokens per conversation
     max_tokens: 150,
 
@@ -33,12 +45,6 @@ module.exports = {
         'Ты выполняешь роль тех.поддержки, которая помогает русскоговорящим клиентам. Ты не отвечаешь на отстраненные от темы вопросы!',
         ''
     ],
-
-    // Params for Console Application
-    console_app: {
-        user_name: 'User',
-        gpt_name: 'ChatGPT'
-    },
 
     // Params for Discord Bot
     discord: {

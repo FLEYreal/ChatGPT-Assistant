@@ -14,8 +14,14 @@
 
 <body>
     <section class="component" style="width: <%= config_style.width %>; height: <%= config_style.height %>">
+
+        
         <header class="header">
-            ChatGPT 3.5
+            <% if(custom_names.gpt_name && custom_names.gpt_name.length > 0) { %>
+                <%= custom_names.gpt_name %>
+            <% } else { %>
+                <%= default_name  %>
+            <% } %>
         </header>
 
         <section class="chat" style="height: calc(<%= config_style.height %> - (75px + 110px))">
@@ -28,7 +34,7 @@
     
                             <div class="section-gpt-profile-picture section-profile-picture">
                                 <!-- <img alt="gpt-profile-picture" class="gpt-profile-picture"/> -->
-                                <div class="gpt-profile-picture profile-picture">GPT</div>
+                                <div class="gpt-profile-picture profile-picture"><%= custom_names.short_gpt_name || 'GPT' %></div>
                             </div>
     
                             <div class="section-gpt-message-text section-message-text">
@@ -43,7 +49,7 @@
     
                             <div class="section-user-profile-picture section-profile-picture">
                                 <!-- <img alt="user-profile-picture" class="user-profile-picture"/> -->
-                                <div class="user-profile-picture profile-picture">User</div>
+                                <div class="user-profile-picture profile-picture"><%= custom_names.short_user_name || 'User' %></div>
                             </div>
     
                             <div class="section-user-message-text section-message-text">

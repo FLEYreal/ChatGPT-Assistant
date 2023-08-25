@@ -32,7 +32,7 @@ function consoleApplication(config) {
         const userInterface = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            prompt: `\n${config.console_app.user_name || 'User'} > `
+            prompt: `\n${config.user_name || 'User'} > `
         })
 
         // Start a conversation
@@ -52,7 +52,7 @@ function consoleApplication(config) {
             })
 
             // Send response in console
-            console.log(`\n\u001b[1;32m${config.console_app.gpt_name || 'ChatGPT'} >`, response.choices[0].message.content, '\u001b[0m')
+            console.log(`\n\u001b[1;32m${config.gpt_name || 'ChatGPT'} >`, response.choices[0].message.content, '\u001b[0m')
 
             // Continue a conversation
             userInterface.prompt()

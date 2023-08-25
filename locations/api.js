@@ -373,8 +373,26 @@ function apiApplication(config) {
                     .then(res => res.data.history)
                     .catch(err => res.json({ error: err }))
 
+                // Define GPT version display name
+                let display_gpt_name;
+
+                if(config.gpt_version.startsWith('gpt-3.5-turbo')) display_gpt_name = 'ChatGPT 3.5 (Fastest Model)'
+                else if(config.gpt_version.startsWith('gpt-4')) display_gpt_name = 'ChatGPT 4 (Most Advanced Model)'
+                else display_gpt_name = 'ChatGPT 3 (Basic Model)'
+
                 // Send file
-                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), { conversation_history: history, config_style: config_style })
+                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), { 
+                    conversation_history: history, 
+                    config_style: config_style,
+                    custom_names: {
+                        user_name: config.user_name,
+                        short_user_name: config.short_user_name,
+
+                        gpt_name: config.gpt_name,
+                        short_gpt_name: config.short_gpt_name,
+                    },
+                    default_name: display_gpt_name
+                })
 
             } catch (error) {
                 console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
