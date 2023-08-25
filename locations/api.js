@@ -62,13 +62,13 @@ function apiApplication(config) {
         // Socket events
         let connections = [];
         io.sockets.on('connection', (socket) => {
-            if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
+            if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
             connections.push(socket)
 
             socket.on('disconnect', () => {
 
                 connections.splice(connections.indexOf(socket), 1)
-                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
+                if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
 
             })
 
@@ -82,9 +82,26 @@ function apiApplication(config) {
                     prompt: data.value
                 })
                     .then(res => res.data.gpt_response)
-                    .catch(err => res.json({ error: err }))
+                    .catch(err => {
+                        io.sockets.emit('get_gpt_response', { error: err })
+                        console.log('[\u001b[1;31mERROR\u001b[0m] :', err)
+                    })
 
                 io.sockets.emit('get_gpt_response', { gpt_response: response })
+            })
+
+            socket.on('restart_conversation', async (data) => {
+
+                // Delete conversation from DB
+                if(config.delete_restarted_conversations) {
+                    await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/delete`, {
+                        id: data.id,
+                    })
+                        .then(res => res.data.gpt_response)
+                        .catch(err => {
+                            console.log('[\u001b[1;31mERROR\u001b[0m] :', err)
+                        })
+                }
             })
         })
 
@@ -93,7 +110,7 @@ function apiApplication(config) {
         // Create message and send it in response
         app.post('/message/create', async (req, res) => {
             try {
-                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/message/create" worked')
+                if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/message/create" worked')
 
                 const response = await openAI.chat.completions.create({
                     model: config.gpt_version,
@@ -115,7 +132,7 @@ function apiApplication(config) {
         app.get('/chat/create', async (req, res) => {
             try {
                 // Log that route worked
-                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
+                if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
 
                 // Get unique ID
                 const id = crypto.randomUUID()
@@ -175,7 +192,7 @@ function apiApplication(config) {
                 .catch(err => res.json({ error: err }))
 
             // Update history in database
-            await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
+            await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
                 id: id,
                 prompt: prompt,
                 gpt_response: gpt_response.response
@@ -192,19 +209,19 @@ function apiApplication(config) {
         })
 
         // Delete a conversation from DB
-        app.delete('/chat/delete', async (req, res) => {
+        app.post('/chat/delete', async (req, res) => {
             try {
                 // Log that route worked
-                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
+                if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
 
                 // Get ID from request body
                 let { id } = req.body
+
                 if (!id) id = req.cookies['CUC-ID']
                 if (!id) {
                     console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
                     return res.status(404).json({ error: 'No ID / CUC-ID found' })
                 }
-
                 // Find a row by ID
                 const row = await new Promise((resolve, reject) => {
                     db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
@@ -248,7 +265,7 @@ function apiApplication(config) {
         app.post('/chat/get-history', async (req, res) => {
             try {
                 // Log that route worked
-                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
+                if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
 
                 // Get ID from request body
                 let { id } = req.body
@@ -286,10 +303,10 @@ function apiApplication(config) {
         })
 
         // Save history
-        app.post('/chat/save-history', async (req, res) => {
+        app.put('/chat/save-history', async (req, res) => {
             try {
                 // Log that route worked
-                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
+                if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
 
                 // Get ID from request body
                 let { id, prompt, gpt_response } = req.body
@@ -366,7 +383,7 @@ function apiApplication(config) {
                     res.cookie('CUC-ID', id)
                 }
 
-                if(!lang) lang = 'en'
+                if (!lang) lang = 'en'
 
                 // Get History of the conversation by ID
                 let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
@@ -378,13 +395,13 @@ function apiApplication(config) {
                 // Define GPT version display name
                 let display_gpt_name;
 
-                if(config.gpt_version.startsWith('gpt-3.5-turbo')) display_gpt_name = 'ChatGPT 3.5 (Fastest Model)'
-                else if(config.gpt_version.startsWith('gpt-4')) display_gpt_name = 'ChatGPT 4 (Most Advanced Model)'
+                if (config.gpt_version.startsWith('gpt-3.5-turbo')) display_gpt_name = 'ChatGPT 3.5 (Fastest Model)'
+                else if (config.gpt_version.startsWith('gpt-4')) display_gpt_name = 'ChatGPT 4 (Most Advanced Model)'
                 else display_gpt_name = 'ChatGPT 3 (Basic Model)'
 
                 // Send file
-                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), { 
-                    conversation_history: history, 
+                res.render(path.resolve(__dirname, '..', 'interfaces', 'chat_interface'), {
+                    conversation_history: history,
                     config_style: config_style,
                     custom_names: {
                         user_name: config.user_name,
@@ -403,7 +420,7 @@ function apiApplication(config) {
         })
 
         server.listen(process.env.API_PORT | 3000, () => {
-            if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')
+            if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')
         })
     }
 

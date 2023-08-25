@@ -64,5 +64,8 @@ module.exports = {
     display_startup_logs: true,
 
     // Display info logs
-    display_info_logs: true
+    display_info_logs: true,
+
+    // Delete conversation from Database when it's restarted
+    delete_restarted_conversations: true
 }

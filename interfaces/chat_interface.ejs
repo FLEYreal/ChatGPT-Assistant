@@ -209,6 +209,20 @@
             // Prevent default actions of button
             e.preventDefault()
 
+            // Get array of coockies
+            const cookies = document.cookie.split(';');
+            let cucId = '';
+
+            // Find CUC-ID cookie
+            cookies.forEach(i => {
+                if(i.includes('CUC-ID')) {
+                    cucId = i.split('=')[1]
+                }
+            })
+
+            // Delete conversation
+            socket.emit('restart_conversation', {id: cucId})
+
             // Get rid of conversation cookie by expiring it
             document.cookie = "CUC-ID" + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
