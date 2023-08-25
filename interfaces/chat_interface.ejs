@@ -15,19 +15,26 @@
 <body>
     <section class="component" style="width: <%= config_style.width %>; height: <%= config_style.height %>">
 
-        
+        <!-- Header of the page -->
         <header class="header">
+
+            <!-- Define a name of the GPT, either it's custom or it's default -->
             <% if(custom_names.gpt_name && custom_names.gpt_name.length > 0) { %>
                 <%= custom_names.gpt_name %>
             <% } else { %>
                 <%= default_name  %>
             <% } %>
+
         </header>
 
+        <!-- Section with a chat -->
         <section class="chat" style="height: calc(<%= config_style.height %> - (75px + 110px))">
 
+            <!-- Display every message from history -->
             <% chat.forEach(msg => { %>
                 <% if(msg.role !== 'system') { %>
+
+                    <!-- GPT response -->
                     <% if(msg.role === 'assistant') { %>
     
                         <div class="gpt-message message">
@@ -45,6 +52,7 @@
     
                     <% } else if(msg.role === 'user') { %>
     
+                        <!-- User's question -->
                         <div class="user-message message">
     
                             <div class="section-user-profile-picture section-profile-picture">
@@ -64,37 +72,72 @@
     
         </section>
 
-        <section class="input">
+        <!-- Bottom menu of the chat -->
+        <section class="bottom-menu">
+
+            <!-- Bar with buttons -->
             <section class="button-bar">
+
+                <!-- Button to restart conversation -->
                 <button class="restart-chat-button">
+
+                    <!-- Icon for the button -->
                     <img src="/icons/restart_icon.svg" alt="restart-icon"/>
+
                     Restart Conversation
+
                 </button>
+
             </section>
+
+            <!-- Form to send message to chatGPT -->
             <form class="send-message-form">
-                <textarea autocomplete="off" autocorrect="on" required autofocus class="send-message-input" placeholder="Send Message..."></textarea>
+
+                <!-- Text area to make a request to GPT -->
+                <textarea 
+                    autocomplete="off"
+                    autocorrect="on" 
+                    required 
+                    autofocus
+                    class="send-message-input" 
+                    placeholder="Send Message...">
+                </textarea>
+
+                <!-- Button to send message -->
                 <button class="send-message-button"><img src="/icons/send_icon.svg" alt="send-icon"/></button>
             </form>
+
+            <!-- Message to thank creators -->
             <div class="small-message">
                 Embedded <a href="https://chat.openai.com/">ChatGPT</a> chat by <a href="https://nitro-storm.ru">StormShop</a>
             </div>
         </section>
     </section>
+
+    <!-- Script to load NodeJS library "socket.io" -->
     <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Script with main basic JavaScript code -->
     <script>
+        // Connect to lib
         const socket = io.connect();
 
+        // Get basic tags to work with
         const form = document.querySelector('.send-message-form')
         const input = document.querySelector('.send-message-input')
         const chat_box = document.querySelector('.chat')
         const restart_button = document.querySelector('.restart-chat-button')
 
+        // Function to display message
         function createMessage(type = 'user', text = '') {
+
+            // Create all components of the message
             const message_box = document.createElement('div')
             const profile_picture_section = document.createElement('div')
             const profile_picture = document.createElement('div')
             const text_section = document.createElement('div')
 
+            // Add all style classes
             message_box.classList.add(`${type}-message`)
             message_box.classList.add(`message`)
 
@@ -106,9 +149,11 @@
 
             text_section.classList.add(`section-${type}-message-text`)
             text_section.classList.add(`section-message-text`)
-                
+            
+            // Display name
             profile_picture.innerHTML = type === 'user' ? 'User' : 'GPT'
 
+            // Append and display all components
             profile_picture_section.append(profile_picture)
 
             text_section.innerHTML = String(text)
@@ -119,47 +164,69 @@
             chat_box.append(message_box)
         }
 
+        // Works when message to GPT submitted
         function handleSubmit(e) {
+
+            // Prevent Default Actions of Form (Page Reloads)
             e.preventDefault()
+
+            // Define last message
             const lastChild = chat_box.lastElementChild
 
+            // Check if the message is already sent
             if (lastChild && lastChild.classList.contains('user-message')) {
+
                 // IF LAST MESSAGE ALREADY WAS FROM USER
                 return;
+
             } else {
 
+                // Use function  to display message
                 createMessage('user', input.value)
 
+                // Get array of coockies
                 const cookies = document.cookie.split(';');
                 let cucId = '';
 
+                // Find CUC-ID cookie
                 cookies.forEach(i => {
                     if(i.includes('CUC-ID')) {
                         cucId = i.split('=')[1]
                     }
                 })
 
+                // Send event that message sent to server with all the data
                 socket.emit('message_sent', {value: input.value, id: cucId });
+
+                // Clear input
                 input.value = ''
             }
         }
 
+        // Works when button "Restart Conversation" works
         function handleRestart(e) {
+
+            // Prevent default actions of button
             e.preventDefault()
 
+            // Get rid of conversation cookie by expiring it
             document.cookie = "CUC-ID" + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            // Reload page
             location.reload();
         }
 
+        // Add event listeners
         form.addEventListener('submit', handleSubmit)
         restart_button.addEventListener('click', handleRestart)
 
+        // When GPT responded
         socket.on('get_gpt_response', (data) => {
-            console.log('Got Response!')
             if(data.error) {
                 // ERROR OCCURED NEEDS TO BE DISPLAYED
                 return;
             } else {
+                // Display chatGPT response
                 createMessage('gpt', data.gpt_response)
             }
         })
