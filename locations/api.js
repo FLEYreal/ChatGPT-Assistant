@@ -62,13 +62,13 @@ function apiApplication(config) {
         // Socket events
         let connections = [];
         io.sockets.on('connection', (socket) => {
-            console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
+            if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
             connections.push(socket)
 
             socket.on('disconnect', () => {
 
                 connections.splice(connections.indexOf(socket), 1)
-                console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
+                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
 
             })
 
@@ -93,7 +93,7 @@ function apiApplication(config) {
         // Create message and send it in response
         app.post('/message/create', async (req, res) => {
             try {
-                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/message/create" worked')
+                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/message/create" worked')
 
                 const response = await openAI.chat.completions.create({
                     model: config.gpt_version,
@@ -115,7 +115,7 @@ function apiApplication(config) {
         app.get('/chat/create', async (req, res) => {
             try {
                 // Log that route worked
-                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
+                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
 
                 // Get unique ID
                 const id = crypto.randomUUID()
@@ -195,7 +195,7 @@ function apiApplication(config) {
         app.delete('/chat/delete', async (req, res) => {
             try {
                 // Log that route worked
-                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
+                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
 
                 // Get ID from request body
                 let { id } = req.body
@@ -248,7 +248,7 @@ function apiApplication(config) {
         app.post('/chat/get-history', async (req, res) => {
             try {
                 // Log that route worked
-                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
+                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
 
                 // Get ID from request body
                 let { id } = req.body
@@ -289,7 +289,7 @@ function apiApplication(config) {
         app.post('/chat/save-history', async (req, res) => {
             try {
                 // Log that route worked
-                console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
+                if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
 
                 // Get ID from request body
                 let { id, prompt, gpt_response } = req.body
@@ -358,13 +358,15 @@ function apiApplication(config) {
             try {
 
                 // Get ID from request body
-                let { id } = req.query
+                let { id, lang } = req.query
                 if (!id && req.cookies['CUC-ID']) id = req.cookies['CUC-ID']
                 if (!id && !req.cookies['CUC-ID']) {
                     const result = await axios.get(`${process.env.API_IP}:${process.env.API_PORT}/chat/create`)
                     id = result.data.id
                     res.cookie('CUC-ID', id)
                 }
+
+                if(!lang) lang = 'en'
 
                 // Get History of the conversation by ID
                 let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
@@ -401,7 +403,7 @@ function apiApplication(config) {
         })
 
         server.listen(process.env.API_PORT | 3000, () => {
-            console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')
+            if(config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')
         })
     }
 

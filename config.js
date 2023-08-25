@@ -58,5 +58,11 @@ module.exports = {
 
         // API token to connect to the bot
         api_token: ''
-    }
+    },
+
+    // Display logs when script starts
+    display_startup_logs: true,
+
+    // Display info logs
+    display_info_logs: true
 }
