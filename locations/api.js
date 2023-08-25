@@ -121,7 +121,7 @@ function apiApplication(config) {
                 const id = crypto.randomUUID()
 
                 // Insert new data to database
-                db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.system_prompts))], (error) => {
+                db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.instructions))], (error) => {
                     if (error) {
                         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                         return res.status(500).json({ error: error })

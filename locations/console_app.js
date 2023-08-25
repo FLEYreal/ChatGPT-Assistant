@@ -26,7 +26,7 @@ function consoleApplication(config) {
         const history = [];
 
         // Messages from system so GPT understood the context and what it needs to do
-        history.push(...transformPrompts('system', config.system_prompts))
+        history.push(...transformPrompts('system', config.instructions))
 
         // Creating console interface
         const userInterface = readline.createInterface({

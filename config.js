@@ -38,7 +38,7 @@ module.exports = {
     max_tokens: 150,
 
     // Type what you need chatGPT to know and what chatGPT needs to do
-    system_prompts: [
+    instructions: [
 
         // The list of the messages, by comma
         'Ты находишься в дискорд сервере StormShop, который продаёт подписки на разные сервисы, которые заблокированы из-за санкций в России на момент 2023 года!',
