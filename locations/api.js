@@ -66,16 +66,22 @@ function apiApplication(config) {
         // Socket events
         let connections = [];
         io.sockets.on('connection', (socket) => {
+            // Display log when user is connected to the interface
             if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : User connected')
+
+            // Add connection to the array
             connections.push(socket)
 
+            // When user disconnected
             socket.on('disconnect', () => {
 
+                // Delete from the array + log to console
                 connections.splice(connections.indexOf(socket), 1)
                 if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Used disconnected')
 
             })
 
+            // When prompt to chatGPT is sent
             socket.on('message_sent', async (data) => {
 
                 // Get all variables
@@ -95,6 +101,8 @@ function apiApplication(config) {
                     .then(res => res.data.history)
                     .catch(err => res.json({ error: err }))
 
+                if(history.error) return;
+
                 // Get newHistory, parse past one
                 let newHistory = JSON.parse(history)
 
@@ -103,7 +111,6 @@ function apiApplication(config) {
                     role: 'user',
                     content: value
                 })
-
 
                 // Make a POST request to the OpenAI API to get chat completions
                 const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -150,8 +157,10 @@ function apiApplication(config) {
                     }
                 }
 
+                // Notify frontend when message is completed
                 socket.emit('fully_received')
 
+                // Save a prompt and response to history
                 await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
                     id: id,
                     prompt: value,
@@ -159,6 +168,7 @@ function apiApplication(config) {
                 })
             })
 
+            // When button to restart conversation is clicked
             socket.on('restart_conversation', async (data) => {
 
                 // Delete conversation from DB

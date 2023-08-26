@@ -167,9 +167,13 @@
         }
 
         function streamingMessage(chunk) {
+            // Get all gpt messages
             const text_sections = document.querySelectorAll('.section-gpt-message-text')
+
+            // Get last gpt message
             const text_section = text_sections[text_sections.length - 1]
 
+            // Add new chunk of message to the response
             text_section.innerHTML += String(chunk)
         }
 
@@ -245,21 +249,25 @@
             location.reload();
         }
 
-        // Add event listeners
-        form.addEventListener('submit', handleSubmit)
-        restart_button.addEventListener('click', handleRestart)
-
         // When chunk of response received
         socket.on('chunk', (data) => {
+
+            // Get chunk of data
             const { content } = data;
 
+            // Add new chunk to GPT response
             streamingMessage(content)
         })
 
+        // When gpt responded
         socket.on('fully_received', () => {
             // User can send message after gpt answered
             sendMessage = true;
         })
+
+        // Add event listeners
+        form.addEventListener('submit', handleSubmit)
+        restart_button.addEventListener('click', handleRestart)
 
     </script>
 </body>
