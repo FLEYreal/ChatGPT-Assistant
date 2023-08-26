@@ -78,8 +78,18 @@
             <!-- Bar with buttons -->
             <section class="button-bar">
 
+                <!-- Button to stop gpt's answer generation -->
+                <button class="stop-chat-button chat-button">
+
+                    <!-- Icon for the button -->
+                    <img src="/icons/stop_icon.svg" alt="stop-icon"/>
+
+                    Stop Generating
+
+                </button>
+
                 <!-- Button to restart conversation -->
-                <button class="restart-chat-button">
+                <button class="restart-chat-button chat-button">
 
                     <!-- Icon for the button -->
                     <img src="/icons/restart_icon.svg" alt="restart-icon"/>
@@ -129,6 +139,7 @@
         const input = document.querySelector('.send-message-input')
         const chat_box = document.querySelector('.chat')
         const restart_button = document.querySelector('.restart-chat-button')
+        const stop_button = document.querySelector('.stop-chat-button')
 
         // Function to display message
         function createMessage(type = 'user', text = '') {
@@ -166,6 +177,7 @@
             chat_box.append(message_box)
         }
 
+        // Function to add chunks of GPT message
         function streamingMessage(chunk) {
             // Get all gpt messages
             const text_sections = document.querySelectorAll('.section-gpt-message-text')
@@ -256,6 +268,16 @@
             location.reload();
         }
 
+        // Stops generating response of GPT
+        function handleStop(e) {
+
+            // Prevent default actions of button
+            e.preventDefault()
+
+            // Triggers event on the backend to stop generating
+            socket.emit('stop_generating')
+        }
+
         // When chunk of response received
         socket.on('chunk', (data) => {
 
@@ -275,6 +297,7 @@
         // Add event listeners
         form.addEventListener('submit', handleSubmit)
         restart_button.addEventListener('click', handleRestart)
+        stop_button.addEventListener('click', handleStop)
 
     </script>
 </body>

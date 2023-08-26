@@ -70,14 +70,17 @@ body {
 }
 
 .section-message-text {
-    color: #C6C6C6;
     width: calc(100%);
     max-width: 653px;
 }
 
-.section-user-message-text {}
+.section-user-message-text {
+    color: #ececf1;
+}
 
-.section-gpt-message-text {}
+.section-gpt-message-text {
+    color: #d1d5db;
+}
 
 
 
@@ -98,11 +101,11 @@ body {
 .send-message-form {
     width: 94%;
     height: 56px;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
+    border-radius: .75rem;
+    -webkit-border-radius: .75rem;
+    -moz-border-radius: .75rem;
+    -ms-border-radius: .75rem;
+    -o-border-radius: .75rem;
     box-sizing: border-box;
     background: #3F414E;
     box-shadow: 0px 0px 24px 3px rgba(0, 0, 0, 0.15);
@@ -195,7 +198,7 @@ body {
     width: 100%;
     height: 75px;
     background: #3F414E;
-    box-shadow: 0px 0px 24px 5px rgba(0, 0, 0, 0.25);
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 4px 24px 0px;
 }
 
 .button-bar {
@@ -203,24 +206,24 @@ body {
     box-sizing: border-box;
     width: 94%;
     max-width: 768px;
-    bottom: 150px;
+    height: 42px;
+    bottom: 108px;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-flow: row nowrap;
 }
 
-.restart-chat-button {
-    z-index: 10;
-    position: absolute;
-    right: 0;
+.chat-button {
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
-    border: 1px solid #565869;
+    border: 1px solid rgba(86,88,105);
     background-color: rgba(53, 53, 65, 1);
-    box-shadow: 0px 0px 24px 3px rgba(0, 0, 0, 0.15);
-    padding: 8px 12px;
-    color: #BABABA;
+    color: #d9d9e3;
     font-size: 15px;
     font-style: normal;
     font-weight: 400;
@@ -229,19 +232,27 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 8px 12px;
+    margin-left: 8px;
 }
 
-.restart-chat-button>img {
+.restart-chat-button {
+
+}
+
+.stop-chat-button {}
+
+.chat-button>img {
     margin-right: 10px;
 }
 
-.restart-chat-button:hover {
+.chat-button:hover {
     background-color: #40414f;
 }
 
 .chunk-appearance {
-    animation: chunk_appearance 0.2s ease;
-    -webkit-animation: chunk_appearance 0.25s ease;
+    animation: chunk_appearance 0.12s ease;
+    -webkit-animation: chunk_appearance 0.12s ease;
 }
 
 
