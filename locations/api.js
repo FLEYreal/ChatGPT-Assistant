@@ -27,7 +27,6 @@ const sqlite3 = require('sqlite3').verbose()
 // Utils
 const axios = require('axios');
 const decoder = new TextDecoder();
-const controller = new AbortController();
 
 function apiApplication(config) {
 
@@ -85,6 +84,13 @@ function apiApplication(config) {
             // When prompt to chatGPT is sent
             socket.on('message_sent', async (data) => {
                 try {
+
+                    // create new AbortController
+                    const controller = new AbortController();
+                    const signal = controller.signal;
+
+                    // save controller in the context of conversation
+                    socket.controller = controller;
 
                     // Get all variables
                     let gpt_response = '';
@@ -192,10 +198,12 @@ function apiApplication(config) {
                 }
             })
 
-            socket.on('stop_generating', async () => {
+            socket.on('stop_generating', async (data) => {
                 try {
-                    // Stop streaming GPT response
-                    controller.abort();
+                    if (data.sendMessage === false && socket.controller) {
+                        // Stop streaming GPT response
+                        socket.controller.abort();
+                    }
                 } catch (e) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                 }

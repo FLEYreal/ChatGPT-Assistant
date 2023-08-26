@@ -275,7 +275,7 @@
             e.preventDefault()
 
             // Triggers event on the backend to stop generating
-            socket.emit('stop_generating')
+            socket.emit('stop_generating', { sendMessage: sendMessage })
         }
 
         // When chunk of response received

@@ -9,6 +9,7 @@ body {
     position: relative;
     background-color: #353541;
     overflow: hidden;
+    min-width: 220px;
 }
 
 .chat {
@@ -121,7 +122,7 @@ body {
     border: none;
     padding: 0px 12px;
     font-size: 18px;
-    padding-top: 21px;
+    padding-top: 30px;
     box-sizing: border-box;
     color: #999999;
     background: none;
@@ -144,6 +145,7 @@ body {
     background: none;
     cursor: pointer;
     margin-right: 10px;
+    margin-top: 8px;
     padding: 6px;
     transition: all 0.125s ease;
     -webkit-transition: all 0.125s ease;
@@ -168,7 +170,6 @@ body {
 .small-message {
     margin-top: 12px;
     color: #999;
-    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -206,13 +207,13 @@ body {
     box-sizing: border-box;
     width: 94%;
     max-width: 768px;
-    height: 42px;
-    bottom: 108px;
+    min-height: 42px;
+    bottom: 100px;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
 }
 
 .chat-button {
@@ -234,6 +235,7 @@ body {
     justify-content: center;
     padding: 8px 12px;
     margin-left: 8px;
+    margin-bottom: 8px;
 }
 
 .restart-chat-button {
@@ -284,5 +286,62 @@ body {
 
     100% {
         opacity: 1;
+    }
+}
+
+/* For smartphones */
+@media only screen and (max-width: 420px) {
+    .header {
+        font-size: 16px;
+    }
+
+    .message {
+        font-size: 14px;
+    }
+
+    .send-message-input {
+        font-size: 16px;
+    }
+
+    .small-message {
+        font-size: 12px;
+    }
+}
+
+/* For medium screen */
+@media only screen and (min-width: 421px) {
+    .header {
+        font-size: 18px;
+    }
+
+    .message {
+        font-size: 16px;
+    }
+
+    .send-message-input {
+        font-size: 17px;
+    }
+
+    .small-message {
+        font-size: 14px;
+    }
+}
+
+/* Maximum */
+@media only screen and (min-width: 560px) {
+    .header {
+        font-size: 20px;
+    }
+
+    .message {
+        font-size: 17px;
+    }
+
+    .send-message-input {
+        font-size: 18px;
+    }
+
+    .small-message {
+        font-size: 15px;
     }
 }
