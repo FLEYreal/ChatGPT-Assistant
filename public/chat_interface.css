@@ -226,7 +226,7 @@ body {
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
-    border: 1px solid rgba(86,88,105);
+    border: 1px solid rgba(86, 88, 105);
     background-color: rgba(53, 53, 65, 1);
     color: #d9d9e3;
     font-size: 15px;
@@ -269,6 +269,29 @@ body {
     -webkit-animation: chunk_appearance 0.12s ease;
 }
 
+.error_box {
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    position: absolute;
+    background-color: rgba(239, 68, 68, .1);
+    border: 1px solid rgb(239, 68, 68);
+    border-radius: .375rem;
+    -webkit-border-radius: .375rem;
+    -moz-border-radius: .375rem;
+    -ms-border-radius: .375rem;
+    -o-border-radius: .375rem;
+    padding: 8px 12px;
+    color: rgba(236, 236, 241, 1);
+    top: 90px;
+    left: 50%;
+    transform: translate(-50%, -0);
+    -webkit-transform: translate(-50%, -0);
+    -moz-transform: translate(-50%, -0);
+    -ms-transform: translate(-50%, -0);
+    -o-transform: translate(-50%, -0);
+    max-width: 500px;
+}
+
 @keyframes appearance {
     0% {
         transform: translateY(-25px);
@@ -297,7 +320,7 @@ body {
         -ms-transform: translateY(0px);
         -o-transform: translateY(0px);
         opacity: 1;
-}
+    }
 
     100% {
         transform: translateY(-25px);
@@ -306,7 +329,7 @@ body {
         -ms-transform: translateY(-25px);
         -o-transform: translateY(-25px);
         opacity: 0;
-}
+    }
 }
 
 @keyframes chunk_appearance {
