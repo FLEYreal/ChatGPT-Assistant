@@ -20,16 +20,9 @@ const io = require('socket.io')(server);
 // Routes
 const chatRoute = require('./routes/chat')
 const configRoute = require('./routes/config')
-const msgRoute = require('./message')
 
 // Database SQLite
 const sqlite3 = require('sqlite3').verbose()
-
-// OpenAI
-const OpenAIApi = require('openai');
-const openAI = new OpenAIApi({
-    apiKey: process.env.OPENAI_API_KEY
-});
 
 // Utils
 const axios = require('axios');
@@ -65,7 +58,6 @@ function apiApplication(config) {
         // Setup routes
         app.use('/chat', chatRoute)
         app.use('/config', configRoute)
-        app.use('/message', msgRoute)
 
         // Setup EJS template engine
         app.set('view engine', 'ejs');
@@ -165,19 +157,6 @@ function apiApplication(config) {
                     prompt: value,
                     gpt_response: gpt_response
                 })
-
-                // // Get History of the conversation by ID
-                // let response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/conversation`, {
-                //     id: data.id,
-                //     prompt: data.value
-                // })
-                //     .then(res => res.data.gpt_response)
-                //     .catch(err => {
-                //         io.sockets.emit('get_gpt_response', { error: err })
-                //         console.log('[\u001b[1;31mERROR\u001b[0m] :', err)
-                //     })
-
-                // io.sockets.emit('get_gpt_response', { gpt_response: response })
             })
 
             socket.on('restart_conversation', async (data) => {
