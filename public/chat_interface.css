@@ -31,6 +31,10 @@ body {
     -webkit-animation: appearance 0.3s ease;
 }
 
+.none {
+    display: none !important;
+}
+
 .user-message {}
 
 .gpt-message {
@@ -238,11 +242,19 @@ body {
     margin-bottom: 8px;
 }
 
-.restart-chat-button {
-
-}
+.restart-chat-button {}
 
 .stop-chat-button {}
+
+.disappearance {
+    animation: disappearance 0.3s ease infinite;
+    -webkit-animation: disappearance 0.3s ease infinite;
+}
+
+.appearance {
+    animation: appearance 0.3s ease infinite;
+    -webkit-animation: appearance 0.3s ease infinite;
+}
 
 .chat-button>img {
     margin-right: 10px;
@@ -256,8 +268,6 @@ body {
     animation: chunk_appearance 0.12s ease;
     -webkit-animation: chunk_appearance 0.12s ease;
 }
-
-
 
 @keyframes appearance {
     0% {
@@ -277,6 +287,26 @@ body {
         -o-transform: translateY(0px);
         opacity: 1;
     }
+}
+
+@keyframes disappearance {
+    0% {
+        transform: translateY(0px);
+        -webkit-transform: translateY(0px);
+        -moz-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        -o-transform: translateY(0px);
+        opacity: 1;
+}
+
+    100% {
+        transform: translateY(-25px);
+        -webkit-transform: translateY(-25px);
+        -moz-transform: translateY(-25px);
+        -ms-transform: translateY(-25px);
+        -o-transform: translateY(-25px);
+        opacity: 0;
+}
 }
 
 @keyframes chunk_appearance {

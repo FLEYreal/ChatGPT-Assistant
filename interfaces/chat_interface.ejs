@@ -79,7 +79,7 @@
             <section class="button-bar">
 
                 <!-- Button to stop gpt's answer generation -->
-                <button class="stop-chat-button chat-button">
+                <button class="stop-chat-button chat-button none">
 
                     <!-- Icon for the button -->
                     <img src="/icons/stop_icon.svg" alt="stop-icon"/>
@@ -206,6 +206,14 @@
                 // User can't send 2nd message until gpt answers
                 sendMessage = false
 
+                // Show "Stop Generating" button
+                stop_button.classList.toggle('none')
+                stop_button.classList.add('appearance')
+
+                setTimeout(() => {
+                    stop_button.classList.remove('appearance')
+                }, 300)
+
                 // Define last message
                 const lastChild = chat_box.lastElementChild
 
@@ -292,6 +300,14 @@
         socket.on('fully_received', () => {
             // User can send message after gpt answered
             sendMessage = true;
+
+            // Show "Stop Generating" button
+            stop_button.classList.add('disappearance')
+
+            setTimeout(() => {
+                stop_button.classList.remove('disappearance')
+                stop_button.classList.toggle('none')
+            }, 300)
         })
 
         // Add event listeners
