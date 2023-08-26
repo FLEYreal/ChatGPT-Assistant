@@ -173,8 +173,15 @@
             // Get last gpt message
             const text_section = text_sections[text_sections.length - 1]
 
+            // Add span tag for appearance animation
+            const chunk_block = document.createElement('span')
+            chunk_block.classList.add('chunk-appearance')
+
             // Add new chunk of message to the response
-            text_section.innerHTML += String(chunk)
+            chunk_block.innerHTML += String(chunk)
+
+            // Add chunk to text wrapper
+            text_section.append(chunk_block)
         }
 
         // Works when message to GPT submitted

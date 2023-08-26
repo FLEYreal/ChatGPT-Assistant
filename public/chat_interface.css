@@ -239,6 +239,13 @@ body {
     background-color: #40414f;
 }
 
+.chunk-appearance {
+    animation: chunk_appearance 0.2s ease;
+    -webkit-animation: chunk_appearance 0.25s ease;
+}
+
+
+
 @keyframes appearance {
     0% {
         transform: translateY(-25px);
@@ -255,6 +262,16 @@ body {
         -moz-transform: translateY(0px);
         -ms-transform: translateY(0px);
         -o-transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+@keyframes chunk_appearance {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
         opacity: 1;
     }
 }
