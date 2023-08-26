@@ -67,5 +67,8 @@ module.exports = {
     display_info_logs: true,
 
     // Delete conversation from Database when it's restarted
-    delete_restarted_conversations: true
+    delete_restarted_conversations: true,
+
+    // Is chatGPT response streamed or it's sent fully completed
+    streaming_response: true
 }

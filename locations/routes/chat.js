@@ -80,7 +80,7 @@ router.post('/conversation', async (req, res) => {
     })
 
     // Get response of chatGPT
-    const gpt_response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/message/create`, {
+    const gpt_response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/message/create/static`, {
         history: JSON.stringify(newHistory)
     })
         .then(res => res.data)
