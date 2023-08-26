@@ -56,43 +56,43 @@ router.get('/create', async (req, res) => {
 router.post('/conversation', async (req, res) => {
 
     // Get ID from query
-    let { id, prompt } = req.body
-    if (!id) id = req.cookies['CUC-ID']
-    if (!id) {
-        console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-        return res.status(404).json({ error: 'No ID / CUC-ID found' })
-    }
+    // let { id, prompt } = req.body
+    // if (!id) id = req.cookies['CUC-ID']
+    // if (!id) {
+    //     console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
+    //     return res.status(404).json({ error: 'No ID / CUC-ID found' })
+    // }
 
     // Get History of the conversation by ID
-    let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
-        id: id
-    })
-        .then(res => res.data.history)
-        .catch(err => res.json({ error: err }))
+    // let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
+    //     id: id
+    // })
+    //     .then(res => res.data.history)
+    //     .catch(err => res.json({ error: err }))
 
 
     // Add new prompt and get newHistory
-    let newHistory = JSON.parse(history)
+    // let newHistory = JSON.parse(history)
 
-    newHistory.push({
-        role: 'user',
-        content: prompt
-    })
+    // newHistory.push({
+    //     role: 'user',
+    //     content: prompt
+    // })
 
     // Get response of chatGPT
-    const gpt_response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/message/create/static`, {
-        history: JSON.stringify(newHistory)
-    })
-        .then(res => res.data)
-        .catch(err => res.json({ error: err }))
+    // const gpt_response = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/message/create/static`, {
+    //     history: JSON.stringify(newHistory)
+    // })
+    //     .then(res => res.data)
+    //     .catch(err => res.json({ error: err }))
 
     // Update history in database
-    await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
-        id: id,
-        prompt: prompt,
-        gpt_response: gpt_response.response
-    })
-        .catch(err => res.json({ error: err }))
+    // await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
+    //     id: id,
+    //     prompt: prompt,
+    //     gpt_response: gpt_response.response
+    // })
+    //     .catch(err => res.json({ error: err }))
 
     // Return result
     return res.status(200).json({

@@ -121,6 +121,9 @@
         // Connect to lib
         const socket = io.connect();
 
+        // Can user send message
+        let sendMessage = true;
+
         // Get basic tags to work with
         const form = document.querySelector('.send-message-form')
         const input = document.querySelector('.send-message-input')
@@ -163,42 +166,55 @@
             chat_box.append(message_box)
         }
 
+        function streamingMessage(chunk) {
+            const text_sections = document.querySelectorAll('.section-gpt-message-text')
+            const text_section = text_sections[text_sections.length - 1]
+
+            text_section.innerHTML += String(chunk)
+        }
+
         // Works when message to GPT submitted
         function handleSubmit(e) {
 
             // Prevent Default Actions of Form (Page Reloads)
             e.preventDefault()
 
-            // Define last message
-            const lastChild = chat_box.lastElementChild
+            if(sendMessage) {
+                // User can't send 2nd message until gpt answers
+                sendMessage = false
 
-            // Check if the message is already sent
-            if (lastChild && lastChild.classList.contains('user-message')) {
+                // Define last message
+                const lastChild = chat_box.lastElementChild
 
-                // IF LAST MESSAGE ALREADY WAS FROM USER
-                return;
+                // Check if the message is already sent
+                if (lastChild && lastChild.classList.contains('user-message')) {
 
-            } else {
+                    // IF LAST MESSAGE ALREADY WAS FROM USER
+                    return;
 
-                // Use function  to display message
-                createMessage('user', input.value)
+                } else {
 
-                // Get array of coockies
-                const cookies = document.cookie.split(';');
-                let cucId = '';
+                    // Use function  to display message
+                    createMessage('user', input.value)
 
-                // Find CUC-ID cookie
-                cookies.forEach(i => {
-                    if(i.includes('CUC-ID')) {
-                        cucId = i.split('=')[1]
-                    }
-                })
+                    // Get array of coockies
+                    const cookies = document.cookie.split(';');
+                    let cucId = '';
 
-                // Send event that message sent to server with all the data
-                socket.emit('message_sent', {value: input.value, id: cucId });
+                    // Find CUC-ID cookie
+                    cookies.forEach(i => {
+                        if(i.includes('CUC-ID')) {
+                            cucId = i.split('=')[1]
+                        }
+                    })
 
-                // Clear input
-                input.value = ''
+                    // Send event that message sent to server with all the data
+                    createMessage('gpt', '')
+                    socket.emit('message_sent', {value: input.value, id: cucId });
+
+                    // Clear input
+                    input.value = ''
+                }
             }
         }
 
@@ -233,16 +249,18 @@
         form.addEventListener('submit', handleSubmit)
         restart_button.addEventListener('click', handleRestart)
 
-        // When GPT responded
-        socket.on('get_gpt_response', (data) => {
-            if(data.error) {
-                // ERROR OCCURED NEEDS TO BE DISPLAYED
-                return;
-            } else {
-                // Display chatGPT response
-                createMessage('gpt', data.gpt_response)
-            }
+        // When chunk of response received
+        socket.on('chunk', (data) => {
+            const { content } = data;
+
+            streamingMessage(content)
         })
+
+        socket.on('fully_received', () => {
+            // User can send message after gpt answered
+            sendMessage = true;
+        })
+
     </script>
 </body>
 
