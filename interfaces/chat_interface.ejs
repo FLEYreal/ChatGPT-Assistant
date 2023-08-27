@@ -191,7 +191,11 @@
 
             // Styles from config
             const config_style = await fetch(`${env.ip}:${env.port}/config/styles`)
-            .then(res => res.json())
+                .then(res => res.json())
+
+            // Shortcuts not to type long names
+            const gpt = config_style.messages.gpt.color
+            const user = config_style.messages.user.color
 
             // Create all components of the message
             const message_box = document.createElement('div')
@@ -199,7 +203,7 @@
             const profile_picture = document.createElement('div')
             const text_section = document.createElement('div')
 
-            // Add all style classes
+            // Add all styles && classes
             message_box.classList.add(`${type}-message`)
             message_box.classList.add(`message`)
 
@@ -212,6 +216,16 @@
             text_section.classList.add(`section-${type}-message-text`)
             text_section.classList.add(`section-message-text`)
             
+            // Setup styles from config
+            if(type === 'user') {
+                message_box.style.backgroundColor = user.background
+                text_section.style.color = user.font
+            }
+            else {
+                message_box.style.backgroundColor = gpt.background
+                text_section.style.color = gpt.font
+            }
+
             // Display name
             profile_picture.textContent = type === 'user' ? 'User' : 'GPT'
 
