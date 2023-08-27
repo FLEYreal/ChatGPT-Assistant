@@ -211,6 +211,8 @@ router.put('/save-history', async (req, res) => {
 router.get('/interface', async (req, res) => {
 
     try {
+        // Log that route worked
+        if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/interface" worked')
 
         // Get ID from request body
         let { id, lang } = req.query
@@ -239,16 +241,32 @@ router.get('/interface', async (req, res) => {
 
         // Send file
         res.render(path.resolve(__dirname, '..', '..', 'interfaces', 'chat_interface'), {
+            // History of the conversation with GPT
             conversation_history: history,
+
+            // Styles configurable in "config.styles.js"
             config_style: config_style,
+
+            // Custom names taken from "config.js", lets users setup their own names for User and ChatGPT
             custom_names: {
+
+                // Full names
                 user_name: config.user_name,
                 short_user_name: config.short_user_name,
 
+                // Short names
                 gpt_name: config.gpt_name,
                 short_gpt_name: config.short_gpt_name,
             },
-            default_name: display_gpt_name
+
+            // Default name for Header, defined by version of GPT from "config.js"
+            default_name: display_gpt_name,
+
+            // Data about IP and PORT for frontend to send requests if needed
+            backend: {
+                ip: process.env.API_IP,
+                port: process.env.API_PORT
+            }
         })
 
     } catch (error) {

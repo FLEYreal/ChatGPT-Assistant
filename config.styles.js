@@ -56,7 +56,8 @@ module.exports = {
             }
         }
     },
-    
+
+    // Styles for input to send prompt to chatGPT
     input: {
 
         // Settings for the color

@@ -13,6 +13,10 @@
 </head>
 
 <body>
+    <!-- Some hidden data -->
+    <span id="env" style="display: none;">
+        <%= JSON.stringify(backend) %>
+    </span>
     <section class="component" 
         style="
             width: <%= config_style.width %>; 
@@ -168,6 +172,10 @@
         // Connect to lib
         const socket = io.connect();
 
+        // Get Object from hidden span with id "env", it contains OBJECT with valuable data
+        // (which isn't valuable enough to hide it)
+        const env = JSON.parse(document.getElementById('env').textContent.trim())
+
         // Can user send message
         let sendMessage = true;
 
@@ -179,7 +187,13 @@
         const stop_button = document.querySelector('.stop-chat-button')
 
         // Function to display message
-        function createMessage(type = 'user', text = '') {
+        async function createMessage(type = 'user', text = '') {
+
+            // Styles from config
+            const config_style = await fetch(`${env.ip}:${env.port}/config/styles`)
+            .then(res => res.json())
+
+            console.log('CONFIG: ', config_style)
 
             // Create all components of the message
             const message_box = document.createElement('div')
@@ -201,12 +215,12 @@
             text_section.classList.add(`section-message-text`)
             
             // Display name
-            profile_picture.innerHTML = type === 'user' ? 'User' : 'GPT'
+            profile_picture.textContent = type === 'user' ? 'User' : 'GPT'
 
             // Append and display all components
             profile_picture_section.append(profile_picture)
 
-            text_section.innerHTML = String(text)
+            text_section.textContent = String(text)
 
             message_box.append(profile_picture_section)
             message_box.append(text_section)
@@ -227,7 +241,7 @@
             chunk_block.classList.add('chunk-appearance')
 
             // Add new chunk of message to the response
-            chunk_block.innerHTML += String(chunk)
+            chunk_block.textContent += String(chunk)
 
             // Add chunk to text wrapper
             text_section.append(chunk_block)
