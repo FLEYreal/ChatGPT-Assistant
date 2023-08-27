@@ -14,8 +14,7 @@ router.get('/all', async (req, res) => {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/config/all" worked')
 
-        // Set Header & Send Response
-        res.setHeader({ 'Content-Type': 'text/javascript' })
+        // Send Response
         res.json(config)
 
     } catch (error) {
@@ -31,8 +30,7 @@ router.get('/language', async (req, res) => {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/config/language" worked')
 
-        // Set Header & Send Response
-        res.setHeader({ 'Content-Type': 'text/javascript' })
+        // Send Response
         res.json(config_lang)
     } catch (error) {
 
@@ -47,8 +45,7 @@ router.get('/styles', async (req, res) => {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/config/styles" worked')
 
-        // Set Header & Send Response
-        res.setHeader({ 'Content-Type': 'text/javascript' })
+        // Send Response
         res.json(config_style)
     } catch (error) {
 

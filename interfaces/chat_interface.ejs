@@ -193,8 +193,6 @@
             const config_style = await fetch(`${env.ip}:${env.port}/config/styles`)
             .then(res => res.json())
 
-            console.log('CONFIG: ', config_style)
-
             // Create all components of the message
             const message_box = document.createElement('div')
             const profile_picture_section = document.createElement('div')
