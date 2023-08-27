@@ -13,7 +13,13 @@
 </head>
 
 <body>
-    <section class="component" style="width: <%= config_style.width %>; height: <%= config_style.height %>">
+    <section class="component" 
+        style="
+            width: <%= config_style.width %>; 
+            height: <%= config_style.height %>;
+            background-color: <%= config_style.background_color %>;
+            font-family: <%= config_style.font_family %>;
+        ">
 
         <!-- Container to display errors -->
         <!-- <section class="error_box">
@@ -21,7 +27,12 @@
         </section> -->
 
         <!-- Header of the page -->
-        <header class="header">
+        <header class="header" 
+        style="
+            color: <%= config_style.header.color.font %>;
+            background-color: <%= config_style.header.color.background %>;
+            box-shadow: <%= config_style.header.shadow %>;
+        ">
 
             <!-- Define a name of the GPT, either it's custom or it's default -->
             <% if(custom_names.gpt_name && custom_names.gpt_name.length > 0) { %>

@@ -6,10 +6,10 @@ module.exports = {
     height: '100svh',
 
     // Background of the page
-    background: '',
+    background_color: '#353541',
 
-    // Font of the page
-    font_family: '',
+    // Fonts of the page, they're listed, if the 1st font isn't found, it's applying second and so on
+    font_family: 'Söhne ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 
     // Settings for the header
     header: {
@@ -17,14 +17,17 @@ module.exports = {
         // Settings for the color
         color: {
             // Settings for color of the backround of the header
-            background: '',
+            background: '#3F414E',
 
             // Settings for color of the font of the header
-            font: ''
+            font: '#D1D1D1'
         },
 
         // Shadow settings, if you don't know CSS, use box-shadow CSS generators
-        shadow: ''
+        shadow: 'rgba(0, 0, 0, 0.2) 0px 4px 24px 0px',
+
+        // If it's true - hides the header from the page entirely
+        hide: false
     },
 
     // Settings for the messages of GPT & User
