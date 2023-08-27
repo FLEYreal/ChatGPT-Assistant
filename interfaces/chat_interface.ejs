@@ -32,6 +32,7 @@
             color: <%= config_style.header.color.font %>;
             background-color: <%= config_style.header.color.background %>;
             box-shadow: <%= config_style.header.shadow %>;
+            display: <%= config_style.header.hide === true ? 'none' : 'flex' %>
         ">
 
             <!-- Define a name of the GPT, either it's custom or it's default -->
@@ -44,7 +45,11 @@
         </header>
 
         <!-- Section with a chat -->
-        <section class="chat" style="height: calc(<%= config_style.height %> - (75px + 110px))">
+        <section class="chat" 
+        style="
+            height: calc(<%= config_style.height %> - (<%= config_style.header.hide === true ? '0px' : '75px' %> + 110px));
+            margin-top: <%= config_style.header.hide === true ? '0px' : '75px' %>;
+        ">
 
             <!-- Display every message from history -->
             <% chat.forEach(msg => { %>
@@ -53,14 +58,20 @@
                     <!-- GPT response -->
                     <% if(msg.role === 'assistant') { %>
     
-                        <div class="gpt-message message">
+                        <div class="gpt-message message"
+                        style="
+                            background-color: <%= config_style.messages.gpt.color.background %>;
+                        ">
     
                             <div class="section-gpt-profile-picture section-profile-picture">
                                 <!-- <img alt="gpt-profile-picture" class="gpt-profile-picture"/> -->
                                 <div class="gpt-profile-picture profile-picture"><%= custom_names.short_gpt_name || 'GPT' %></div>
                             </div>
     
-                            <div class="section-gpt-message-text section-message-text">
+                            <div class="section-gpt-message-text section-message-text" 
+                            style="
+                                color: <%= config_style.messages.gpt.color.font %>;
+                            ">
                                 <%= msg.content %>
                             </div>
                     
@@ -69,14 +80,20 @@
                     <% } else if(msg.role === 'user') { %>
     
                         <!-- User's question -->
-                        <div class="user-message message">
+                        <div class="user-message message"
+                        style="
+                            background-color: <%= config_style.messages.user.color.background %>;
+                        ">
     
                             <div class="section-user-profile-picture section-profile-picture">
                                 <!-- <img alt="user-profile-picture" class="user-profile-picture"/> -->
                                 <div class="user-profile-picture profile-picture"><%= custom_names.short_user_name || 'User' %></div>
                             </div>
     
-                            <div class="section-user-message-text section-message-text">
+                            <div class="section-user-message-text section-message-text"
+                            style="
+                                color: <%= config_style.messages.user.color.font %>;
+                            ">
                                 <%= msg.content %>
                             </div>
                         
@@ -89,7 +106,11 @@
         </section>
 
         <!-- Bottom menu of the chat -->
-        <section class="bottom-menu">
+        <section class="bottom-menu" 
+        style="
+            background-color: <%= config_style.background_color %>;
+            box-shadow: 0px 0px 50px 50px <%= config_style.background_color %>;
+        ">
 
             <!-- Bar with buttons -->
             <section class="button-bar">

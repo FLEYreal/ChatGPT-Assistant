@@ -15,7 +15,6 @@ body {
     overflow-x: hidden;
     box-sizing: border-box;
     width: 100%;
-    margin-top: 75px;
     padding-bottom: 50px;
 }
 
@@ -29,14 +28,12 @@ body {
     -webkit-animation: appearance 0.3s ease;
 }
 
-.none {
-    display: none !important;
-}
-
 .user-message {}
 
-.gpt-message {
-    background-color: #444653;
+.gpt-message {}
+
+.none {
+    display: none !important;
 }
 
 .section-profile-picture {
@@ -77,13 +74,9 @@ body {
     max-width: 653px;
 }
 
-.section-user-message-text {
-    color: #ececf1;
-}
+.section-user-message-text {}
 
-.section-gpt-message-text {
-    color: #d1d5db;
-}
+.section-gpt-message-text {}
 
 
 
@@ -188,7 +181,6 @@ body {
 
 .header {
     position: absolute;
-    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;

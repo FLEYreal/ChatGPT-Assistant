@@ -38,10 +38,10 @@ module.exports = {
             // Settings for the color
             color: {
                 // Settings for color of the backround of the user message
-                background: '',
+                background: '', // It's page background by default, it can stay empty
 
                 // Settings for color of the font of the user message
-                font: ''
+                font: '#ececf1'
             }
         },
         gpt: {
@@ -49,13 +49,14 @@ module.exports = {
             // Settings for the color
             color: {
                 // Settings for color of the backround of the gpt message
-                background: '',
+                background: '#444653',
 
                 // Settings for color of the font of the gpt message
-                font: ''
+                font: '#d1d5db'
             }
         }
     },
+    
     input: {
 
         // Settings for the color
