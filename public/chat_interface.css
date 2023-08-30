@@ -243,6 +243,16 @@ body {
     -webkit-animation: appearance 0.3s ease infinite;
 }
 
+.opacity {
+    animation: opacity_animation 0.3s ease infinite normal;
+    -webkit-animation: opacity_animation 0.3s ease infinite normal;
+}
+
+.opacity-reverse {
+    animation: opacity_animation 0.3s ease infinite reverse;
+    -webkit-animation: opacity_animation 0.3s ease infinite reverse;
+}
+
 .chat-button>img {
     margin-right: 10px;
 }
@@ -324,6 +334,15 @@ body {
         opacity: 0;
     }
 
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes opacity_animation {
+    0% {
+        opacity: 0;
+    }
     100% {
         opacity: 1;
     }

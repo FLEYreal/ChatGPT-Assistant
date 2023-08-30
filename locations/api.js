@@ -188,7 +188,7 @@ function apiApplication(config) {
 
                     // Save a prompt and response to history
                     await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
-                        id: id,
+                        id: 'id',
                         prompt: value,
                         gpt_response: gpt_response
                     }).catch((err) => {

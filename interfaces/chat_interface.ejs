@@ -345,12 +345,24 @@
             // Display error in console
             console.error('Additional Error data: ', error)
 
-            if(error_box.classList.contains('none')) error_box.classList.remove('none')
             error_box.textContent = error.display
 
+            if(!error_box.classList.contains('opacity')) error_box.classList.add('opacity')
+            if(error_box.classList.contains('none')) error_box.classList.remove('none')
+
+            setTimeout(() => error_box.classList.contains('opacity') ? error_box.classList.remove('opacity') : null, 250);
+
             setTimeout(() => {
-                if(!error_box.classList.contains('none')) error_box.classList.add('none')
-                error_box.textContent = ''
+                if(!error_box.classList.contains('opacity-reverse')) error_box.classList.add('opacity-reverse')
+
+                setTimeout(() => {
+
+                    if(error_box.classList.contains('opacity-reverse')) error_box.classList.remove('opacity-reverse')
+                    if(!error_box.classList.contains('none')) error_box.classList.add('none')
+
+                    error_box.textContent = ''
+
+                }, 250)
             }, 15000)
         }
 
@@ -368,7 +380,7 @@
         socket.on('chunk', (data) => {
 
             // Display error if it exists
-            if(data.error) return;
+            if(data && data.error) return;
 
             // Get chunk of data
             const { content } = data;
@@ -381,7 +393,7 @@
         socket.on('fully_received', (data) => {
 
             // Display error if it exists
-            if(data.error) return;
+            if(data && data.error) return;
 
             // User can send message after gpt answered
             sendMessage = true;
