@@ -125,7 +125,7 @@
                     <!-- Icon for the button -->
                     <img src="/icons/stop_icon.svg" alt="stop-icon"/>
 
-                    Stop Generating
+                    <%= locale.interface.stop_generating %>
 
                 </button>
 
@@ -135,7 +135,7 @@
                     <!-- Icon for the button -->
                     <img src="/icons/restart_icon.svg" alt="restart-icon"/>
 
-                    Restart Conversation
+                    <%= locale.interface.restart_conversation %>
 
                 </button>
 
@@ -151,7 +151,7 @@
                     required 
                     autofocus
                     class="send-message-input" 
-                    placeholder="Send Message..."></textarea>
+                    placeholder="<%= locale.interface.send_message %>"></textarea>
 
                 <!-- Button to send message -->
                 <button class="send-message-button"><img src="/icons/send_icon.svg" alt="send-icon"/></button>
@@ -159,7 +159,7 @@
 
             <!-- Message to thank creators -->
             <div class="small-message">
-                Embedded <a href="https://chat.openai.com/">ChatGPT</a> chat by <a href="https://nitro-storm.ru">StormShop</a>
+                <%= locale.interface.embedded %> <a href="https://chat.openai.com/">ChatGPT</a> <%= locale.interface.chat_by %> <a href="https://nitro-storm.ru">StormShop</a>
             </div>
         </section>
     </section>

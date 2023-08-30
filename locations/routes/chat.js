@@ -2,6 +2,7 @@
 require('dotenv').config();
 const config = require('../../config');
 const config_style = require('../../config.styles');
+const config_lang = require('../../config.language');
 
 // Basics
 const path = require('path');
@@ -31,6 +32,20 @@ router.get('/create', async (req, res) => {
 
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
+
+        // Get language from query
+        let { lang } = req.query;
+
+        // If language wasn't found
+        if (!lang) lang = 'en'
+
+        // If selected language doesn't exist in config.language.js
+        else if (!config_lang[lang]) lang = 'en'
+
+        // Get object with all translations
+        const locale = config_lang[lang]
+
+        console.log(locale)
 
         // Get unique ID
         const id = crypto.randomUUID() || createUUID()
@@ -96,6 +111,18 @@ router.post('/delete', async (req, res) => {
 
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
+
+        // Get language from query
+        let { lang } = req.query;
+
+        // If language wasn't found
+        if (!lang) lang = 'en'
+
+        // If selected language doesn't exist in config.language.js
+        else if (!config_lang[lang]) lang = 'en'
+
+        // Get object with all translations
+        const locale = config_lang[lang]
 
         // Get ID from request body
         let { id } = req.body
@@ -211,6 +238,18 @@ router.post('/get-history', async (req, res) => {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
 
+        // Get language from query
+        let { lang } = req.query;
+
+        // If language wasn't found
+        if (!lang) lang = 'en'
+
+        // If selected language doesn't exist in config.language.js
+        else if (!config_lang[lang]) lang = 'en'
+
+        // Get object with all translations
+        const locale = config_lang[lang]
+
         // Get ID from request body
         let { id } = req.body
 
@@ -303,6 +342,18 @@ router.put('/save-history', async (req, res) => {
     try {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
+
+        // Get language from query
+        let { lang } = req.query;
+
+        // If language wasn't found
+        if (!lang) lang = 'en'
+
+        // If selected language doesn't exist in config.language.js
+        else if (!config_lang[lang]) lang = 'en'
+
+        // Get object with all translations
+        const locale = config_lang[lang]
 
         // Get ID from request body
         let { id, prompt, gpt_response } = req.body
@@ -427,8 +478,17 @@ router.get('/interface', async (req, res) => {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/interface" worked')
 
-        // Get ID from request body
+        // Get ID and language from request body
         let { id, lang } = req.query
+
+        // If language wasn't found
+        if (!lang) lang = 'en'
+
+        // If selected language doesn't exist in config.language.js
+        else if (!config_lang[lang]) lang = 'en'
+
+        // Get object with all translations
+        const locale = config_lang[lang]
 
         // If id isn't defined from request's body, get it from cookies
         if (!id && req.cookies['CUC-ID']) id = req.cookies['CUC-ID']
@@ -454,9 +514,6 @@ router.get('/interface', async (req, res) => {
             res.cookie('CUC-ID', id)
         }
 
-        // Setup default language if not found
-        if (!lang) lang = 'en'
-
         // Get History of the conversation by ID
         let history = await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`, {
             id: id
@@ -481,9 +538,9 @@ router.get('/interface', async (req, res) => {
         // Define GPT version display name
         let display_gpt_name;
 
-        if (config.gpt_version.startsWith('gpt-3.5-turbo')) display_gpt_name = 'ChatGPT 3.5 (Fastest Model)'
-        else if (config.gpt_version.startsWith('gpt-4')) display_gpt_name = 'ChatGPT 4 (Most Advanced Model)'
-        else display_gpt_name = 'ChatGPT 3 (Basic Model)'
+        if (config.gpt_version.startsWith('gpt-3.5-turbo')) display_gpt_name = `ChatGPT 3.5 (${locale.interface.gpt_fastest})`
+        else if (config.gpt_version.startsWith('gpt-4')) display_gpt_name = `ChatGPT 4 (${locale.interface.gpt_advanced})`
+        else display_gpt_name = `ChatGPT 3 (${locale.interface.gpt_basic})`
 
         // Check if every variable that sends to interface is defined
         if (!history) {
@@ -567,7 +624,13 @@ router.get('/interface', async (req, res) => {
             backend: {
                 ip: process.env.API_IP,
                 port: process.env.API_PORT
-            }
+            },
+
+            // All text in object, translatable to different languages
+            locale: locale,
+
+            // What language is it: 'ru', 'en', 'ja', 'tr', 'kr' and ...etc
+            lang: lang
         })
 
     } catch (error) {
