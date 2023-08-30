@@ -36,7 +36,13 @@ router.get('/create', async (req, res) => {
         db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.instructions))], (error) => {
             if (error) {
                 console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-                return res.status(500).json({ error: error })
+                return res.json({
+                    error: {
+                        code: 500,
+                        message: error,
+                        display: 'Failed to create new conversation!'
+                    }
+                })
             }
         })
 
@@ -64,31 +70,59 @@ router.post('/delete', async (req, res) => {
         if (!id) id = req.cookies['CUC-ID']
         if (!id) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-            return res.status(404).json({ error: 'No ID / CUC-ID found' })
+            return res.json({
+                error: {
+                    code: 404,
+                    display: 'Coversation ID not found'
+                }
+            })
         }
         // Find a row by ID
         const row = await new Promise((resolve, reject) => {
             db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
-                    reject(error);
+                    reject({
+                        error: {
+                            code: 500,
+                            message: error,
+                            display: 'Failed to find conversation!'
+                        }
+                    });
                 } else {
                     resolve(row);
                 }
             });
         });
 
-        if (row.length <= 0) {
+
+        if (row.error) {
+            return res.json({
+                error: row.error
+            })
+        }
+        else if (row.length <= 0) {
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
-            return res.status(404).json({ message: "Row not found!" });
+            return res.json({
+                error: {
+                    code: 404,
+                    display: "Failed to find conversation! Conversation not found!"
+                }
+            });
         }
 
         // Delete ID from database
         db.run('DELETE FROM conversations WHERE id = ?', [id], (error) => {
             if (error) {
                 console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-                return res.status(500).json({ error: error })
+                return res.json({
+                    error: {
+                        code: 500,
+                        message: error,
+                        display: 'Failed to clear conversation!'
+                    }
+                })
             } else {
 
                 // Clear cookie
@@ -116,7 +150,12 @@ router.post('/get-history', async (req, res) => {
         if (!id) id = req.cookies['CUC-ID']
         if (!id) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-            return res.status(404).json({ error: 'No ID / CUC-ID found' })
+            return res.json({
+                error: {
+                    code: 404,
+                    display: 'Coversation ID not found'
+                }
+            })
         }
 
         // Find a row by ID
@@ -124,14 +163,25 @@ router.post('/get-history', async (req, res) => {
             db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
-                    reject(error);
+                    reject({
+                        error: {
+                            code: 500,
+                            message: error,
+                            display: 'Failed to find conversation!'
+                        }
+                    });
                 } else {
                     resolve(row);
                 }
             });
         });
 
-        if (row.length <= 0) {
+        if (row.error) {
+            return res.json({
+                error: row.error
+            })
+        }
+        else if (row.length <= 0) {
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
             return res.status(404).json({ message: "Row not found!" });
@@ -157,7 +207,12 @@ router.put('/save-history', async (req, res) => {
         if (!id) id = req.cookies['CUC-ID']
         if (!id) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-            return res.status(404).json({ error: 'No ID / CUC-ID found' })
+            return res.json({
+                error: {
+                    code: 404,
+                    display: 'Coversation ID not found'
+                }
+            })
         }
 
         // Find a row by ID
@@ -165,14 +220,25 @@ router.put('/save-history', async (req, res) => {
             db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
-                    reject(error);
+                    reject({
+                        error: {
+                            code: 500,
+                            message: error,
+                            display: 'Failed to find conversation!'
+                        }
+                    });
                 } else {
                     resolve(row);
                 }
             });
         });
 
-        if (row.length <= 0) {
+        if (row.error) {
+            return res.json({
+                error: row.error
+            })
+        }
+        else if (row.length <= 0) {
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
             return res.status(404).json({ message: "Row not found!" });
@@ -194,12 +260,21 @@ router.put('/save-history', async (req, res) => {
         })
 
         // Insert updated history to DB
-        db.run('UPDATE conversations SET history = ? WHERE id = ?', [JSON.stringify(newHistory), id], (err) => {
-            if (err) console.error('[\u001b[1;33mWARN\u001b[0m] :', err)
+        db.run('UPDATE conversations SET history = ? WHERE id = ?', [JSON.stringify(newHistory), id], (error) => {
+            if (error) {
+                console.error('[\u001b[1;33mWARN\u001b[0m] :', err)
+                return res.json({
+                    error: {
+                        code: 500,
+                        message: error,
+                        display: `Failed to save conversation history! If you think this error is important, contact us on ${config.contact_email}`
+                    }
+                })
+            } else {
+                // Return result
+                return res.status(200).json({ message: 'History saved!' })
+            }
         })
-
-        // Return result
-        return res.status(200).json({ message: 'History saved!' })
 
     } catch (error) {
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
@@ -219,6 +294,16 @@ router.get('/interface', async (req, res) => {
         if (!id && req.cookies['CUC-ID']) id = req.cookies['CUC-ID']
         if (!id && !req.cookies['CUC-ID']) {
             const result = await axios.get(`${process.env.API_IP}:${process.env.API_PORT}/chat/create`)
+                .catch(error => error)
+
+            if (result.error) return res.json({
+                error: {
+                    code: 500,
+                    message: result.error,
+                    display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                }
+            })
+
             id = result.data.id
             res.cookie('CUC-ID', id)
         }
@@ -230,7 +315,15 @@ router.get('/interface', async (req, res) => {
             id: id
         })
             .then(res => res.data.history)
-            .catch(err => res.json({ error: err }))
+            .catch(err => err)
+
+        if (history.error) return res.json({
+            error: {
+                code: 500,
+                message: history.error,
+                display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+            }
+        })
 
         // Define GPT version display name
         let display_gpt_name;

@@ -67,5 +67,8 @@ module.exports = {
     display_info_logs: true,
 
     // Delete conversation from Database when it's restarted
-    delete_restarted_conversations: true
+    delete_restarted_conversations: true,
+
+    // Support email, might be displayed in errors
+    contact_email: "borisov.nikita.off@gmail.com"
 }

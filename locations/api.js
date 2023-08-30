@@ -99,7 +99,11 @@ function apiApplication(config) {
                     // If id is undefined
                     if (!id) {
                         console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
-                        return res.status(404).json({ error: 'No ID / CUC-ID found' })
+                        socket.emit('err', {
+                            code: 404,
+                            display: `No conversation ID found!`,
+                            data: error
+                        })
                     }
 
                     // Get History of the conversation by ID
@@ -107,9 +111,13 @@ function apiApplication(config) {
                         id: id
                     })
                         .then(res => res.data.history)
-                        .catch(err => res.json({ error: err }))
-
-                    if (history.error) return;
+                        .catch(err => {
+                            socket.emit('err', {
+                                code: 500,
+                                display: `Failed to get history of conversation! Try later or contact support on ${config.contact_email}`,
+                                data: err
+                            })
+                        })
 
                     // Get newHistory, parse past one
                     let newHistory = JSON.parse(history)
@@ -137,7 +145,14 @@ function apiApplication(config) {
 
                         // Use the AbortController's signal to allow aborting the request
                         signal: controller.signal,
-                    });
+                    })
+                        .catch(err => {
+                            socket.emit('err', {
+                                code: 500,
+                                display: `Failed to load chunk of the response! Try later or contact support on ${config.contact_email}`,
+                                data: err
+                            })
+                        });
 
                     // When chunk of the response gotten
                     for await (const chunk of response.body) {
@@ -176,10 +191,16 @@ function apiApplication(config) {
                         id: id,
                         prompt: value,
                         gpt_response: gpt_response
+                    }).catch((err) => {
+                        socket.emit('err', {
+                            code: 500,
+                            display: `Failed to save conversation history! If you think this error is important, you can contact us on: ${config.contact_email}`,
+                            data: err
+                        })
                     })
 
-                } catch (e) {
-                    console.error('[\u001b[1;31mERROR\u001b[0m] : (Might Be just a Request Abort, Nothing to worry)', e)
+                } catch (error) {
+                    console.error('[\u001b[1;31mERROR\u001b[0m] : (Might Be just a Request Abort, Nothing to worry)', error)
                 }
             })
 
@@ -193,24 +214,39 @@ function apiApplication(config) {
                     })
                         .then(res => res.data.gpt_response)
                         .catch(err => {
+                            socket.emit('err', {
+                                code: 500,
+                                display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                                data: error
+                            })
                             console.log('[\u001b[1;31mERROR\u001b[0m] :', err)
                         })
                 }
             })
 
+            // Stop generating response of GPT, aborts fetch from "message_sent" event
             socket.on('stop_generating', async (data) => {
                 try {
                     if (data.sendMessage === false && socket.controller) {
                         // Stop streaming GPT response
                         socket.controller.abort();
+                    } else {
+                        socket.emit('err', {
+                            code: 400,
+                            display: `Can't stop generating response!`,
+                            data: {}
+                        })
                     }
                 } catch (e) {
+                    socket.emit('err', {
+                        code: 500,
+                        display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                        data: error
+                    })
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                 }
             })
         })
-
-
 
         server.listen(process.env.API_PORT | 3000, () => {
             if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : API Server is ON')

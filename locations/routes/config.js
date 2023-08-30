@@ -32,6 +32,7 @@ router.get('/language', async (req, res) => {
 
         // Send Response
         res.json(config_lang)
+
     } catch (error) {
 
         // Display caught error
@@ -47,6 +48,7 @@ router.get('/styles', async (req, res) => {
 
         // Send Response
         res.json(config_style)
+        
     } catch (error) {
 
         // Display caught error

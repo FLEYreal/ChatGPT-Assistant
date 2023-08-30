@@ -339,6 +339,11 @@
             location.reload();
         }
 
+        // Function to display errors
+        function displayError(error) {
+
+        }
+
         // Stops generating response of GPT
         function handleStop(e) {
 
@@ -352,6 +357,9 @@
         // When chunk of response received
         socket.on('chunk', (data) => {
 
+            // Display error if it exists
+            if(data.error) return;
+
             // Get chunk of data
             const { content } = data;
 
@@ -360,7 +368,11 @@
         })
 
         // When gpt responded
-        socket.on('fully_received', () => {
+        socket.on('fully_received', (data) => {
+
+            // Display error if it exists
+            if(data.error) return;
+
             // User can send message after gpt answered
             sendMessage = true;
 
@@ -371,6 +383,11 @@
                 stop_button.classList.remove('disappearance')
                 stop_button.classList.toggle('none')
             }, 300)
+        })
+
+        // Handle caught error
+        socket.on('err', (error) => {
+            displayError(error)
         })
 
         // Add event listeners
