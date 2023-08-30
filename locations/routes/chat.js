@@ -23,7 +23,6 @@ const db = new sqlite3.Database('./conversations.db', sqlite3.OPEN_READWRITE, (e
 })
 
 // Utils
-const { transformPrompts } = require('../../utils/transform_prompts');
 const axios = require('axios');
 
 // Create Chat ID and save to db. Database will store all the history of conversation
@@ -46,14 +45,13 @@ router.get('/create', async (req, res) => {
             })
         }
 
-        // Load instructions to chatGPT from config
-        const instructions = JSON.stringify(transformPrompts('system', config.instructions)) || []
+        // // Load instructions to chatGPT from config
 
         // Save result of the promise to "result" in the case of an error
         const result = await new Promise((resolve) => {
 
             // Insert new data to database
-            db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, instructions], (error) => {
+            db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify([])], (error) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
 
@@ -267,7 +265,11 @@ router.post('/get-history', async (req, res) => {
 
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
-            return res.status(404).json({ message: "Row not found!" });
+            return res.json({
+                error: {
+                    message: "Row not found!"
+                }
+            });
 
         }
 
@@ -356,7 +358,11 @@ router.put('/save-history', async (req, res) => {
 
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
-            return res.status(404).json({ message: "Row not found!" });
+            return res.json({
+                error: {
+                    message: "Row not found!"
+                }
+            });
 
         }
 
@@ -480,47 +486,57 @@ router.get('/interface', async (req, res) => {
         else display_gpt_name = 'ChatGPT 3 (Basic Model)'
 
         // Check if every variable that sends to interface is defined
-        if(!history) {
+        if (!history) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : History is not defined on \"/chat/interface\"')
-            return res.json({ error: {
+            return res.json({
+                error: {
                     code: 404,
                     display: `History is not defined! Try later or contact support on ${config.contact_email}`,
-            }})
+                }
+            })
         }
-        
-        else if(!config_style) {
+
+        else if (!config_style) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : Style Config is not defined on \"/chat/interface\"')
-            return res.json({ error: {
+            return res.json({
+                error: {
                     code: 404,
                     display: `Style Config is not defined! Try later or contact support on ${config.contact_email}`,
-            }})
+                }
+            })
         }
 
-        else if(!display_gpt_name) {
+        else if (!display_gpt_name) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : Display GPT Name is not defined on \"/chat/interface\"')
-            return res.json({ error: {
+            return res.json({
+                error: {
                     code: 404,
                     display: `Name of chatGPT is not defined! Try later or contact support on ${config.contact_email}`,
-            }})
+                }
+            })
         }
 
-        else if(!process.env.API_IP) {
+        else if (!process.env.API_IP) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : API\'s IP is not defined in \".env\" file on \"/chat/interface\"')
-            return res.json({ error: {
+            return res.json({
+                error: {
                     code: 404,
                     display: `IP of API is not defined! Try later or contact support on ${config.contact_email}`,
-            }})
+                }
+            })
         }
 
-        else if(!process.env.API_PORT) {
+        else if (!process.env.API_PORT) {
             console.log('[\u001b[1;31mERROR\u001b[0m] : API\'s PORT is not defined in \".env\" file on \"/chat/interface\"')
-            return res.json({ error: {
+            return res.json({
+                error: {
                     code: 404,
                     display: `PORT of API is not defined! Try later or contact support on ${config.contact_email}`,
-            }})
+                }
+            })
         }
 
-        else if(config.user_name || config.short_user_name || config.gpt_name || config.short_gpt_name) {
+        else if (config.user_name || config.short_user_name || config.gpt_name || config.short_gpt_name) {
             console.log('[\u001b[1;33mWARN\u001b[0m] : Custom names aren\'t defined in config!');
         }
 

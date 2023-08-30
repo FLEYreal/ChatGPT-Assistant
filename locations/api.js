@@ -27,6 +27,7 @@ const sqlite3 = require('sqlite3').verbose()
 // Utils
 const axios = require('axios');
 const decoder = new TextDecoder();
+const { transformPrompts } = require('../utils/transform_prompts');
 
 function apiApplication(config) {
 
@@ -120,7 +121,8 @@ function apiApplication(config) {
                         })
 
                     // Get newHistory, parse past one
-                    let newHistory = JSON.parse(history)
+                    let parsedHistory = JSON.parse(history)
+                    let newHistory = [...transformPrompts('system', config.instructions), ...parsedHistory]
 
                     // Push current prompt GPT
                     newHistory.push({
@@ -188,7 +190,7 @@ function apiApplication(config) {
 
                     // Save a prompt and response to history
                     await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
-                        id: 'id',
+                        id: id,
                         prompt: value,
                         gpt_response: gpt_response
                     }).catch((err) => {
