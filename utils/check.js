@@ -54,9 +54,9 @@ async function check() {
     await check_api_file(config, 'locations/routes/config.js', 'All routes related to configs won\'t work without this file.')
 
     // Check all locations except API
-    if (config && config.locations.console) await check_file('locations/console_app.js', 'This file is a center of console application.\n         Console application will no longer work until file is back!')
-    if (config && config.locations.console) await check_file('locations/discord.js', 'This file is a center of discord bot.\n         Discord Bot will no longer work until file is back!')
-    if (config && config.locations.console) await check_file('locations/telegram.js', 'This file is a center of telegram bot.\n         Telegrm Bot will no longer work until file is back!')
+    await check_file('locations/console_app.js', 'This file is a center of console application.\n         Console application will no longer work until file is back!')
+    await check_file('locations/discord.js', 'This file is a center of discord bot.\n         Discord Bot will no longer work until file is back!')
+    await check_file('locations/telegram.js', 'This file is a center of telegram bot.\n         Telegrm Bot will no longer work until file is back!')
 
     // Check all important Utils
     await check_file('utils/transform_prompts.js', 'This file transforms prompts to chatGPT to proper look!\n         Without this file, any interaction with chatGPT will no longer work!')
