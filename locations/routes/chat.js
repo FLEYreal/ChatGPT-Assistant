@@ -35,7 +35,7 @@ router.get('/create', async (req, res) => {
 
         // Insert new data to database
         const result = await new Promise((resolve) => {
-            db.run('INSERT INTO conversatio(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.instructions))], (error) => {
+            db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.instructions))], (error) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
                     resolve({
@@ -88,11 +88,11 @@ router.post('/delete', async (req, res) => {
             })
         }
         // Find a row by ID
-        const row = await new Promise((resolve, reject) => {
+        const row = await new Promise((resolve) => {
             db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
-                    reject({
+                    resolve({
                         error: {
                             code: 500,
                             message: error,
@@ -111,6 +111,7 @@ router.post('/delete', async (req, res) => {
                 error: row.error
             })
         }
+        
         else if (row.length <= 0) {
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
