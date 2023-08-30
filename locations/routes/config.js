@@ -8,23 +8,6 @@ const config = require('../../config')
 const express = require('express');
 const router = express.Router();
 
-
-router.get('/all', async (req, res) => {
-    try {
-        // Log that route worked
-        if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/config/all" worked')
-
-        // Send Response
-        res.json(config)
-
-    } catch (error) {
-
-        // Display caught error
-        console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: error })
-    }
-})
-
 router.get('/language', async (req, res) => {
     try {
         // Log that route worked
