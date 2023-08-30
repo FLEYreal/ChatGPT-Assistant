@@ -70,5 +70,9 @@ module.exports = {
     delete_restarted_conversations: true,
 
     // Support email, might be displayed in errors
-    contact_email: "borisov.nikita.off@gmail.com"
+    contact_email: "borisov.nikita.off@gmail.com",
+
+    // This param is important to check that your script is properly setup
+    // If it's off, it can cause issues with finding the source of potential errors
+    important_checks: true
 }

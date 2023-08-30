@@ -561,6 +561,6 @@ router.get('/interface', async (req, res) => {
         return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
 
     }
-})
+});
 
-module.exports = router
+module.exports = router;

@@ -28,10 +28,6 @@ body {
     -webkit-animation: appearance 0.3s ease;
 }
 
-.user-message {}
-
-.gpt-message {}
-
 .none {
     display: none !important;
 }
@@ -43,10 +39,6 @@ body {
     width: 40px;
     margin-right: 0.75rem;
 }
-
-.section-user-profile-picture {}
-
-.section-gpt-profile-picture {}
 
 .profile-picture {
     width: 32px;
@@ -73,12 +65,6 @@ body {
     width: calc(100%);
     max-width: 653px;
 }
-
-.section-user-message-text {}
-
-.section-gpt-message-text {}
-
-
 
 .bottom-menu {
     position: absolute;
@@ -228,10 +214,6 @@ body {
     margin-left: 8px;
     margin-bottom: 8px;
 }
-
-.restart-chat-button {}
-
-.stop-chat-button {}
 
 .disappearance {
     animation: disappearance 0.3s ease infinite;

@@ -1,6 +1,6 @@
 // Function to create UUID
 
-export default function createUUID() {
+module.exports = function createUUID() {
     const table = [
         "0", "1", "2", "3",
         "4", "5", "6", "7",
