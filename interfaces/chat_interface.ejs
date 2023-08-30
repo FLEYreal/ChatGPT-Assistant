@@ -26,9 +26,9 @@
         ">
 
         <!-- Container to display errors -->
-        <!-- <section class="error_box">
-            Error occured, aware!
-        </section> -->
+        <section class="error_box none">
+            
+        </section>
 
         <!-- Header of the page -->
         <header class="header" 
@@ -183,6 +183,7 @@
         const form = document.querySelector('.send-message-form')
         const input = document.querySelector('.send-message-input')
         const chat_box = document.querySelector('.chat')
+        const error_box = document.querySelector('.error_box')
         const restart_button = document.querySelector('.restart-chat-button')
         const stop_button = document.querySelector('.stop-chat-button')
 
@@ -341,7 +342,16 @@
 
         // Function to display errors
         function displayError(error) {
+            // Display error in console
+            console.error('Additional Error data: ', error)
 
+            if(error_box.classList.contains('none')) error_box.classList.remove('none')
+            error_box.textContent = error.display
+
+            setTimeout(() => {
+                if(!error_box.classList.contains('none')) error_box.classList.add('none')
+                error_box.textContent = ''
+            }, 15000)
         }
 
         // Stops generating response of GPT

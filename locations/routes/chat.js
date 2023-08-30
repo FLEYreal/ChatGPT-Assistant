@@ -26,6 +26,7 @@ const axios = require('axios');
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get('/create', async (req, res) => {
     try {
+
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
 
@@ -33,18 +34,27 @@ router.get('/create', async (req, res) => {
         const id = crypto.randomUUID()
 
         // Insert new data to database
-        db.run('INSERT INTO conversations(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.instructions))], (error) => {
-            if (error) {
-                console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-                return res.json({
-                    error: {
-                        code: 500,
-                        message: error,
-                        display: 'Failed to create new conversation!'
-                    }
-                })
-            }
+        const result = await new Promise((resolve) => {
+            db.run('INSERT INTO conversatio(id, history) VALUES (?, ?)', [id, JSON.stringify(transformPrompts('system', config.instructions))], (error) => {
+                if (error) {
+                    console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
+                    resolve({
+                        error: {
+                            code: 500,
+                            message: error,
+                            display: 'Failed to create new conversation!'
+                        }
+                    })
+                } else resolve()
+            })
         })
+
+        // If error happened while working with db
+        if (result && result.error) {
+            return res.json({
+                ...result.error
+            })
+        }
 
         // Set id in cookie
         res.cookie('CUC-ID', id) // CUC-ID stands for ChatGPT-Unique-Conversation-ID
@@ -54,7 +64,7 @@ router.get('/create', async (req, res) => {
 
     } catch (error) {
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: error })
+        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
     }
 })
 
@@ -135,7 +145,7 @@ router.post('/delete', async (req, res) => {
 
     } catch (error) {
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: error })
+        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
     }
 })
 
@@ -278,7 +288,7 @@ router.put('/save-history', async (req, res) => {
 
     } catch (error) {
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: error })
+        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
     }
 })
 
@@ -364,7 +374,7 @@ router.get('/interface', async (req, res) => {
 
     } catch (error) {
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: error })
+        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
     }
 })
 
