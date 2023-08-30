@@ -342,27 +342,40 @@
 
         // Function to display errors
         function displayError(error) {
+            
             // Display error in console
             console.error('Additional Error data: ', error)
 
+            // Display error
             error_box.textContent = error.display
 
+            // Add appearance animation
             if(!error_box.classList.contains('opacity')) error_box.classList.add('opacity')
+            
+            // Remove display: none
             if(error_box.classList.contains('none')) error_box.classList.remove('none')
 
-            setTimeout(() => error_box.classList.contains('opacity') ? error_box.classList.remove('opacity') : null, 250);
+            // Remove appearance animation after it played
+            setTimeout(() => error_box.classList.contains('opacity') ? error_box.classList.remove('opacity') : null, 300);
 
+            // Hide error after 15 seconds passed
             setTimeout(() => {
+
+                // Add disappearance animation
                 if(!error_box.classList.contains('opacity-reverse')) error_box.classList.add('opacity-reverse')
 
                 setTimeout(() => {
 
+                    // Remove disappearance animation
                     if(error_box.classList.contains('opacity-reverse')) error_box.classList.remove('opacity-reverse')
+
+                    // Add display: none
                     if(!error_box.classList.contains('none')) error_box.classList.add('none')
 
+                    // Remove error text
                     error_box.textContent = ''
 
-                }, 250)
+                }, 300)
             }, 15000)
         }
 
