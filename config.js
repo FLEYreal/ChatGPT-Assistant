@@ -47,18 +47,10 @@ module.exports = {
     ],
 
     // Params for Discord Bot
-    discord: {
-
-        // API token to connect to the bot.
-        api_token: ''
-    },
+    discord: {},
 
     // Params for Telegram bot
-    telegram: {
-
-        // API token to connect to the bot
-        api_token: ''
-    },
+    telegram: {},
 
     // Display logs when script starts
     display_startup_logs: true,
@@ -71,8 +63,4 @@ module.exports = {
 
     // Support email, might be displayed in errors
     contact_email: "borisov.nikita.off@gmail.com",
-
-    // This param is important to check that your script is properly setup
-    // If it's off, it can cause issues with finding the source of potential errors
-    important_checks: true
 }
