@@ -111,7 +111,7 @@ router.post('/delete', async (req, res) => {
                 error: row.error
             })
         }
-        
+
         else if (row.length <= 0) {
             // No row found
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
@@ -227,11 +227,11 @@ router.put('/save-history', async (req, res) => {
         }
 
         // Find a row by ID
-        const row = await new Promise((resolve, reject) => {
+        const row = await new Promise((resolve) => {
             db.all('SELECT * FROM conversations WHERE id = ?', [id], (error, row) => {
                 if (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error);
-                    reject({
+                    resolve({
                         error: {
                             code: 500,
                             message: error,
@@ -273,7 +273,7 @@ router.put('/save-history', async (req, res) => {
         // Insert updated history to DB
         db.run('UPDATE conversations SET history = ? WHERE id = ?', [JSON.stringify(newHistory), id], (error) => {
             if (error) {
-                console.error('[\u001b[1;33mWARN\u001b[0m] :', err)
+                console.error('[\u001b[1;33mWARN\u001b[0m] :', error)
                 return res.json({
                     error: {
                         code: 500,
