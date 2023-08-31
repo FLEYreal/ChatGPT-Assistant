@@ -28,24 +28,23 @@ const axios = require('axios');
 
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get('/create', async (req, res) => {
+
+    // Get language from query
+    let { lang } = req.query;
+
+    // If language wasn't found
+    if (!lang) lang = 'en'
+
+    // If selected language doesn't exist in config.language.js
+    else if (!config_lang[lang]) lang = 'en'
+
+    // Get object with all translations
+    const locale = config_lang[lang]
+
     try {
 
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
-
-        // Get language from query
-        let { lang } = req.query;
-
-        // If language wasn't found
-        if (!lang) lang = 'en'
-
-        // If selected language doesn't exist in config.language.js
-        else if (!config_lang[lang]) lang = 'en'
-
-        // Get object with all translations
-        const locale = config_lang[lang]
-
-        console.log(locale)
 
         // Get unique ID
         const id = crypto.randomUUID() || createUUID()
@@ -55,7 +54,7 @@ router.get('/create', async (req, res) => {
             return res.json({
                 error: {
                     code: 500,
-                    display: "Conversation ID couldn\'t be created!"
+                    display: locale.errors.id_not_created
                 }
             })
         }
@@ -76,7 +75,7 @@ router.get('/create', async (req, res) => {
                         error: {
                             code: 500,
                             message: error,
-                            display: 'Failed to create new conversation!'
+                            display: locale.errors.failed_conversation
                         }
                     })
                 } else resolve()
@@ -100,29 +99,30 @@ router.get('/create', async (req, res) => {
 
         // Display error to console and return it as response
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
+        return res.status(500).json({ error: locale.errors.unexpected_error })
 
     }
 })
 
 // Delete a conversation from DB
 router.post('/delete', async (req, res) => {
+
+    // Get language from query
+    let { lang } = req.query;
+
+    // If language wasn't found
+    if (!lang) lang = 'en'
+
+    // If selected language doesn't exist in config.language.js
+    else if (!config_lang[lang]) lang = 'en'
+
+    // Get object with all translations
+    const locale = config_lang[lang]
+
     try {
 
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked')
-
-        // Get language from query
-        let { lang } = req.query;
-
-        // If language wasn't found
-        if (!lang) lang = 'en'
-
-        // If selected language doesn't exist in config.language.js
-        else if (!config_lang[lang]) lang = 'en'
-
-        // Get object with all translations
-        const locale = config_lang[lang]
 
         // Get ID from request body
         let { id } = req.body
@@ -136,7 +136,7 @@ router.post('/delete', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: 'Coversation ID not found'
+                    display: locale.errors.id_not_found
                 }
             })
         }
@@ -155,7 +155,7 @@ router.post('/delete', async (req, res) => {
                         error: {
                             code: 500,
                             message: error,
-                            display: 'Failed to find conversation!'
+                            display: locale.errors.failed_to_find
                         }
                     });
 
@@ -179,7 +179,7 @@ router.post('/delete', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: "Failed to find conversation! Conversation not found!"
+                    display: locale.errors.failed_to_find
                 }
             });
         }
@@ -191,7 +191,7 @@ router.post('/delete', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `Promise didn\'t return row! Contact us if you think this error is important! Email: ${config.contact_email}`
+                    display: locale.errors.promise_failed_to_find
                 }
             });
 
@@ -209,7 +209,7 @@ router.post('/delete', async (req, res) => {
                     error: {
                         code: 500,
                         message: error,
-                        display: 'Failed to clear conversation!'
+                        display: locale.errors.failed_clear_conversation
                     }
                 })
             } else {
@@ -218,7 +218,7 @@ router.post('/delete', async (req, res) => {
                 res.clearCookie('CUC-ID');
 
                 // Return success
-                return res.status(200).json({ message: 'row successfully deleted' })
+                return res.status(200).json({ message: locale.messages.row_deleted })
             }
         })
 
@@ -226,29 +226,30 @@ router.post('/delete', async (req, res) => {
 
         // Display error to console and return it as response
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
+        return res.status(500).json({ error: locale.errors.unexpected_error })
 
     }
 })
 
 // Get conversation history by ID
 router.post('/get-history', async (req, res) => {
+
+    // Get language from query
+    let { lang } = req.query;
+
+    // If language wasn't found
+    if (!lang) lang = 'en'
+
+    // If selected language doesn't exist in config.language.js
+    else if (!config_lang[lang]) lang = 'en'
+
+    // Get object with all translations
+    const locale = config_lang[lang]
+
     try {
 
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked')
-
-        // Get language from query
-        let { lang } = req.query;
-
-        // If language wasn't found
-        if (!lang) lang = 'en'
-
-        // If selected language doesn't exist in config.language.js
-        else if (!config_lang[lang]) lang = 'en'
-
-        // Get object with all translations
-        const locale = config_lang[lang]
 
         // Get ID from request body
         let { id } = req.body
@@ -262,7 +263,7 @@ router.post('/get-history', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: 'Coversation ID not found'
+                    display: locale.errors.id_not_found
                 }
             })
         }
@@ -281,7 +282,7 @@ router.post('/get-history', async (req, res) => {
                         error: {
                             code: 500,
                             message: error,
-                            display: 'Failed to find conversation!'
+                            display: locale.errors.failed_to_find
                         }
                     });
                 } else {
@@ -306,7 +307,7 @@ router.post('/get-history', async (req, res) => {
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
             return res.json({
                 error: {
-                    message: "Row not found!"
+                    message: locale.errors.row_not_found
                 }
             });
 
@@ -319,7 +320,7 @@ router.post('/get-history', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `Promise didn\'t return row! Contact us if you think this error is important! Email: ${config.contact_email}`
+                    display: locale.errors.promise_failed_to_find
                 }
             });
 
@@ -332,28 +333,29 @@ router.post('/get-history', async (req, res) => {
 
         // Display error to console and return it as response
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: error })
+        return res.status(500).json({ error: locale.errors.unexpected_error })
 
     }
 })
 
 // Save history
 router.put('/save-history', async (req, res) => {
+
+    // Get language from query
+    let { lang } = req.query;
+
+    // If language wasn't found
+    if (!lang) lang = 'en'
+
+    // If selected language doesn't exist in config.language.js
+    else if (!config_lang[lang]) lang = 'en'
+
+    // Get object with all translations
+    const locale = config_lang[lang]
+
     try {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked')
-
-        // Get language from query
-        let { lang } = req.query;
-
-        // If language wasn't found
-        if (!lang) lang = 'en'
-
-        // If selected language doesn't exist in config.language.js
-        else if (!config_lang[lang]) lang = 'en'
-
-        // Get object with all translations
-        const locale = config_lang[lang]
 
         // Get ID from request body
         let { id, prompt, gpt_response } = req.body
@@ -367,7 +369,7 @@ router.put('/save-history', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: 'Coversation ID not found'
+                    display: locale.errors.id_not_found
                 }
             })
         }
@@ -386,7 +388,7 @@ router.put('/save-history', async (req, res) => {
                         error: {
                             code: 500,
                             message: error,
-                            display: 'Failed to find conversation!'
+                            display: locale.errors.failed_to_find
                         }
                     });
                 } else {
@@ -411,7 +413,7 @@ router.put('/save-history', async (req, res) => {
             console.error('[\u001b[1;33mWARN\u001b[0m] : Row not found!');
             return res.json({
                 error: {
-                    message: "Row not found!"
+                    message: locale.errors.row_not_found
                 }
             });
 
@@ -424,7 +426,7 @@ router.put('/save-history', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `Promise didn\'t return row! Contact us if you think this error is important! Email: ${config.contact_email}`
+                    display: locale.errors.promise_failed_to_find
                 }
             });
 
@@ -453,12 +455,12 @@ router.put('/save-history', async (req, res) => {
                     error: {
                         code: 500,
                         message: error,
-                        display: `Failed to save conversation history! If you think this error is important, contact us on ${config.contact_email}`
+                        display: locale.errors.failed_to_save
                     }
                 })
             } else {
                 // Return result
-                return res.status(200).json({ message: 'History saved!' })
+                return res.status(200).json({ message: locale.messages.history_saved })
             }
         })
 
@@ -466,7 +468,7 @@ router.put('/save-history', async (req, res) => {
 
         // Display error to console and return it as response
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
+        return res.status(500).json({ error: locale.errors.unexpected_error })
 
     }
 })
@@ -474,21 +476,21 @@ router.put('/save-history', async (req, res) => {
 // Get configurable styles
 router.get('/interface', async (req, res) => {
 
+    // Get ID and language from request body
+    let { id, lang } = req.query
+
+    // If language wasn't found
+    if (!lang) lang = 'en'
+
+    // If selected language doesn't exist in config.language.js
+    else if (!config_lang[lang]) lang = 'en'
+
+    // Get object with all translations
+    const locale = config_lang[lang]
+
     try {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/interface" worked')
-
-        // Get ID and language from request body
-        let { id, lang } = req.query
-
-        // If language wasn't found
-        if (!lang) lang = 'en'
-
-        // If selected language doesn't exist in config.language.js
-        else if (!config_lang[lang]) lang = 'en'
-
-        // Get object with all translations
-        const locale = config_lang[lang]
 
         // If id isn't defined from request's body, get it from cookies
         if (!id && req.cookies['CUC-ID']) id = req.cookies['CUC-ID']
@@ -504,7 +506,7 @@ router.get('/interface', async (req, res) => {
                     error: {
                         code: 500,
                         message: result.error,
-                        display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                        display: locale.errors.unexpected_error
                     }
                 })
             }
@@ -529,7 +531,7 @@ router.get('/interface', async (req, res) => {
                 error: {
                     code: 500,
                     message: history.error,
-                    display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                    display: locale.errors.unexpected_error
                 }
             })
 
@@ -548,7 +550,7 @@ router.get('/interface', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `History is not defined! Try later or contact support on ${config.contact_email}`,
+                    display: locale.errors.history_not_defined,
                 }
             })
         }
@@ -558,7 +560,7 @@ router.get('/interface', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `Style Config is not defined! Try later or contact support on ${config.contact_email}`,
+                    display: locale.errors.config_style_not_defined
                 }
             })
         }
@@ -568,7 +570,7 @@ router.get('/interface', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `Name of chatGPT is not defined! Try later or contact support on ${config.contact_email}`,
+                    display: locale.errors.display_gpt_name_not_defined
                 }
             })
         }
@@ -578,7 +580,7 @@ router.get('/interface', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `IP of API is not defined! Try later or contact support on ${config.contact_email}`,
+                    display: locale.errors.api_ip_not_defined
                 }
             })
         }
@@ -588,7 +590,7 @@ router.get('/interface', async (req, res) => {
             return res.json({
                 error: {
                     code: 404,
-                    display: `PORT of API is not defined! Try later or contact support on ${config.contact_email}`,
+                    display: locale.errors.api_port_not_defined
                 }
             })
         }
@@ -637,7 +639,7 @@ router.get('/interface', async (req, res) => {
 
         // Display error to console and return it as response
         console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
-        return res.status(500).json({ error: `Unexpected Error happened! If you believe it\'s a mistake, contact us on: "${config.contact_email}". If you\'re owner, check console to see an error` })
+        return res.status(500).json({ error: locale.errors.unexpected_error })
 
     }
 });
