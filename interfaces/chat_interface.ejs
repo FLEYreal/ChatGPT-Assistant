@@ -17,6 +17,9 @@
     <span id="env" style="display: none;">
         <%= JSON.stringify(backend) %>
     </span>
+    <span id="lang" style="display: none;">
+        <%= JSON.stringify(lang) %>
+    </span>
     <section class="component" 
         style="
             width: <%= config_style.width %>; 
@@ -176,6 +179,8 @@
         // (which isn't valuable enough to hide it)
         const env = JSON.parse(document.getElementById('env').textContent.trim())
 
+        const lang = JSON.parse(document.getElementById('lang').textContent.trim())
+
         // Can user send message
         let sendMessage = true;
 
@@ -305,7 +310,7 @@
 
                     // Send event that message sent to server with all the data
                     createMessage('gpt', '')
-                    socket.emit('message_sent', {value: input.value, id: cucId });
+                    socket.emit('message_sent', {value: input.value, id: cucId, lang: lang });
 
                     // Clear input
                     input.value = ''
@@ -331,7 +336,7 @@
             })
 
             // Delete conversation
-            socket.emit('restart_conversation', {id: cucId})
+            socket.emit('restart_conversation', {id: cucId, lang: lang})
 
             // Get rid of conversation cookie by expiring it
             document.cookie = "CUC-ID" + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -386,7 +391,7 @@
             e.preventDefault()
 
             // Triggers event on the backend to stop generating
-            socket.emit('stop_generating', { sendMessage: sendMessage })
+            socket.emit('stop_generating', { sendMessage: sendMessage, lang: lang })
         }
 
         // When chunk of response received

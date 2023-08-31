@@ -2,7 +2,6 @@ const fs = require('fs')
 
 // Configs
 require('dotenv').config();
-const config_style = require('../config.styles');
 const config_lang = require('../config.language');
 
 // Basics
@@ -84,7 +83,20 @@ function apiApplication(config) {
 
             // When prompt to chatGPT is sent
             socket.on('message_sent', async (data) => {
+
                 try {
+
+                    // Get ID and language from data
+                    let { lang } = data
+
+                    // If language wasn't found
+                    if (!lang) lang = 'en'
+
+                    // If selected language doesn't exist in config.language.js
+                    else if (!config_lang[lang]) lang = 'en'
+
+                    // Get object with all translations
+                    const locale = config_lang[lang]
 
                     // create new AbortController
                     const controller = new AbortController();
@@ -102,7 +114,7 @@ function apiApplication(config) {
                         console.log('[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found')
                         socket.emit('err', {
                             code: 404,
-                            display: `No conversation ID found!`,
+                            display: locale.errors.id_not_found,
                             data: error
                         })
                     }
@@ -115,7 +127,7 @@ function apiApplication(config) {
                         .catch(err => {
                             socket.emit('err', {
                                 code: 500,
-                                display: `Failed to get history of conversation! Try later or contact support on ${config.contact_email}`,
+                                display: locale.errors.failed_to_get_history,
                                 data: err
                             })
                         })
@@ -151,7 +163,7 @@ function apiApplication(config) {
                         .catch(err => {
                             socket.emit('err', {
                                 code: 500,
-                                display: `Failed to load chunk of the response! Try later or contact support on ${config.contact_email}`,
+                                display: locale.errors.failed_to_load_chunk,
                                 data: err
                             })
                         });
@@ -196,7 +208,7 @@ function apiApplication(config) {
                     }).catch((err) => {
                         socket.emit('err', {
                             code: 500,
-                            display: `Failed to save conversation history! If you think this error is important, you can contact us on: ${config.contact_email}`,
+                            display: locale.errors.failed_to_save,
                             data: err
                         })
                     })
@@ -209,25 +221,50 @@ function apiApplication(config) {
             // When button to restart conversation is clicked
             socket.on('restart_conversation', async (data) => {
 
+                // Get ID and language from data
+                let { lang } = data
+
+                // If language wasn't found
+                if (!lang) lang = 'en'
+
+                // If selected language doesn't exist in config.language.js
+                else if (!config_lang[lang]) lang = 'en'
+
+                // Get object with all translations
+                const locale = config_lang[lang]
+
                 // Delete conversation from DB
                 if (config.delete_restarted_conversations) {
                     await axios.post(`${process.env.API_IP}:${process.env.API_PORT}/chat/delete`, {
                         id: data.id,
                     })
                         .then(res => res.data.gpt_response)
-                        .catch(err => {
+                        .catch(error => {
                             socket.emit('err', {
                                 code: 500,
-                                display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                                display: locale.errors.unexpected_error,
                                 data: error
                             })
-                            console.log('[\u001b[1;31mERROR\u001b[0m] :', err)
+                            console.log('[\u001b[1;31mERROR\u001b[0m] :', error)
                         })
                 }
             })
 
             // Stop generating response of GPT, aborts fetch from "message_sent" event
             socket.on('stop_generating', async (data) => {
+
+                // Get ID and language from data
+                let { lang } = data
+
+                // If language wasn't found
+                if (!lang) lang = 'en'
+
+                // If selected language doesn't exist in config.language.js
+                else if (!config_lang[lang]) lang = 'en'
+
+                // Get object with all translations
+                const locale = config_lang[lang]
+
                 try {
                     if (data.sendMessage === false && socket.controller) {
                         // Stop streaming GPT response
@@ -235,14 +272,14 @@ function apiApplication(config) {
                     } else {
                         socket.emit('err', {
                             code: 400,
-                            display: `Can't stop generating response!`,
+                            display: locale.errors.cant_stop,
                             data: {}
                         })
                     }
                 } catch (e) {
                     socket.emit('err', {
                         code: 500,
-                        display: `Unexpected error happened! Try later or contact support on ${config.contact_email}`,
+                        display: locale.errors.unexpected_error,
                         data: error
                     })
                     console.error('[\u001b[1;31mERROR\u001b[0m] :', error)
