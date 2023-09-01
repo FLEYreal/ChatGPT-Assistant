@@ -180,6 +180,13 @@ function apiApplication(config) {
                             .filter((line) => line !== "[DONE]")
                             .map((line) => JSON.parse(line));
 
+                        if(new RegExp(/\n/).test(lines[0].choices[0].delta.content)) {
+
+                            let result = lines[0].choices[0].delta.content.replace(/\n/g, '<br>')
+                            lines[0].choices[0].delta.content = result;
+                            
+                        }
+
                         // Destructuring!
                         for (const line of lines) {
                             const {
@@ -196,6 +203,8 @@ function apiApplication(config) {
                             }
                         }
                     }
+
+                    console.log(gpt_response)
 
                     // Notify frontend when message is completed
                     socket.emit('fully_received')
