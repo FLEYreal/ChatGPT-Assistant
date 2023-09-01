@@ -248,6 +248,18 @@
 
         // Function to add chunks of GPT message
         function streamingMessage(chunk) {
+
+            // Text
+            let text = String(chunk)
+
+            // Defined all line-wrapping-codes and replace them with <br>
+            var htmlString = text.replace(/\[BACK-SLASH-N\]/g, '<br>');
+
+            console.log(htmlString)
+
+            // Split by <br>
+            var htmlParts = htmlString.split('<br>');
+
             // Get all gpt messages
             const text_sections = document.querySelectorAll('.section-gpt-message-text')
 
@@ -258,8 +270,12 @@
             const chunk_block = document.createElement('span')
             chunk_block.classList.add('chunk-appearance')
 
-            // Add new chunk of message to the response
-            chunk_block.textContent += String(chunk)
+            for (var i = 0; i < htmlParts.length; i++) {
+                chunk_block.appendChild(document.createTextNode(htmlParts[i]));
+                if (i < htmlParts.length - 1) {
+                    chunk_block.appendChild(document.createElement('br'));
+                }
+            }
 
             // Add chunk to text wrapper
             text_section.append(chunk_block)
