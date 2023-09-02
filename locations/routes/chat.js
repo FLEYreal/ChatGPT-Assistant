@@ -326,18 +326,16 @@ router.post('/get-history', async (req, res) => {
 
         }
 
-        let test = JSON.parse(row[0].history)
-
-        const newTest = test.map(i => ({
+        const history = JSON.parse(row[0].history).map(i => ({
             role: i.role,
             content: i.role === 'assistant' ? i.content.split(/\[BACK-SLASH-N\]/) : i.content
         }));
         
 
-        console.log(newTest)
+        console.log(history)
 
         // Return result
-        return res.status(200).json({ history: row[0].history })
+        return res.status(200).json({ history: JSON.stringify(history) })
 
     } catch (error) {
 

@@ -80,7 +80,13 @@
                                 color: <%= config_style.messages.gpt.color.font %>;
                             ">
 
-                                <%= msg.content %>
+                                <% if(msg.role === 'assistant') { %>
+                                    <% msg.content.forEach(i => { %>
+                                        <p style="margin-bottom: 1.25em; margin-top: 0px;"><%= i %></p>
+                                    <% }) %>
+                                <% } else { %>
+                                    <%= msg.content %>
+                                <% } %>
 
                             </div>
                     
