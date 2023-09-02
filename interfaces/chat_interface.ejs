@@ -79,7 +79,9 @@
                             style="
                                 color: <%= config_style.messages.gpt.color.font %>;
                             ">
+
                                 <%= msg.content %>
+
                             </div>
                     
                         </div>
@@ -254,8 +256,6 @@
 
             // Defined all line-wrapping-codes and replace them with <br>
             var htmlString = text.replace(/\[BACK-SLASH-N\]/g, '<br>');
-
-            console.log(htmlString)
 
             // Split by <br>
             var htmlParts = htmlString.split('<br>');

@@ -20,7 +20,8 @@ async function main() {
     apiApplication(config)
 
     // Discord bot
-    require('./locations/discord')
+    const { discordBot } = require('./locations/discord');
+    discordBot(config)
 
     // Telegram bot
     require('./locations/telegram')

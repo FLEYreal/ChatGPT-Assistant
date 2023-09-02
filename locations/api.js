@@ -181,7 +181,7 @@ function apiApplication(config) {
                             .map((line) => JSON.parse(line));
 
                         // Defined line wrapping and change to correct "code" to then define it on frontend and replace with <br>
-                        if(lines && lines[0].choices[0] && new RegExp(/\n/).test(lines[0].choices[0].delta.content)) {
+                        if (lines && lines[0].choices[0] && new RegExp(/\n/).test(lines[0].choices[0].delta.content)) {
 
                             let result = lines[0].choices[0].delta.content.replace(/\n/g, '[BACK-SLASH-N]')
                             lines[0].choices[0].delta.content = result;
