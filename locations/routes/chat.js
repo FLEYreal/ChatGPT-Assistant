@@ -26,6 +26,9 @@ const db = new sqlite3.Database('./conversations.db', sqlite3.OPEN_READWRITE, (e
 // Utils
 const axios = require('axios');
 
+// Middlewares
+const { check_lang, check_id } = require('../../middlewares')
+
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get('/create', async (req, res) => {
 
