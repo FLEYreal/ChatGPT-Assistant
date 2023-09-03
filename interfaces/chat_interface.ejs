@@ -71,21 +71,28 @@
                         ">
     
                             <div class="section-gpt-profile-picture section-profile-picture">
-                                <!-- <img alt="gpt-profile-picture" class="gpt-profile-picture"/> -->
                                 <div class="gpt-profile-picture profile-picture"><%= custom_names.short_gpt_name || 'GPT' %></div>
                             </div>
     
+                            
                             <div class="section-gpt-message-text section-message-text" 
                             style="
                                 color: <%= config_style.messages.gpt.color.font %>;
                             ">
 
+                                <!-- If it's a gpt's response -->
                                 <% if(msg.role === 'assistant') { %>
+
+                                    <!-- Load the response correctly, with line wrapping -->
                                     <% msg.content.forEach(i => { %>
                                         <p style="margin-bottom: 1.25em; margin-top: 0px;"><%= i %></p>
                                     <% }) %>
+
                                 <% } else { %>
+                                    
+                                    <!-- Just Load content of user's question -->
                                     <%= msg.content %>
+                                    
                                 <% } %>
 
                             </div>
@@ -101,7 +108,6 @@
                         ">
     
                             <div class="section-user-profile-picture section-profile-picture">
-                                <!-- <img alt="user-profile-picture" class="user-profile-picture"/> -->
                                 <div class="user-profile-picture profile-picture"><%= custom_names.short_user_name || 'User' %></div>
                             </div>
     

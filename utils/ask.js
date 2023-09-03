@@ -1,0 +1,1 @@
+// Future feature to ask chatGPT with just a function
