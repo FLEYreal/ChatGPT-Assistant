@@ -30,19 +30,10 @@ const axios = require('axios');
 const { check_lang, check_id } = require('../../middlewares')
 
 // Create Chat ID and save to db. Database will store all the history of conversation
-router.get('/create', async (req, res) => {
-
-    // Get language from query
-    let { lang } = req.query;
-
-    // If language wasn't found
-    if (!lang) lang = 'en'
-
-    // If selected language doesn't exist in config.language.js
-    else if (!config_lang[lang]) lang = 'en'
+router.get('/create', check_lang, async (req, res) => {
 
     // Get object with all translations
-    const locale = config_lang[lang]
+    const locale = req.locale
 
     try {
 
@@ -108,19 +99,10 @@ router.get('/create', async (req, res) => {
 })
 
 // Delete a conversation from DB
-router.post('/delete', async (req, res) => {
-
-    // Get language from query
-    let { lang } = req.query;
-
-    // If language wasn't found
-    if (!lang) lang = 'en'
-
-    // If selected language doesn't exist in config.language.js
-    else if (!config_lang[lang]) lang = 'en'
+router.post('/delete', check_lang, async (req, res) => {
 
     // Get object with all translations
-    const locale = config_lang[lang]
+    const locale = req.locale
 
     try {
 
@@ -235,19 +217,10 @@ router.post('/delete', async (req, res) => {
 })
 
 // Get conversation history by ID
-router.post('/get-history', async (req, res) => {
-
-    // Get language from query
-    let { lang } = req.query;
-
-    // If language wasn't found
-    if (!lang) lang = 'en'
-
-    // If selected language doesn't exist in config.language.js
-    else if (!config_lang[lang]) lang = 'en'
+router.post('/get-history', check_lang, async (req, res) => {
 
     // Get object with all translations
-    const locale = config_lang[lang]
+    const locale = req.locale
 
     try {
 
@@ -333,9 +306,6 @@ router.post('/get-history', async (req, res) => {
             role: i.role,
             content: i.role === 'assistant' ? i.content.split(/\[BACK-SLASH-N\]/) : i.content
         }));
-        
-
-        console.log(history)
 
         // Return result
         return res.status(200).json({ history: JSON.stringify(history) })
@@ -350,19 +320,10 @@ router.post('/get-history', async (req, res) => {
 })
 
 // Save history
-router.put('/save-history', async (req, res) => {
-
-    // Get language from query
-    let { lang } = req.query;
-
-    // If language wasn't found
-    if (!lang) lang = 'en'
-
-    // If selected language doesn't exist in config.language.js
-    else if (!config_lang[lang]) lang = 'en'
+router.put('/save-history', check_lang, async (req, res) => {
 
     // Get object with all translations
-    const locale = config_lang[lang]
+    const locale = req.locale
 
     try {
         // Log that route worked
@@ -485,23 +446,17 @@ router.put('/save-history', async (req, res) => {
 })
 
 // Get configurable styles
-router.get('/interface', async (req, res) => {
-
-    // Get ID and language from request body
-    let { id, lang } = req.query
-
-    // If language wasn't found
-    if (!lang) lang = 'en'
-
-    // If selected language doesn't exist in config.language.js
-    else if (!config_lang[lang]) lang = 'en'
+router.get('/interface', check_lang, async (req, res) => {
 
     // Get object with all translations
-    const locale = config_lang[lang]
+    const locale = req.locale
 
     try {
         // Log that route worked
         if (config.display_info_logs) console.log('[\u001b[1;36mINFO\u001b[0m] : Route "/chat/interface" worked')
+
+        // Get ID from request body
+        let { id } = req.body
 
         // If id isn't defined from request's body, get it from cookies
         if (!id && req.cookies['CUC-ID']) id = req.cookies['CUC-ID']
@@ -643,7 +598,7 @@ router.get('/interface', async (req, res) => {
             locale: locale,
 
             // What language is it: 'ru', 'en', 'ja', 'tr', 'kr' and ...etc
-            lang: lang
+            lang: req.lang
         })
 
     } catch (error) {

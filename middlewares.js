@@ -13,7 +13,8 @@ function check_lang(req, res, next) {
     else if (!config_lang[lang]) lang = 'en'
 
     // Get object with all translations
-    req.locale = config_lang[lang]
+    req.locale = config_lang[lang];
+    req.lang = lang;
 
     next()
 }
