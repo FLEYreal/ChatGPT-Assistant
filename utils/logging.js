@@ -8,7 +8,7 @@ class Logging {
     }
 
     static error(message) {
-        console.log(`[${chalk.bold.red('ERROR')}] : ${message}`);
+        console.error(`[${chalk.bold.red('ERROR')}] : ${message}`);
     }
 };
 
