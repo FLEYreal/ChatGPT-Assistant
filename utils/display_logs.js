@@ -3,7 +3,7 @@
 // Configs
 require('dotenv').config();
 const config = require('../config');
-const logging = require('logging');
+const { logging } = require('./logging');
 
 if (config.display_startup_logs) {
     // Display console logs
