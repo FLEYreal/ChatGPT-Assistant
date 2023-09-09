@@ -15,8 +15,8 @@ class Logging {
         console.log(`[${chalk.bold.cyan('INFO')}] : ${message}`);
     }
 
-    static error(message='') {
-        console.error(`[${chalk.bold.red('ERROR')}] : ${message}`);
+    static error(message='', ...args) {
+        console.error(`[${chalk.bold.red('ERROR')}] : ${message}`, ...args);
     }
 
     static warn(message='') {

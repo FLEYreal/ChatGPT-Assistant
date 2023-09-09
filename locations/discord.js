@@ -3,17 +3,20 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, CommandInteractionOptionResolver } = require('discord.js');
 const { logging } = require('../utils/logging');
+const config = require('../config');
 
 const commandMap = [
     {
-        'name': 'command',
-        'description': 'Reply with hello',
-        'options': [],
-    },
-    {
-        'name': 'test',
-        'description': 'test',
-        'options': [],
+        name: 'chat',
+        description: 'Chat with GPT.',
+        options: [
+            {
+                name: 'prompt',
+                description: 'Your question or message to ChatGPT',
+                type: 3,  // string
+                required: true
+            }
+        ],
     }
 ];
 
@@ -56,19 +59,42 @@ function discordBot(config) {
 
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isCommand()) return;
+        const { commandName, options } = interaction;
 
-        const command = interaction.commandName;
-
-        if (command === 'command') {
-            await interaction.reply('hello');
-        }
-
-        if (command === 'test') {
-            await interaction.reply('Test successfull.');
+        if (commandName === 'chat') {
+            const prompt = options.getString('prompt');
+            const res = await chatWithGPT(prompt);
+            const reply = res.choices[0].message.content;
+            interaction.reply(reply);
         }
     });
 
     client.login(process.env.DISCORD_TOKEN);
+}
+
+async function chatWithGPT(prompt) {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+            messages: [{
+                role: 'user',
+                content: prompt,
+            }],
+            temperature: 0.1,
+            model: config.gpt_version,
+            max_tokens: config.max_tokens,
+        }),
+    })
+    .catch(e => {
+        logging.error("Error calling ChatGPT API: ", e.message);
+        return "An error occurred while processing your request";
+    });
+
+    return res.json();
 }
 
 module.exports = {
