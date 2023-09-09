@@ -64,8 +64,18 @@ function discordBot(config) {
         if (commandName === 'chat') {
             const prompt = options.getString('prompt');
             const res = await chatWithGPT(prompt);
-            const reply = res.choices[0].message.content;
-            interaction.reply(reply);
+            interaction.reply(res);
+        }
+    });
+
+    client.on('messageCreate', async (message) => {
+        if (message.author.bot || message.content.includes("@here") || message.content.includes("@everyone") || message.type == "REPLY") return;
+        const botId = client.user.id;
+
+        if (message.mentions.users.has(botId)) {
+            const prompt = message.content.slice(botId.length + 4);
+            const res = await chatWithGPT(prompt);
+            message.reply(res);
         }
     });
 
@@ -80,10 +90,16 @@ async function chatWithGPT(prompt) {
             Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
-            messages: [{
-                role: 'user',
-                content: prompt,
-            }],
+            messages: [
+                {
+                    role: 'user',
+                    content: 'Summarize in one sentence with a max of 50 characters.',
+                },
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
             temperature: 0.1,
             model: config.gpt_version,
             max_tokens: config.max_tokens,
@@ -94,7 +110,8 @@ async function chatWithGPT(prompt) {
         return "An error occurred while processing your request";
     });
 
-    return res.json();
+    const data = await res.json();
+    return data.choices[0].message.content;
 }
 
 module.exports = {
