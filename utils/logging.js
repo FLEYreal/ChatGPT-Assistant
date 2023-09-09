@@ -3,28 +3,28 @@
 const chalk = require('chalk');
 
 class Logging {
-    static on(message='') {
-        console.log(`[${chalk.bold.green('ON')}] : ${message}`);
+    static on(message='', ...args) {
+        console.log(`[${chalk.bold.green('ON')}] : ${message}`, ...args);
     }
 
-    static off(message='') {
-        console.log(`[${chalk.bold.red('OFF')}] : ${message}`);
+    static off(message='', ...args) {
+        console.log(`[${chalk.bold.red('OFF')}] : ${message}`, ...args);
     }
 
-    static info(message='') {
-        console.log(`[${chalk.bold.cyan('INFO')}] : ${message}`);
+    static info(message='', ...args) {
+        console.log(`[${chalk.bold.cyan('INFO')}] : ${message}`, ...args);
     }
 
     static error(message='', ...args) {
         console.error(`[${chalk.bold.red('ERROR')}] : ${message}`, ...args);
     }
 
-    static warn(message='') {
-        console.warn(`[${chalk.bold.yellow('WARN')}] : ${chalk.bold.yellow(message)}`);
+    static warn(message='', ...args) {
+        console.warn(`[${chalk.bold.yellow('WARN')}] : ${chalk.bold.yellow(message)}`, ...args);
     }
 
-    static exitWithError(message='', exitCode=1) {
-        console.error(`[${chalk.bold.red('ERROR')}] : ${chalk.bold.yellow(message)}`);
+    static exitWithError(message='', exitCode=1, ...args) {
+        console.error(`[${chalk.bold.red('ERROR')}] : ${chalk.bold.yellow(message)}`, ...args);
         process.exit(exitCode);
     }
 };
