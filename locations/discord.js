@@ -4,6 +4,19 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, CommandInteractionOptionResolver } = require('discord.js');
 const { logging } = require('../utils/logging');
 
+const commandMap = [
+    {
+        'name': 'command',
+        'description': 'Reply with hello',
+        'options': [],
+    },
+    {
+        'name': 'test',
+        'description': 'test',
+        'options': [],
+    }
+];
+
 function discordBot(config) {
     if (!config.locations.discord) return;
 
@@ -29,27 +42,29 @@ function discordBot(config) {
 
     client.on('ready', async () => {
         const guildId = '1147478772921147432';
-        const commandName = 'command';
-        const commandDescription = 'Reply with hello';
 
-        const command = await client.guilds.cache.get(guildId)?.commands.create({
-            name: commandName,
-            description: commandDescription,
-            options: [],
-        });
+        for (const command of commandMap) {
+            const _command = await client.guilds.cache.get(guildId)?.commands.create({
+                name: command.name,
+                description: command.description,
+                options: command.options,
+            });
 
-        if (command) {
-            logging.info(`Slash Command ${command.name} registered!`);
+            if (_command) logging.info(`"/${command.name}" registered!`);
         }
     });
 
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isCommand()) return;
 
-        const commandName = interaction.commandName;
+        const command = interaction.commandName;
 
-        if (commandName === 'command') {
+        if (command === 'command') {
             await interaction.reply('hello');
+        }
+
+        if (command === 'test') {
+            await interaction.reply('Test successfull.');
         }
     });
 

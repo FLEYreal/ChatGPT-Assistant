@@ -24,8 +24,8 @@ class Logging {
     }
 
     static exitWithError(message='', exitCode=1) {
-        console.error(`[${chalk.bold.red('ERROR')}] : ${chalk.bold.yellow(message)}`)
-        process.exit(exitCode)
+        console.error(`[${chalk.bold.red('ERROR')}] : ${chalk.bold.yellow(message)}`);
+        process.exit(exitCode);
     }
 };
 
