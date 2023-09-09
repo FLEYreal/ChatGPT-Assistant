@@ -26,7 +26,7 @@ const sqlite3 = require('sqlite3').verbose()
 // Utils
 const axios = require('axios');
 const decoder = new TextDecoder();
-const { transformPrompts } = require('../utils/transform_prompts');
+const { transformPrompts, transformResponse } = require('../utils/transform_prompts');
 
 function apiApplication(config) {
 
@@ -134,7 +134,7 @@ function apiApplication(config) {
 
                     // Get newHistory, parse past one
                     let parsedHistory = JSON.parse(history)
-                    let newHistory = [...transformPrompts('system', config.instructions), ...parsedHistory]
+                    let newHistory = [...transformPrompts('system', config.instructions), ...transformResponse(parsedHistory)]
 
                     // Push current prompt GPT
                     newHistory.push({
@@ -204,8 +204,6 @@ function apiApplication(config) {
                             }
                         }
                     }
-
-                    console.log(gpt_response)
 
                     // Notify frontend when message is completed
                     socket.emit('fully_received')
