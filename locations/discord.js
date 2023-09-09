@@ -72,7 +72,8 @@ function discordBot(config) {
         if (message.author.bot || message.content.includes("@here") || message.content.includes("@everyone") || message.type == "REPLY") return;
         const botId = client.user.id;
 
-        if (message.mentions.users.has(botId)) {
+        // Ensure that only the bot is mentioned
+        if (message.mentions.users.size == 1 && message.mentions.users.has(botId)) {
             const prompt = message.content.slice(botId.length + 4);
             const res = await chatWithGPT(prompt);
             message.reply(res);
