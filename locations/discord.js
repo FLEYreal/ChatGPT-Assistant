@@ -39,7 +39,7 @@ function discordBot(config) {
         });
 
         if (command) {
-            logging.info('Slash Command ${command.name} registered!');
+            logging.info(`Slash Command ${command.name} registered!`);
         }
     });
 
