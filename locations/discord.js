@@ -1,58 +1,61 @@
+'use strict';
+
 require('dotenv').config();
 const { Client, GatewayIntentBits, CommandInteractionOptionResolver } = require('discord.js');
+const { logging } = require('../utils/logging');
 
 function discordBot(config) {
-  if (!config.locations.discord) return;
-  
-  if (config.locations.console) {
-    console.log('[\u001b[1;31mERROR\u001b[0m] : Discord Bot cannot work when Console Application is on!');
-    return;
-  }
-  
-  const client = new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.DirectMessages,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.GuildMembers,
-    ],
-  });
+    if (!config.locations.discord) return;
 
-  client.once('ready', () => {
-    if (config.display_info_logs) {
-      console.log(`[\u001b[1;36mINFO\u001b[0m] : Discord Bot has logged in!`);
+    if (config.locations.console) {
+        logging.error('Discord Bot cannot work when Console Application is on!');
+        return;
     }
-  });
 
-  client.on('ready', async () => {
-    const guildId = '1147478772921147432';
-    const commandName = 'command';
-    const commandDescription = 'Reply with hello';
-
-    const command = await client.guilds.cache.get(guildId)?.commands.create({
-      name: commandName,
-      description: commandDescription,
-      options: [],
+    const client = new Client({
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.DirectMessages,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.GuildMembers,
+        ],
     });
 
-    if (command) {
-      console.log(`[\u001b[1;36mINFO\u001b[0m] : Slash Command ${command.name} registered!`);
-    }
-  });
+    client.once('ready', () => {
+        if (config.display_info_logs) {
+            logging.info('Discord Bot has logged in!');
+        }
+    });
 
-  client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isCommand()) return;
+    client.on('ready', async () => {
+        const guildId = '1147478772921147432';
+        const commandName = 'command';
+        const commandDescription = 'Reply with hello';
 
-    const commandName = interaction.commandName;
+        const command = await client.guilds.cache.get(guildId)?.commands.create({
+            name: commandName,
+            description: commandDescription,
+            options: [],
+        });
 
-    if (commandName === 'command') {
-      await interaction.reply('hello');
-    }
-  });
+        if (command) {
+            logging.info('Slash Command ${command.name} registered!');
+        }
+    });
 
-  client.login(process.env.DISCORD_TOKEN);
+    client.on('interactionCreate', async (interaction) => {
+        if (!interaction.isCommand()) return;
+
+        const commandName = interaction.commandName;
+
+        if (commandName === 'command') {
+            await interaction.reply('hello');
+        }
+    });
+
+    client.login(process.env.DISCORD_TOKEN);
 }
 
 module.exports = {
-  discordBot
+    discordBot
 };
