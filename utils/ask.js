@@ -7,8 +7,43 @@ const config_lang = require('../config.language')
 const decoder = new TextDecoder();
 
 // Function to get full GPT response instantly
-async function getGPTResponse(history, lang) {
+async function getGPTResponse(history, controller, lang = 'en') {
 
+    // Make a POST request to the OpenAI API to get chat completions
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+            messages: history,
+            temperature: 0.1,
+            model: config.gpt_version,
+            max_tokens: config.max_tokens,
+            stream: false,
+        }),
+
+        // Use the AbortController's signal to allow aborting the request
+        signal: controller.signal,
+    })
+        .then(res => res.json())
+        .catch(err => {
+            console.error('[\u001b[1;31mERROR\u001b[0m] :', err)
+            return {
+                error: err
+            }
+        });
+
+    if (response.error) return {
+        error: {
+            code: 404,
+            display: config_lang[lang].errors.failed_to_load_chunk,
+            data: error
+        }
+    }
+
+    return response
 }
 
 // Function to get GPT response bit by bit in real time
@@ -41,8 +76,8 @@ async function getStreamingGPTResponse(history, controller, lang = 'en', onChunk
                 error: err
             }
         });
-    
-    if(response.error) return {
+
+    if (response.error) return {
         error: {
             code: 404,
             display: config_lang[lang].errors.failed_to_load_chunk,
@@ -64,10 +99,10 @@ async function getStreamingGPTResponse(history, controller, lang = 'en', onChunk
 
         // Defined line wrapping and change to correct "code" to then define it on frontend and replace with <br>
         if (
-            lines 
+            lines
             && lines[0]
             && lines[0].choices
-            && lines[0].choices[0] 
+            && lines[0].choices[0]
             && new RegExp(/\n/).test(lines[0].choices[0].delta.content)) {
 
             let result = lines[0].choices[0].delta.content.replace(/\n/g, '[BACK-SLASH-N]')

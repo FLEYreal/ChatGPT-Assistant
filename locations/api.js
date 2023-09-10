@@ -155,13 +155,12 @@ function apiApplication(config) {
 
                         // 4TH param is callback function that works as chunk is received
                         async (chunk, response, isDone) => {
-                            
+
                             if (!isDone) {
                                 socket.emit('chunk', { content: chunk })
                             }
 
                             else if (isDone) {
-                                console.log('DONE: ', chunk, response, isDone)
                                 gpt_response = response
 
                                 // Notify frontend when message is completed
