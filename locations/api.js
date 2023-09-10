@@ -25,7 +25,7 @@ const sqlite3 = require('sqlite3').verbose()
 
 // Utils
 const axios = require('axios');
-const decoder = new TextDecoder();
+// const decoder = new TextDecoder();
 const { transformPrompts, transformResponse } = require('../utils/transform_prompts');
 const { getStreamingGPTResponse } = require('../utils/ask')
 
@@ -154,39 +154,41 @@ function apiApplication(config) {
                         lang,
 
                         // 4TH param is callback function that works as chunk is received
-                        (chunk, response, isDone) => {
-                            if(!isDone)
-                                socket.emit('chunk', { content: chunk })
+                        async (chunk, response, isDone) => {
                             
-                            else if(isDone) {
+                            if (!isDone) {
+                                socket.emit('chunk', { content: chunk })
+                            }
+
+                            else if (isDone) {
                                 console.log('DONE: ', chunk, response, isDone)
                                 gpt_response = response
+
+                                // Notify frontend when message is completed
+                                socket.emit('fully_received')
+
+                                console.log('After: \n', id, '\n', value, '\n', gpt_response)
+
+                                // Save a prompt and response to history
+                                await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
+                                    id: id,
+                                    prompt: value,
+                                    gpt_response: gpt_response
+                                }).catch((err) => {
+                                    socket.emit('err', {
+                                        code: 500,
+                                        display: locale.errors.failed_to_save,
+                                        data: err
+                                    })
+                                })
                             }
                         }
                     )
 
-                    if(gpt.error) 
+                    if (gpt.error)
                         socket.emit('err', {
                             ...gpt.error
                         })
-
-                    // Notify frontend when message is completed
-                    socket.emit('fully_received')
-
-                    console.log('After: \n', id, '\n', value, '\n', gpt_response)
-
-                    // Save a prompt and response to history
-                    await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
-                        id: id,
-                        prompt: value,
-                        gpt_response: gpt_response
-                    }).catch((err) => {
-                        socket.emit('err', {
-                            code: 500,
-                            display: locale.errors.failed_to_save,
-                            data: err
-                        })
-                    })
 
                 } catch (error) {
                     console.error('[\u001b[1;31mERROR\u001b[0m] : (Might Be just a Request Abort, Nothing to worry)', error)

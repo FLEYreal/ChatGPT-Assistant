@@ -1,5 +1,24 @@
+'use strict';
+
 require('dotenv').config();
 const { Client, GatewayIntentBits, CommandInteractionOptionResolver } = require('discord.js');
+const { logging } = require('../utils/logging');
+const config = require('../config');
+
+const commandMap = [
+    {
+        name: 'chat',
+        description: 'Chat with GPT.',
+        options: [
+            {
+                name: 'prompt',
+                description: 'Your question or message to ChatGPT',
+                type: 3,  // string
+                required: true
+            }
+        ],
+    }
+];
 
 function discordBot(config) {
     if (!config.locations.discord) return;
@@ -51,6 +70,38 @@ function discordBot(config) {
     });
 
     client.login(process.env.DISCORD_TOKEN);
+}
+
+async function chatWithGPT(prompt) {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+            messages: [
+                {
+                    role: 'user',
+                    content: 'Summarize in one sentence with a max of 50 characters.',
+                },
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
+            temperature: 0.1,
+            model: config.gpt_version,
+            max_tokens: config.max_tokens,
+        }),
+    })
+        .catch(e => {
+            logging.error("Error calling ChatGPT API: ", e.message);
+            return "An error occurred while processing your request";
+        });
+
+    const data = await res.json();
+    return data.choices[0].message.content;
 }
 
 module.exports = {
