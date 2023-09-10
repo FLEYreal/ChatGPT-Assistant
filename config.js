@@ -13,7 +13,7 @@ module.exports = {
         api: true,
 
         // Discord bot
-        discord: true,
+        discord: false,
 
         // Telegram bot
         telegram: false
@@ -35,7 +35,7 @@ module.exports = {
     short_gpt_name: '', // Default Value is "GPT"
 
     // Max amount of tokens per conversation
-    max_tokens: 40,
+    max_tokens: 120,
 
     // Type what you need chatGPT to know and what chatGPT needs to do
     instructions: [

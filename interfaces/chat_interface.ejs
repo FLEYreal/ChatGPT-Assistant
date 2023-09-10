@@ -41,14 +41,12 @@
             box-shadow: <%= config_style.header.shadow %>;
             display: <%= config_style.header.hide === true ? 'none' : 'flex' %>
         ">
-
             <!-- Define a name of the GPT, either it's custom or it's default -->
             <% if(custom_names.gpt_name && custom_names.gpt_name.length > 0) { %>
                 <%= custom_names.gpt_name %>
             <% } else { %>
                 <%= default_name  %>
             <% } %>
-
         </header>
 
         <!-- Section with a chat -->
@@ -57,73 +55,29 @@
             height: calc(<%= config_style.height %> - (<%= config_style.header.hide === true ? '0px' : '75px' %> + 110px));
             margin-top: <%= config_style.header.hide === true ? '0px' : '75px' %>;
         ">
-
-            <!-- Display every message from history -->
             <% chat.forEach(msg => { %>
                 <% if(msg.role !== 'system') { %>
-
-                    <!-- GPT response -->
                     <% if(msg.role === 'assistant') { %>
-    
                         <div class="gpt-message message"
                         style="
                             background-color: <%= config_style.messages.gpt.color.background %>;
                         ">
-    
                             <div class="section-gpt-profile-picture section-profile-picture">
                                 <div class="gpt-profile-picture profile-picture"><%= custom_names.short_gpt_name || 'GPT' %></div>
                             </div>
-    
-                            
-                            <div class="section-gpt-message-text section-message-text" 
-                            style="
-                                color: <%= config_style.messages.gpt.color.font %>;
-                            ">
-
-                                <!-- If it's a gpt's response -->
-                                <% if(msg.role === 'assistant') { %>
-
-                                    <!-- Load the response correctly, with line wrapping -->
-                                    <% msg.content.forEach(i => { %>
-                                        <p style="margin-bottom: 1.25em; margin-top: 0px;"><%= i %></p>
-                                    <% }) %>
-
-                                <% } else { %>
-                                    
-                                    <!-- Just Load content of user's question -->
-                                    <%= msg.content %>
-                                    
-                                <% } %>
-
-                            </div>
-                    
-                        </div>
-    
+                            <div class="section-gpt-message-text section-message-text" style="color: <%= config_style.messages.gpt.color.font %>;"><% if(msg.role === 'assistant') { %><% msg.content.forEach(i => { %><p style="margin-bottom: 1.25em; margin-top: 0px;"><%= i %></p><% }) %><% } else { %> <%= msg.content %> <% } %></div></div>
                     <% } else if(msg.role === 'user') { %>
-    
-                        <!-- User's question -->
                         <div class="user-message message"
-                        style="
-                            background-color: <%= config_style.messages.user.color.background %>;
-                        ">
-    
+                        style="background-color: <%= config_style.messages.user.color.background %>;">
                             <div class="section-user-profile-picture section-profile-picture">
                                 <div class="user-profile-picture profile-picture"><%= custom_names.short_user_name || 'User' %></div>
                             </div>
-    
                             <div class="section-user-message-text section-message-text"
-                            style="
-                                color: <%= config_style.messages.user.color.font %>;
-                            ">
-                                <%= msg.content %>
-                            </div>
-                        
+                            style="color: <%= config_style.messages.user.color.font %>;"><%= msg.content %></div>
                         </div>
-                        
                     <% } %>
                 <% } %>
             <% }) %>
-    
         </section>
 
         <!-- Bottom menu of the chat -->
@@ -266,12 +220,6 @@
             // Text
             let text = String(chunk)
 
-            // Defined all line-wrapping-codes and replace them with <br>
-            var htmlString = text.replace(/\[BACK-SLASH-N\]/g, '<br>');
-
-            // Split by <br>
-            var htmlParts = htmlString.split('<br>');
-
             // Get all gpt messages
             const text_sections = document.querySelectorAll('.section-gpt-message-text')
 
@@ -282,12 +230,7 @@
             const chunk_block = document.createElement('span')
             chunk_block.classList.add('chunk-appearance')
 
-            for (var i = 0; i < htmlParts.length; i++) {
-                chunk_block.appendChild(document.createTextNode(htmlParts[i]));
-                if (i < htmlParts.length - 1) {
-                    chunk_block.appendChild(document.createElement('br'));
-                }
-            }
+            chunk_block.appendChild(document.createTextNode(text))
 
             // Add chunk to text wrapper
             text_section.append(chunk_block)

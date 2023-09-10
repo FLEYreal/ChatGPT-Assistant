@@ -64,6 +64,7 @@ body {
 .section-message-text {
     width: calc(100%);
     max-width: 653px;
+    white-space: pre-wrap;
 }
 
 .bottom-menu {
@@ -269,6 +270,13 @@ body {
     -ms-transform: translate(-50%, -0);
     -o-transform: translate(-50%, -0);
     max-width: 500px;
+}
+
+.code-element {
+    background-color: #000;
+    padding: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #aaff2a;
 }
 
 @keyframes appearance {

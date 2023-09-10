@@ -97,19 +97,6 @@ async function getStreamingGPTResponse(history, controller, lang = 'en', onChunk
             .filter((line) => line !== "[DONE]")
             .map((line) => JSON.parse(line));
 
-        // Defined line wrapping and change to correct "code" to then define it on frontend and replace with <br>
-        if (
-            lines
-            && lines[0]
-            && lines[0].choices
-            && lines[0].choices[0]
-            && new RegExp(/\n/).test(lines[0].choices[0].delta.content)) {
-
-            let result = lines[0].choices[0].delta.content.replace(/\n/g, '[BACK-SLASH-N]')
-            lines[0].choices[0].delta.content = result;
-
-        }
-
         // Destructuring!
         for (const line of lines) {
             const {
@@ -122,12 +109,16 @@ async function getStreamingGPTResponse(history, controller, lang = 'en', onChunk
 
             if (content) {
                 gpt_response += content;
+
+                // Each chunk calls callback function
                 onChunk(content, null, false)
             }
         }
     }
 
+    // Callback function works when it's fully completed
     onChunk(null, gpt_response, true)
+
     return {
         chunk: null,
         response: gpt_response,
