@@ -48,10 +48,14 @@ module.exports = {
     ],
 
     // Params for Discord Bot
-    discord: {},
+    discord: {
+
+    },
 
     // Params for Telegram bot
-    telegram: {},
+    telegram: {
+
+    },
 
     // Display logs when script starts
     display_startup_logs: true,

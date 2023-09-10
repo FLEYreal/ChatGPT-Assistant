@@ -27,6 +27,7 @@ const sqlite3 = require('sqlite3').verbose()
 const axios = require('axios');
 const decoder = new TextDecoder();
 const { transformPrompts, transformResponse } = require('../utils/transform_prompts');
+const { getStreamingGPTResponse } = require('../utils/ask')
 
 function apiApplication(config) {
 
@@ -100,7 +101,6 @@ function apiApplication(config) {
 
                     // create new AbortController
                     const controller = new AbortController();
-                    const signal = controller.signal;
 
                     // save controller in the context of conversation
                     socket.controller = controller;
@@ -143,70 +143,37 @@ function apiApplication(config) {
                     })
 
                     // Make a POST request to the OpenAI API to get chat completions
-                    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-                        },
-                        body: JSON.stringify({
-                            messages: newHistory,
-                            temperature: 0.1,
-                            model: config.gpt_version,
-                            max_tokens: config.max_tokens,
-                            stream: true,
-                        }),
+                    const gpt = getStreamingGPTResponse(
+                        // 1ST param is a history of conversation
+                        newHistory,
 
-                        // Use the AbortController's signal to allow aborting the request
-                        signal: controller.signal,
-                    })
-                        .catch(err => {
-                            socket.emit('err', {
-                                code: 500,
-                                display: locale.errors.failed_to_load_chunk,
-                                data: err
-                            })
-                        });
+                        // 2ND param is controller that let you to stop generating response if needed
+                        controller,
 
-                    // When chunk of the response gotten
-                    for await (const chunk of response.body) {
-                        const decodedChunk = decoder.decode(chunk);
+                        // 3RD param is a language, 'ru', 'en' or else
+                        lang,
 
-                        // Clean up the data
-                        const lines = decodedChunk
-                            .split("\n")
-                            .map((line) => line.replace("data: ", ""))
-                            .filter((line) => line.length > 0)
-                            .filter((line) => line !== "[DONE]")
-                            .map((line) => JSON.parse(line));
-
-                        // Defined line wrapping and change to correct "code" to then define it on frontend and replace with <br>
-                        if (lines && lines[0].choices[0] && new RegExp(/\n/).test(lines[0].choices[0].delta.content)) {
-
-                            let result = lines[0].choices[0].delta.content.replace(/\n/g, '[BACK-SLASH-N]')
-                            lines[0].choices[0].delta.content = result;
-
-                        }
-
-                        // Destructuring!
-                        for (const line of lines) {
-                            const {
-                                choices: [
-                                    {
-                                        delta: { content },
-                                    },
-                                ],
-                            } = line;
-
-                            if (content) {
-                                gpt_response += content;
-                                socket.emit('chunk', { content: content })
+                        // 4TH param is callback function that works as chunk is received
+                        (chunk, response, isDone) => {
+                            if(!isDone)
+                                socket.emit('chunk', { content: chunk })
+                            
+                            else if(isDone) {
+                                console.log('DONE: ', chunk, response, isDone)
+                                gpt_response = response
                             }
                         }
-                    }
+                    )
+
+                    if(gpt.error) 
+                        socket.emit('err', {
+                            ...gpt.error
+                        })
 
                     // Notify frontend when message is completed
                     socket.emit('fully_received')
+
+                    console.log('After: \n', id, '\n', value, '\n', gpt_response)
 
                     // Save a prompt and response to history
                     await axios.put(`${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`, {
