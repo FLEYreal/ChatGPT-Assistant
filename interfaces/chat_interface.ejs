@@ -10,6 +10,11 @@
 
     <!-- Uncommented styles that are not recommended to change for regular user -->
     <link rel="stylesheet" href="/chat_interface.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
 </head>
 
 <body>
@@ -65,7 +70,8 @@
                             <div class="section-gpt-profile-picture section-profile-picture">
                                 <div class="gpt-profile-picture profile-picture"><%= custom_names.short_gpt_name || 'GPT' %></div>
                             </div>
-                            <div class="section-gpt-message-text section-message-text" style="color: <%= config_style.messages.gpt.color.font %>;"><% if(msg.role === 'assistant') { %><% msg.content.forEach(i => { %><p style="margin-bottom: 1.25em; margin-top: 0px;"><%= i %></p><% }) %><% } else { %> <%= msg.content %> <% } %></div></div>
+                            <div class="section-gpt-message-text section-message-text" style="color: <%= config_style.messages.gpt.color.font %>;"><%= msg.content %></div>
+                        </div>
                     <% } else if(msg.role === 'user') { %>
                         <div class="user-message message"
                         style="background-color: <%= config_style.messages.user.color.background %>;">
@@ -73,7 +79,12 @@
                                 <div class="user-profile-picture profile-picture"><%= custom_names.short_user_name || 'User' %></div>
                             </div>
                             <div class="section-user-message-text section-message-text"
-                            style="color: <%= config_style.messages.user.color.font %>;"><%= msg.content %></div>
+                            style="color: <%= config_style.messages.user.color.font %>;"><%= msg.content %>
+                            <pre class="hljs code">
+<code>// Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь Ваш код здесь
+function example() {
+    console.log("Hello, world!");
+}</code></pre></div>
                         </div>
                     <% } %>
                 <% } %>
@@ -149,6 +160,8 @@
 
         const lang = JSON.parse(document.getElementById('lang').textContent.trim())
 
+        let last_gpt_message = '';
+
         // Can user send message
         let sendMessage = true;
 
@@ -219,6 +232,8 @@
 
             // Text
             let text = String(chunk)
+
+            last_gpt_message += text
 
             // Get all gpt messages
             const text_sections = document.querySelectorAll('.section-gpt-message-text')
@@ -366,7 +381,7 @@
         }
 
         // When chunk of response received
-        socket.on('chunk', (data) => {
+        socket.on('chunk', data => {
 
             // Display error if it exists
             if(data && data.error) return;
@@ -386,6 +401,19 @@
 
             // User can send message after gpt answered
             sendMessage = true;
+
+            let gptMessageArray = last_gpt_message.split(/\`\`\`/);
+
+            let gptMessages = document.querySelectorAll('.section-gpt-message-text');
+
+            if (gptMessages.length > 0) {
+                let sectionGptMessageText = gptMessages[gptMessages.length - 1];
+
+                sectionGptMessageText.textContent = '';
+
+                
+
+            last_gpt_message = '';
 
             // Show "Stop Generating" button
             stop_button.classList.add('disappearance')
