@@ -1,0 +1,27 @@
+name: Check Format
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@80b2fcb96ae248b7b80d284855acf93c338a6a0a # v2.5.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout branch
+        uses: actions/checkout@72f2cec99f417b1a1c5e2e88945068983b7965f9 # v4.0.0
+        with:
+          persist-credentials: false
+
+      - name: Prettify code
+        uses: creyD/prettier_action@9561a3f1e164fa28b6f4da59c1807e1cd1af7cf5 # v4.3
+        with:
+          # This part is also where you can pass other options, for example:
+          prettier_options: --write **/*.{js,md}
+
