@@ -1,12 +1,13 @@
 // Configs
-require('dotenv').config()
-
-// Utils
-const { transformPrompts } = require('../utils/transform_prompts')
-const { getGPTResponse } = require('../utils/ask')
-
+import dotenv from "dotenv";
 // Basics
-const readline = require('readline')
+import readline from "readline";
+
+import { getGPTResponse } from "../utils/ask.js";
+// Utils
+import { transformPrompts } from "../utils/transform_prompts.js";
+
+dotenv.config();
 
 function consoleApplication(config) {
     // Checks if it's off in config
@@ -35,7 +36,7 @@ function consoleApplication(config) {
             history.push({ role: "user", content: line });
 
             // Get a response from ChatGPT
-            const response = await getGPTResponse(history)
+            const response = await getGPTResponse(history);
 
             // Send response in console
             console.log(
@@ -50,6 +51,4 @@ function consoleApplication(config) {
     }
 }
 
-module.exports = {
-    consoleApplication: consoleApplication,
-};
+export { consoleApplication };

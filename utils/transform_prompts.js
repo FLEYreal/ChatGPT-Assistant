@@ -13,6 +13,4 @@ function transformPrompts(role, prompts) {
     return result;
 }
 
-module.exports = {
-    transformPrompts,
-};
+export { transformPrompts };
