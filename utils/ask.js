@@ -1,7 +1,7 @@
 // Configs
-require('dotenv').config()
-const config = require('../config')
-const config_lang = require('../config.language')
+require("dotenv").config();
+const config = require("../config");
+const config_lang = require("../config.language");
 
 // Utils
 const decoder = new TextDecoder();
@@ -32,23 +32,24 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
         // Use the AbortController's signal to allow aborting the request
         signal: controller.signal,
     })
-        .then(res => res.json())
-        .catch(err => {
-            console.error('[\u001b[1;31mERROR\u001b[0m] :', err)
+        .then((res) => res.json())
+        .catch((err) => {
+            console.error("[\u001b[1;31mERROR\u001b[0m] :", err);
             return {
-                error: err
-            }
+                error: err,
+            };
         });
 
-    if (response.error) return {
-        error: {
-            code: 404,
-            display: config_lang[lang].errors.failed_to_load_chunk,
-            data: error
-        }
-    }
+    if (response.error)
+        return {
+            error: {
+                code: 404,
+                display: config_lang[lang].errors.failed_to_load_chunk,
+                data: error,
+            },
+        };
 
-    return response
+    return response;
 }
 
 // Function to get GPT response bit by bit in real time
@@ -58,7 +59,7 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
     if(controller === null) controller = new AbortController()
 
     // Entire gpt response
-    let gpt_response = '';
+    let gpt_response = "";
 
     // Make a POST request to the OpenAI API to get chat completions
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -77,21 +78,21 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
 
         // Use the AbortController's signal to allow aborting the request
         signal: controller.signal,
-    })
-        .catch(err => {
-            console.error('[\u001b[1;31mERROR\u001b[0m] :', err)
-            return {
-                error: err
-            }
-        });
+    }).catch((err) => {
+        console.error("[\u001b[1;31mERROR\u001b[0m] :", err);
+        return {
+            error: err,
+        };
+    });
 
-    if (response.error) return {
-        error: {
-            code: 404,
-            display: config_lang[lang].errors.failed_to_load_chunk,
-            data: error
-        }
-    }
+    if (response.error)
+        return {
+            error: {
+                code: 404,
+                display: config_lang[lang].errors.failed_to_load_chunk,
+                data: error,
+            },
+        };
 
     // When chunk of the response gotten
     for await (const chunk of response.body) {
@@ -119,22 +120,22 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
                 gpt_response += content;
 
                 // Each chunk calls callback function
-                onChunk(content, null, false)
+                onChunk(content, null, false);
             }
         }
     }
 
     // Callback function works when it's fully completed
-    onChunk(null, gpt_response, true)
+    onChunk(null, gpt_response, true);
 
     return {
         chunk: null,
         response: gpt_response,
-        isDone: true
-    }
+        isDone: true,
+    };
 }
 
 module.exports = {
     getGPTResponse,
-    getStreamingGPTResponse
-}
+    getStreamingGPTResponse,
+};
