@@ -1,7 +1,7 @@
 'use strict';
 
 require('dotenv').config();
-const { Client, GatewayIntentBits, CommandInteractionOptionResolver } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const { logging } = require('../utils/logging');
 const config = require('../config');
 
@@ -24,7 +24,7 @@ function discordBot(config) {
     if (!config.locations.discord) return;
 
     if (config.locations.console) {
-        console.log('[\u001b[1;31mERROR\u001b[0m] : Discord Bot cannot work when Console Application is on!');
+        logging.error('Discord Bot cannot work when Console Application is on!');
         return;
     }
 
@@ -35,37 +35,57 @@ function discordBot(config) {
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.GuildMembers,
         ],
+        partials: [
+            Partials.Channel,
+        ]
     });
 
     client.once('ready', () => {
         if (config.display_info_logs) {
-            console.log(`[\u001b[1;36mINFO\u001b[0m] : Discord Bot has logged in!`);
+            logging.info('Discord Bot has logged in!');
         }
     });
 
     client.on('ready', async () => {
         const guildId = '1147478772921147432';
-        const commandName = 'command';
-        const commandDescription = 'Reply with hello';
 
-        const command = await client.guilds.cache.get(guildId)?.commands.create({
-            name: commandName,
-            description: commandDescription,
-            options: [],
-        });
+        for (const command of commandMap) {
+            const _command = await client.guilds.cache.get(guildId)?.commands.create({
+                name: command.name,
+                description: command.description,
+                options: command.options,
+            });
 
-        if (command) {
-            console.log(`[\u001b[1;36mINFO\u001b[0m] : Slash Command ${command.name} registered!`);
+            if (_command) logging.info(`"/${command.name}" registered!`);
         }
     });
 
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isCommand()) return;
+        const { commandName, options } = interaction;
 
-        const commandName = interaction.commandName;
+        if (commandName === 'chat') {
+            const prompt = options.getString('prompt');
+            const res = await chatWithGPT(prompt);
+            interaction.reply(res);
+        }
+    });
 
-        if (commandName === 'command') {
-            await interaction.reply('hello');
+    client.on('messageCreate', async (message) => {
+        if (message.author.bot || message.content.includes("@here") || message.content.includes("@everyone") || message.type == "REPLY") return;
+        const botId = client.user.id;
+
+        if (!message.guild) {
+            const prompt = message.content;
+            const res = await chatWithGPT(prompt);
+            message.author.send(res);
+        }
+
+        // Ensure that only the bot is mentioned
+        else if (message.mentions.users.size == 1 && message.mentions.users.has(botId)) {
+            const prompt = message.content.slice(botId.length + 4);
+            const res = await chatWithGPT(prompt);
+            message.reply(res);
         }
     });
 
@@ -94,11 +114,10 @@ async function chatWithGPT(prompt) {
             model: config.gpt_version,
             max_tokens: config.max_tokens,
         }),
-    })
-        .catch(e => {
-            logging.error("Error calling ChatGPT API: ", e.message);
-            return "An error occurred while processing your request";
-        });
+    }).catch(err => {
+        logging.error("Error calling ChatGPT API: ", err.message);
+        return "An error occurred while processing your request";
+    });
 
     const data = await res.json();
     return data.choices[0].message.content;

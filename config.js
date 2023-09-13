@@ -13,7 +13,7 @@ module.exports = {
         api: true,
 
         // Discord bot
-        discord: false,
+        discord: true,
 
         // Telegram bot
         telegram: false
