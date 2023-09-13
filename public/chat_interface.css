@@ -266,6 +266,7 @@ code {
     display: block;
     background-color: #0d1117;
     margin: 12px 0;
+    cursor: pointer;
 }
 
 code::before {
@@ -283,17 +284,24 @@ code::before {
     -moz-border-radius: 6px;
     -ms-border-radius: 6px;
     -o-border-radius: 6px;
-    transition: all 0.2s ease;
-    -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -ms-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
+    transition: all 0.12s ease;
+    -webkit-transition: all 0.12s ease;
+    -moz-transition: all 0.12s ease;
+    -ms-transition: all 0.12s ease;
+    -o-transition: all 0.12s ease;
+    backdrop-filter: blur(2px);
 }
 
 code:hover::before {
     color: #d9d9e3;
     border: 1px solid rgba(86, 88, 105);
     backdrop-filter: blur(4px);
+}
+
+code:active::before {
+    color: #ffffff;
+    background-color: rgba(255,255,255,0.2);
+    backdrop-filter: blur(6px);
 }
 
 .error_box {

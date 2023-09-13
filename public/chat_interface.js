@@ -1,12 +1,6 @@
 // Connect to lib
 const socket = io.connect();
 
-marked.setOptions({
-    highlight: function (code) {
-        return hljs.highlightAuto(code).value;
-    }
-});
-
 // Get Object from hidden span with id "env", it contains OBJECT with valuable data
 // (which isn't valuable enough to hide it)
 const env = JSON.parse(document.getElementById('env').textContent.trim())
@@ -25,6 +19,10 @@ const chat_box = document.querySelector('.chat')
 const error_box = document.querySelector('.error_box')
 const restart_button = document.querySelector('.restart-chat-button')
 const stop_button = document.querySelector('.stop-chat-button')
+let codeMessages = document.querySelectorAll('code')
+
+// Add copy handler to each code element to be able to copy it on click
+for (let i = 0; codeMessages.length > i; i++) codeMessages[i].addEventListener('click', handleCopy)
 
 // Function to display message
 async function createMessage(type = 'user', text = '') {
@@ -105,6 +103,11 @@ function streamingMessage(chunk) {
 
     // Add chunk to text wrapper
     text_section.append(chunk_block)
+}
+
+// Function to copy code
+function handleCopy(e) {
+    console.log('clicked!', e.target.textContent)
 }
 
 // Works when message to GPT submitted
@@ -284,11 +287,15 @@ socket.on('fully_received', (data) => {
             let code = hljs.highlightAuto(
                 decodeEntities(codeMessages[i].innerHTML)
             );
-    
+
             // Add classes, include code into container
             codeMessages[i].classList.add('hljs');
             codeMessages[i].classList.add('xml');
             codeMessages[i].innerHTML = code.value;
+            codeMessages[i].addEventListener('click', handleCopy)
+
+        } else if (!codeMessages[i].classList.contains('hljs')) {
+            codeMessages[i].addEventListener('click', handleCopy)
         }
 
     }
