@@ -2,6 +2,7 @@
 require("dotenv").config();
 const config = require("../config");
 const config_lang = require("../config.language");
+const { transformHistory } = require("./transform_prompts");
 
 // Utils
 const decoder = new TextDecoder();
@@ -9,6 +10,7 @@ const decoder = new TextDecoder();
 // Function to get full GPT response instantly
 async function getGPTResponse(history, controller = null, lang = "en") {
     if (controller === null) controller = new AbortController();
+    history = transformHistory(history);
 
     // Make a POST request to the OpenAI API to get chat completions
     const response = await fetch("https://api.openai.com/v1/chat/completions", {

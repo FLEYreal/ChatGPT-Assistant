@@ -82,7 +82,6 @@ function discordBot(config) {
             const prompt = options.getString("prompt");
             update_history(prompt);
             const res = await getGPTResponse(history);
-            logging.info(res);
             interaction.reply(res);
         }
     });

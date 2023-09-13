@@ -1,3 +1,7 @@
+"use strict";
+
+const { logging } = require("./logging");
+
 function transformPrompts(role, prompts) {
     const filteredPrompts = prompts.filter((i) => i.length > 0);
 
@@ -13,6 +17,12 @@ function transformPrompts(role, prompts) {
     return result;
 }
 
+function transformHistory(history) {
+    logging.info(history);
+    return history;
+}
+
 module.exports = {
     transformPrompts,
+    transformHistory,
 };
