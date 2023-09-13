@@ -2,7 +2,6 @@
 require("dotenv").config();
 const config = require("../../config");
 const config_style = require("../../config.styles");
-const config_lang = require("../../config.language");
 
 // Basics
 const path = require("path");
@@ -11,6 +10,7 @@ const router = express.Router();
 
 // Utils
 const createUUID = require("../../utils/uuid");
+const { marked } = require('marked');
 
 // Libraries
 const crypto = require("crypto");
@@ -612,6 +612,9 @@ router.get("/interface", check_lang, async (req, res) => {
 
                 // What language is it: 'ru', 'en', 'ja', 'tr', 'kr' and ...etc
                 lang: req.lang,
+
+                // Function to transform text into markdown
+                marked
             },
         );
     } catch (error) {
