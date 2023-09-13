@@ -2,9 +2,11 @@
 
 const chalk = require("chalk");
 
-const isObject = (value) => typeof value === "object" && value !== null;
 const transformMessage = (message) =>
-    isObject(message) ? JSON.stringify(message) : message;
+    typeof message === "object" && message !== null
+        ? JSON.stringify(message)
+        : message;
+
 class Logging {
     static on(message = "", ...args) {
         console.log(

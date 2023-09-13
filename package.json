@@ -26,6 +26,7 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3"
   }

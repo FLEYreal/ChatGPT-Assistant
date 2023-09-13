@@ -1,6 +1,7 @@
 "use strict";
 
 require("dotenv").config();
+const { transformPrompt } = require("../utils/transform_prompts");
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { logging } = require("../utils/logging");
 const { getGPTResponse } = require("../utils/ask");
@@ -29,7 +30,11 @@ const summarizePrompt = {
 let history = [];
 
 function update_history(prompt) {
-    history.push(summarizePrompt, { role: "user", content: prompt });
+    const _i = history.indexOf(summarizePrompt);
+    const message = { role: "user", content: prompt };
+
+    if (_i === -1) history.push(summarizePrompt, message);
+    else history.push(message);
 }
 
 function discordBot(config) {
