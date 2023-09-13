@@ -133,6 +133,7 @@ function apiApplication(config) {
 
                     // Get newHistory, parse past one
                     let parsedHistory = JSON.parse(history)
+
                     let newHistory = [...transformPrompts('system', config.instructions), ...parsedHistory]
 
                     // Push current prompt GPT

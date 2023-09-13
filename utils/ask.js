@@ -6,8 +6,13 @@ const config_lang = require('../config.language')
 // Utils
 const decoder = new TextDecoder();
 
+
+
 // Function to get full GPT response instantly
-async function getGPTResponse(history, controller, lang = 'en') {
+async function getGPTResponse(history, controller = null, lang = 'en') {
+
+    // If controller isn't defined
+    if(controller === null) controller = new AbortController()
 
     // Make a POST request to the OpenAI API to get chat completions
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -47,7 +52,10 @@ async function getGPTResponse(history, controller, lang = 'en') {
 }
 
 // Function to get GPT response bit by bit in real time
-async function getStreamingGPTResponse(history, controller, lang = 'en', onChunk) {
+async function getStreamingGPTResponse(history, controller = null, lang = 'en', onChunk) {
+
+    // If controller isn't defined
+    if(controller === null) controller = new AbortController()
 
     // Entire gpt response
     let gpt_response = '';
