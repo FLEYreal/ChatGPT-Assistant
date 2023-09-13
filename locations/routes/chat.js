@@ -302,13 +302,7 @@ router.post("/get-history", check_lang, async (req, res) => {
             });
         }
 
-        const history = JSON.parse(row[0].history).map((i) => ({
-            role: i.role,
-            content:
-                i.role === "assistant"
-                    ? i.content.split(/\[BACK-SLASH-N\]/)
-                    : i.content,
-        }));
+        const history = JSON.parse(row[0].history)
 
         // Return result
         return res.status(200).json({ history: JSON.stringify(history) });
