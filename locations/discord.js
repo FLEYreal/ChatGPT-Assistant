@@ -3,6 +3,7 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { logging } = require("../utils/logging");
+const { getGPTResponse } = require("../utils/ask");
 const config = require("../config");
 
 const commandMap = [
@@ -19,6 +20,17 @@ const commandMap = [
         ],
     },
 ];
+
+const summarizePrompt = {
+    role: "user",
+    content: "Summarize in one sentence with a max of 50 characters.",
+};
+
+let history = [];
+
+function update_history(prompt) {
+    history.push(summarizePrompt, { role: "user", content: prompt });
+}
 
 function discordBot(config) {
     if (!config.locations.discord) return;
@@ -68,7 +80,9 @@ function discordBot(config) {
 
         if (commandName === "chat") {
             const prompt = options.getString("prompt");
-            const res = await chatWithGPT(prompt);
+            update_history(prompt);
+            const res = await getGPTResponse(history);
+            logging.info(res);
             interaction.reply(res);
         }
     });
@@ -83,12 +97,14 @@ function discordBot(config) {
             return;
         const botId = client.user.id;
 
+        // Direct message
         if (!message.guild) {
             const prompt = message.content;
             const res = await chatWithGPT(prompt);
             message.author.send(res);
         }
 
+        // Guild Message
         // Ensure that only the bot is mentioned
         else if (
             message.mentions.users.size == 1 &&
