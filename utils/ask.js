@@ -8,6 +8,7 @@ dotenv.config();
 
 // Utils
 const decoder = new TextDecoder();
+import { logging } from './logging.js'
 
 // Function to get full GPT response instantly
 async function getGPTResponse(history, controller = null, lang = 'en') {
@@ -37,7 +38,7 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
         })
             .then((res) => res.json())
             .catch((err) => {
-                console.error("[\u001b[1;31mERROR\u001b[0m] :", err);
+                logging.error(err);
                 return {
                     error: err,
                 };
@@ -54,8 +55,8 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
 
         return response;
 
-    } catch (e) {
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", e);
+    } catch (err) {
+        logging.error(err);
         return {
             error: {
                 code: 500,
@@ -94,7 +95,7 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
             // Use the AbortController's signal to allow aborting the request
             signal: controller.signal,
         }).catch((err) => {
-            console.error("[\u001b[1;31mERROR\u001b[0m] :", err);
+            logging.error(err);
             return {
                 error: err,
             };
@@ -148,8 +149,8 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
             response: gpt_response,
             isDone: true,
         };
-    } catch (e) {
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", e);
+    } catch (err) {
+        logging.error(err);
         return {
             error: {
                 code: 500,

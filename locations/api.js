@@ -1,21 +1,29 @@
+// Basics
+import { createServer } from "http";
+import path from "path";
+
+// Libraries
+import dotenv from "dotenv";
 import axios from "axios";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-import { createServer } from "http";
-import path from "path";
 import { Server } from "socket.io";
-import sqlite3 from "sqlite3";
 
+// Configs
 import config_lang from "../config.language.js";
+
+// Routes
 import configRoute from "./routes/config.js";
-
-import { getStreamingGPTResponse } from "../utils/ask.js";
-import { transformPrompts } from "../utils/transform_prompts.js";
-
 import chatRoute from "./routes/chat.js";
 
+// Utils
+import sqlite3 from "sqlite3";
+import { getStreamingGPTResponse } from "../utils/ask.js";
+import { transformPrompts } from "../utils/transform_prompts.js";
+import { logging } from "../utils/logging.js";
+
+// File system
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -38,9 +46,7 @@ function apiApplication(config) {
     if (!config.locations.api) {
         return;
     } else if (config.locations.console) {
-        console.log(
-            "[\u001b[1;31mERROR\u001b[0m] : API cannot work when Console Application is on!",
-        );
+        logging.error('API cannot work when Console Application is on!')
         return;
     } else {
         // Connect to SQLite
@@ -49,10 +55,7 @@ function apiApplication(config) {
             sqlite3.OPEN_READWRITE,
             (error) => {
                 if (error)
-                    console.error(
-                        "[\u001b[1;31mERROR\u001b[0m] :",
-                        error.message,
-                    );
+                    logging.error(error.message)
             },
         );
 
@@ -79,8 +82,7 @@ function apiApplication(config) {
         let connections = [];
         io.sockets.on("connection", (socket) => {
             // Display log when user is connected to the interface
-            if (config.display_info_logs)
-                console.log("[\u001b[1;36mINFO\u001b[0m] : User connected");
+            if (config.display_info_logs) logging.info("User connected");
 
             // Add connection to the array
             connections.push(socket);
@@ -89,10 +91,7 @@ function apiApplication(config) {
             socket.on("disconnect", () => {
                 // Delete from the array + log to console
                 connections.splice(connections.indexOf(socket), 1);
-                if (config.display_info_logs)
-                    console.log(
-                        "[\u001b[1;36mINFO\u001b[0m] : Used disconnected",
-                    );
+                if (config.display_info_logs) logging.info("Used disconnected")
             });
 
             // When prompt to chatGPT is sent
@@ -121,9 +120,7 @@ function apiApplication(config) {
 
                     // If id is undefined
                     if (!id) {
-                        console.log(
-                            "[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found",
-                        );
+                        logging.error("No ID / CUC-ID found")
                         socket.emit("err", {
                             code: 404,
                             display: locale.errors.id_not_found,
@@ -135,9 +132,7 @@ function apiApplication(config) {
                     let history = await axios
                         .post(
                             `${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`,
-                            {
-                                id: id,
-                            },
+                            { id: id },
                         )
                         .then((res) => res.data.history)
                         .catch((err) => {
@@ -209,10 +204,7 @@ function apiApplication(config) {
                             ...gpt.error,
                         });
                 } catch (error) {
-                    console.error(
-                        "[\u001b[1;31mERROR\u001b[0m] : (Might Be just a Request Abort, Nothing to worry)",
-                        error,
-                    );
+                    logging.error(`(Might Be just a Request Abort, Nothing to worry) ${error}`);
                 }
             });
 
@@ -223,6 +215,7 @@ function apiApplication(config) {
 
                 // If language wasn't found
                 if (!lang) lang = "en";
+
                 // If selected language doesn't exist in config.language.js
                 else if (!config_lang[lang]) lang = "en";
 
@@ -245,10 +238,7 @@ function apiApplication(config) {
                                 display: locale.errors.unexpected_error,
                                 data: error,
                             });
-                            console.log(
-                                "[\u001b[1;31mERROR\u001b[0m] :",
-                                error,
-                            );
+                            logging.error(error);
                         });
                 }
             });
@@ -283,14 +273,13 @@ function apiApplication(config) {
                         display: locale.errors.unexpected_error,
                         data: error,
                     });
-                    console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                    logging.error(error);
                 }
             });
         });
 
         server.listen(process.env.API_PORT | 3000, () => {
-            if (config.display_info_logs)
-                console.log("[\u001b[1;36mINFO\u001b[0m] : API Server is ON");
+            if (config.display_info_logs) logging.info("API Server is ON");
         });
     }
 }

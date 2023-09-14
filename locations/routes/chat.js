@@ -1,5 +1,4 @@
 // Utils
-
 import axios from "axios";
 
 // Libraries
@@ -14,13 +13,13 @@ import sqlite3 from "sqlite3";
 // Utils
 import createUUID from "../../utils/uuid.js";
 import { marked } from 'marked';
+import { logging } from "../../utils/logging.js";
 
 // Middlewares
 import { check_lang, check_id } from "../../middlewares.js";
 
 // Configs
 dotenv.config();
-
 import config from "../../config.js";
 import config_style from "../../config.styles.js";
 
@@ -32,17 +31,16 @@ const db = new sqlite3.Database(
     "./conversations.db",
     sqlite3.OPEN_READWRITE,
     (error) => {
-        if (error)
-            console.error("[\u001b[1;31mERROR\u001b[0m] :", error.message);
+        if (error) logging.error(error.message);
     },
 );
 
+// File system
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get("/create", check_lang, async (req, res) => {
@@ -51,10 +49,7 @@ router.get("/create", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked',
-            );
+        if (config.display_info_logs) logging.info('Route "/chat/create" worked');
 
         // Get unique ID
         const id = crypto.randomUUID() || createUUID();
@@ -69,8 +64,6 @@ router.get("/create", check_lang, async (req, res) => {
             });
         }
 
-        // // Load instructions to chatGPT from config
-
         // Save result of the promise to "result" in the case of an error
         const result = await new Promise((resolve) => {
             // Insert new data to database
@@ -79,7 +72,7 @@ router.get("/create", check_lang, async (req, res) => {
                 [id, JSON.stringify([])],
                 (error) => {
                     if (error) {
-                        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                        logging.error(error);
 
                         // Uses "resolve" instead of "reject", otherwise it's going to trigger "catch" and return error with
                         // no information provided to resolve. Also doesn't use status(500), it's triggering "catch" as well
@@ -109,7 +102,7 @@ router.get("/create", check_lang, async (req, res) => {
         return res.status(200).json({ id: id });
     } catch (error) {
         // Display error to console and return it as response
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+        logging.error(error);
         return res.status(500).json({ error: locale.errors.unexpected_error });
     }
 });
@@ -122,9 +115,7 @@ router.post("/delete", check_lang, async (req, res) => {
     try {
         // Log that route worked
         if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/chat/create" worked',
-            );
+            logging.info('Route "/chat/create" worked');
 
         // Get ID from request body
         let { id } = req.body;
@@ -134,7 +125,7 @@ router.post("/delete", check_lang, async (req, res) => {
 
         // If ID still couldn't be created
         if (!id) {
-            console.log("[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found");
+            logging.log("No ID / CUC-ID found");
             return res.json({
                 error: {
                     code: 404,
@@ -151,7 +142,7 @@ router.post("/delete", check_lang, async (req, res) => {
                 [id],
                 (error, row) => {
                     if (error) {
-                        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                        logging.error(error);
 
                         // Uses "resolve" instead of "reject", otherwise it's going to trigger "catch" and return error with
                         // no information provided to resolve. Also doesn't use status(500), it's triggering "catch" as well
@@ -177,7 +168,7 @@ router.post("/delete", check_lang, async (req, res) => {
         // If failed to find conversation in db
         else if (row.length <= 0) {
             // No row found
-            console.error("[\u001b[1;33mWARN\u001b[0m] : Row not found!");
+            logging.warn("Row not found!");
             return res.json({
                 error: {
                     code: 404,
@@ -188,7 +179,7 @@ router.post("/delete", check_lang, async (req, res) => {
 
         // Promise didn't return a thing
         else if (!row) {
-            console.error("[\u001b[1;33mWARN\u001b[0m] : Row not found!");
+            logging.warn("Row not found!");
             return res.json({
                 error: {
                     code: 404,
@@ -201,7 +192,7 @@ router.post("/delete", check_lang, async (req, res) => {
         db.run("DELETE FROM conversations WHERE id = ?", [id], (error) => {
             if (error) {
                 // Display an error
-                console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                logging.error("error");
 
                 // Return an error
                 return res.json({
@@ -223,7 +214,7 @@ router.post("/delete", check_lang, async (req, res) => {
         });
     } catch (error) {
         // Display error to console and return it as response
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+        logging.error(error);
         return res.status(500).json({ error: locale.errors.unexpected_error });
     }
 });
@@ -235,10 +226,7 @@ router.post("/get-history", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/chat/get-history" worked',
-            );
+        if (config.display_info_logs) logging.info('Route "/chat/get-history" worked');
 
         // Get ID from request body
         let { id } = req.body;
@@ -248,7 +236,7 @@ router.post("/get-history", check_lang, async (req, res) => {
 
         // If ID still couldn't be created
         if (!id) {
-            console.log("[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found");
+            logging.error("No ID / CUC-ID found");
             return res.json({
                 error: {
                     code: 404,
@@ -265,7 +253,7 @@ router.post("/get-history", check_lang, async (req, res) => {
                 [id],
                 (error, row) => {
                     if (error) {
-                        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                        logging.error(error);
 
                         // Uses "resolve" instead of "reject", otherwise it's going to trigger "catch" and return error with
                         // no information provided to resolve. Also doesn't use status(500), it's triggering "catch" as well
@@ -293,7 +281,7 @@ router.post("/get-history", check_lang, async (req, res) => {
         // If there's no conversation in DB
         else if (row.length <= 0) {
             // No row found
-            console.error("[\u001b[1;33mWARN\u001b[0m] : Row not found!");
+            logging.warn("Row not found!");
             return res.json({
                 error: {
                     message: locale.errors.row_not_found,
@@ -303,7 +291,7 @@ router.post("/get-history", check_lang, async (req, res) => {
 
         // Promise didn't return a thing
         else if (!row) {
-            console.error("[\u001b[1;33mWARN\u001b[0m] : Row not found!");
+            logging.warn("Row not found!");
             return res.json({
                 error: {
                     code: 404,
@@ -311,14 +299,14 @@ router.post("/get-history", check_lang, async (req, res) => {
                 },
             });
         }
-      
+
         const history = JSON.parse(row[0].history);
 
         // Return result
         return res.status(200).json({ history: JSON.stringify(history) });
     } catch (error) {
         // Display error to console and return it as response
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+        logging.error(error);
         return res.status(500).json({ error: locale.errors.unexpected_error });
     }
 });
@@ -330,10 +318,7 @@ router.put("/save-history", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/chat/save-history" worked',
-            );
+        if (config.display_info_logs) logging.info('Route "/chat/save-history" worked',);
 
         // Get ID from request body
         let { id, prompt, gpt_response } = req.body;
@@ -343,7 +328,7 @@ router.put("/save-history", check_lang, async (req, res) => {
 
         // If ID still couldn't be created
         if (!id) {
-            console.log("[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found");
+            logging.error("No ID / CUC-ID found");
             return res.json({
                 error: {
                     code: 404,
@@ -360,7 +345,7 @@ router.put("/save-history", check_lang, async (req, res) => {
                 [id],
                 (error, row) => {
                     if (error) {
-                        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                        logging.error(error);
 
                         // Uses "resolve" instead of "reject", otherwise it's going to trigger "catch" and return error with
                         // no information provided to resolve. Also doesn't use status(500), it's triggering "catch" as well
@@ -388,7 +373,7 @@ router.put("/save-history", check_lang, async (req, res) => {
         // If there's no conversation in db
         else if (row.length <= 0) {
             // No row found
-            console.error("[\u001b[1;33mWARN\u001b[0m] : Row not found!");
+            logging.warn("Row not found!");
             return res.json({
                 error: {
                     message: locale.errors.row_not_found,
@@ -398,7 +383,7 @@ router.put("/save-history", check_lang, async (req, res) => {
 
         // Promise didn't return a thing
         else if (!row) {
-            console.error("[\u001b[1;33mWARN\u001b[0m] : Row not found!");
+            logging.warn(" Row not found!");
             return res.json({
                 error: {
                     code: 404,
@@ -428,7 +413,7 @@ router.put("/save-history", check_lang, async (req, res) => {
             [JSON.stringify(newHistory), id],
             (error) => {
                 if (error) {
-                    console.error("[\u001b[1;33mWARN\u001b[0m] :", error);
+                    logging.warn(error);
                     return res.json({
                         error: {
                             code: 500,
@@ -446,7 +431,7 @@ router.put("/save-history", check_lang, async (req, res) => {
         );
     } catch (error) {
         // Display error to console and return it as response
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+        logging.error(error);
         return res.status(500).json({ error: locale.errors.unexpected_error });
     }
 });
@@ -458,10 +443,7 @@ router.get("/interface", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/chat/interface" worked',
-            );
+        if (config.display_info_logs) logging.info('Route "/chat/interface" worked',);
 
         // Get ID from request body
         let { id } = req.body;
@@ -497,9 +479,7 @@ router.get("/interface", check_lang, async (req, res) => {
         let history = await axios
             .post(
                 `${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`,
-                {
-                    id: id,
-                },
+                { id: id },
             )
             .then((res) => res.data.history)
             .catch((err) => err);
@@ -527,9 +507,7 @@ router.get("/interface", check_lang, async (req, res) => {
 
         // Check if every variable that sends to interface is defined
         if (!history) {
-            console.log(
-                '[\u001b[1;31mERROR\u001b[0m] : History is not defined on "/chat/interface"',
-            );
+            logging.error('History is not defined on "/chat/interface"',);
             return res.json({
                 error: {
                     code: 404,
@@ -537,9 +515,7 @@ router.get("/interface", check_lang, async (req, res) => {
                 },
             });
         } else if (!config_style) {
-            console.log(
-                '[\u001b[1;31mERROR\u001b[0m] : Style Config is not defined on "/chat/interface"',
-            );
+            logging.error('Style Config is not defined on "/chat/interface"',);
             return res.json({
                 error: {
                     code: 404,
@@ -547,9 +523,7 @@ router.get("/interface", check_lang, async (req, res) => {
                 },
             });
         } else if (!display_gpt_name) {
-            console.log(
-                '[\u001b[1;31mERROR\u001b[0m] : Display GPT Name is not defined on "/chat/interface"',
-            );
+            logging.log('Display GPT Name is not defined on "/chat/interface"',);
             return res.json({
                 error: {
                     code: 404,
@@ -557,9 +531,7 @@ router.get("/interface", check_lang, async (req, res) => {
                 },
             });
         } else if (!process.env.API_IP) {
-            console.log(
-                '[\u001b[1;31mERROR\u001b[0m] : API\'s IP is not defined in ".env" file on "/chat/interface"',
-            );
+            logging.error('API\'s IP is not defined in ".env" file on "/chat/interface"',);
             return res.json({
                 error: {
                     code: 404,
@@ -567,9 +539,7 @@ router.get("/interface", check_lang, async (req, res) => {
                 },
             });
         } else if (!process.env.API_PORT) {
-            console.log(
-                '[\u001b[1;31mERROR\u001b[0m] : API\'s PORT is not defined in ".env" file on "/chat/interface"',
-            );
+            logging.error( 'API\'s PORT is not defined in ".env" file on "/chat/interface"',);
             return res.json({
                 error: {
                     code: 404,
@@ -582,9 +552,7 @@ router.get("/interface", check_lang, async (req, res) => {
             config.gpt_name ||
             config.short_gpt_name
         ) {
-            console.log(
-                "[\u001b[1;33mWARN\u001b[0m] : Custom names aren't defined in config!",
-            );
+            logging.warn("Custom names aren't defined in config!",);
         }
 
         // Send file
@@ -629,7 +597,7 @@ router.get("/interface", check_lang, async (req, res) => {
         );
     } catch (error) {
         // Display error to console and return it as response
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+        logging.error(error);
         return res.status(500).json({ error: locale.errors.unexpected_error });
     }
 });
