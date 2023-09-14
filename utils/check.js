@@ -1,3 +1,8 @@
+// Config
+import dotenv from 'dotenv';
+dotenv.config();
+
+// Utils
 import { logging } from "./logging.js";
 
 // Basics
@@ -38,6 +43,95 @@ async function check_api_file(
                 `File \"${source}\" doesn't exist!\n         This file is important for API!\n         If you lost the file, you can restore it by either downloading a copy from our official sources (StormShop) or contacting us personally: borisov.nikit.off@gmail.com\n`,
             );
         }
+    }
+}
+
+// Function that checks all important variables for interface
+function check_interface_variables(variables, locale) {
+    try {
+
+        if (!locale) {
+            logging.error('No locale defined!')
+            return {
+                error: {
+                    code: 400,
+                    display: 'No locale defined!',
+                }
+            }
+        } else if (!variables) {
+            logging.error('No variables to check!')
+            return {
+                error: {
+                    code: 400,
+                    display: locale.errors.no_vars,
+                }
+            }
+        }
+
+        if (!variables.history) {
+            logging.error('History is not defined on "/chat/interface"');
+            return {
+                error: {
+                    code: 404,
+                    display: locale.errors.history_not_defined,
+                },
+            };
+        } else if (!variables.config_style) {
+            logging.error('Style Config is not defined on "/chat/interface"');
+            return {
+                error: {
+                    code: 404,
+                    display: locale.errors.config_style_not_defined,
+                },
+            };
+        } else if (!variables.display_gpt_name) {
+            logging.log('Display GPT Name is not defined on "/chat/interface"');
+            return {
+                error: {
+                    code: 404,
+                    display: locale.errors.display_gpt_name_not_defined,
+                },
+            };
+        } else if (!process.env.API_IP) {
+            logging.error('API\'s IP is not defined in ".env" file on "/chat/interface"');
+            return {
+                error: {
+                    code: 404,
+                    display: locale.errors.api_ip_not_defined,
+                },
+            };
+        } else if (!process.env.API_PORT) {
+            logging.error('API\'s PORT is not defined in ".env" file on "/chat/interface"');
+            return {
+                error: {
+                    code: 404,
+                    display: locale.errors.api_port_not_defined,
+                },
+            };
+        } else if (
+            variables.config.user_name ||
+            variables.config.short_user_name ||
+            variables.config.gpt_name ||
+            variables.config.short_gpt_name
+        ) {
+            logging.warn("Custom names aren't defined in config!");
+        }
+
+        return {
+            success: true
+        }
+
+    } catch (err) {
+
+        logging.error(err)
+        return {
+            error: {
+                code: 500,
+                display: locale.errors.unexpected_error,
+                message: err
+            }
+        }
+
     }
 }
 
@@ -154,4 +248,4 @@ async function check() {
 }
 
 // Export everything needed
-export { check, check_file, check_api_file };
+export { check, check_file, check_api_file, check_interface_variables };
