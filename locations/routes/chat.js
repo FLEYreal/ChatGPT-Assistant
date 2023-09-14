@@ -1,22 +1,31 @@
-// Configs
-require("dotenv").config();
-const config = require("../../config");
-const config_style = require("../../config.styles");
-
-// Basics
-const path = require("path");
-const express = require("express");
-const router = express.Router();
-
 // Utils
-const createUUID = require("../../utils/uuid");
-const { marked } = require('marked');
+
+import axios from "axios";
 
 // Libraries
-const crypto = require("crypto");
+import crypto from "crypto";
+import dotenv from "dotenv";
+import express from "express";
+import path from "path";
 
 // Database SQLite
-const sqlite3 = require("sqlite3").verbose();
+import sqlite3 from "sqlite3";
+
+// Utils
+import createUUID from "../../utils/uuid.js";
+import { marked } from 'marked';
+
+// Middlewares
+import { check_lang, check_id } from "../../middlewares.js";
+
+// Configs
+dotenv.config();
+
+import config from "../../config.js";
+import config_style from "../../config.styles.js";
+
+// Basics
+const router = express.Router();
 
 // Connect to SQLite
 const db = new sqlite3.Database(
@@ -28,11 +37,12 @@ const db = new sqlite3.Database(
     },
 );
 
-// Utils
-const axios = require("axios");
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// Middlewares
-const { check_lang, check_id } = require("../../middlewares");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get("/create", check_lang, async (req, res) => {
@@ -301,8 +311,8 @@ router.post("/get-history", check_lang, async (req, res) => {
                 },
             });
         }
-
-        const history = JSON.parse(row[0].history)
+      
+        const history = JSON.parse(row[0].history);
 
         // Return result
         return res.status(200).json({ history: JSON.stringify(history) });
@@ -624,4 +634,4 @@ router.get("/interface", check_lang, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

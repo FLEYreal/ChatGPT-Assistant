@@ -1,32 +1,36 @@
-// Configs
-require("dotenv").config();
+import dotenv from "dotenv";
+
+import config from "./config.js";
 
 // Utils for checking
-const { check } = require("./utils/check");
+import { check } from "./utils/check.js";
+
+import { apiApplication } from "./locations/api.js";
+import { consoleApplication } from "./locations/console_app.js";
+import { discordBot } from "./locations/discord.js";
+
+// Configs
+dotenv.config();
 
 async function main() {
     // Important checks of script,
     await check();
 
     // Config
-    const config = require("./config");
 
     // Display logs to console
-    require("./utils/display_logs");
+    await import ("./utils/display_logs.js");
 
     // API routes
-    const { apiApplication } = require("./locations/api");
     apiApplication(config);
 
     // Discord bot
-    const { discordBot } = require("./locations/discord");
     discordBot(config);
 
     // Telegram bot
-    require("./locations/telegram");
+    await import ("./locations/telegram.js");
 
     // Console application
-    const { consoleApplication } = require("./locations/console_app");
     consoleApplication(config);
 }
 

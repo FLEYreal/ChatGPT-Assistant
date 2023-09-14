@@ -1,12 +1,13 @@
 // Configs
-require("dotenv").config();
-const config = require("../config");
-const config_lang = require("../config.language");
+import dotenv from "dotenv";
+
+import config from "../config.js";
+import config_lang from "../config.language.js";
+
+dotenv.config();
 
 // Utils
 const decoder = new TextDecoder();
-
-
 
 // Function to get full GPT response instantly
 async function getGPTResponse(history, controller = null, lang = 'en') {
@@ -69,7 +70,6 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
 async function getStreamingGPTResponse(history, controller = null, lang = 'en', onChunk) {
 
     try {
-
         // If controller isn't defined
         if (controller === null) controller = new AbortController()
 
@@ -148,7 +148,6 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
             response: gpt_response,
             isDone: true,
         };
-
     } catch (e) {
         console.error("[\u001b[1;31mERROR\u001b[0m] :", e);
         return {
@@ -161,7 +160,4 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
     }
 }
 
-module.exports = {
-    getGPTResponse,
-    getStreamingGPTResponse,
-};
+export { getGPTResponse, getStreamingGPTResponse };

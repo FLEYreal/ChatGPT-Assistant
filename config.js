@@ -1,7 +1,7 @@
 // CONFIG OF THIS PROJECT
 // SET UP THE PROJECT THE WAY YOU NEED TO!
 
-module.exports = {
+export default {
     // Locations where GPT will work
     locations: {
         // In console
