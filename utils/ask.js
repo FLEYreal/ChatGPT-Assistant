@@ -61,7 +61,7 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
             error: {
                 code: 500,
                 display: config_lang[lang].errors.unexpected_error,
-                data: e,
+                data: err,
             }
         }
     }
@@ -155,7 +155,7 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
             error: {
                 code: 500,
                 display: config_lang[lang].errors.unexpected_error,
-                data: e,
+                data: err,
             }
         }
     }

@@ -266,7 +266,7 @@ router.get("/interface", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs) logging.info('Route "/chat/interface" worked',);
+        if (config.display_info_logs) logging.info('Route "/chat/interface" worked');
 
         // Get ID from request body
         let { id } = req.body;
@@ -278,7 +278,8 @@ router.get("/interface", check_lang, async (req, res) => {
         if (!id && !req.cookies["CUC-ID"]) {
             const result = await axios
                 .get(`${process.env.API_IP}:${process.env.API_PORT}/chat/create`)
-                .catch(error => logging.error(error));
+                    .then(res => res.data)
+                    .catch(error => logging.error(error));
 
             // If chat couldn't be created or different error
             if (result.error) {
@@ -292,7 +293,7 @@ router.get("/interface", check_lang, async (req, res) => {
             }
 
             // Save ID
-            id = result.data.id;
+            id = result.id;
             res.cookie("CUC-ID", id);
         }
 
@@ -302,7 +303,7 @@ router.get("/interface", check_lang, async (req, res) => {
                 `${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`,
                 { id: id },
             )
-            .then((res) => res.data.history)
+            .then((res) => res.data)
             .catch(error => logging.error(error));
 
         // If couldn't get history or different error caught
@@ -350,7 +351,7 @@ router.get("/interface", check_lang, async (req, res) => {
             path.resolve(__dirname, "..", "..", "interfaces", "chat_interface"),
             {
                 // History of the conversation with GPT
-                conversation_history: history,
+                conversation_history: history.history,
 
                 // Styles configurable in "config.styles.js"
                 config_style: config_style,

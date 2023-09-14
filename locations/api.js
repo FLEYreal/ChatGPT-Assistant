@@ -102,6 +102,7 @@ function apiApplication(config) {
 
                     // If language wasn't found
                     if (!lang) lang = "en";
+
                     // If selected language doesn't exist in config.language.js
                     else if (!config_lang[lang]) lang = "en";
 
@@ -115,7 +116,6 @@ function apiApplication(config) {
                     socket.controller = controller;
 
                     // Get all variables
-                    let gpt_response = "";
                     let { value, id } = data;
 
                     // If id is undefined
@@ -123,8 +123,7 @@ function apiApplication(config) {
                         logging.error("No ID / CUC-ID found")
                         socket.emit("err", {
                             code: 404,
-                            display: locale.errors.id_not_found,
-                            data: error,
+                            display: locale.errors.id_not_found
                         });
                     }
 
@@ -134,17 +133,26 @@ function apiApplication(config) {
                             `${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`,
                             { id: id },
                         )
-                        .then((res) => res.data.history)
-                        .catch((err) => {
+                        .then(res => res.data)
+                        .catch(error => {
+                            logging.error(error)
                             socket.emit("err", {
                                 code: 500,
                                 display: locale.errors.failed_to_get_history,
-                                data: err,
+                                message: error,
                             });
                         });
 
+                    if (history.error) {
+                        socket.emit('err', {
+                            code: history.error.code,
+                            display: history.error.display,
+                            message: history.error.message
+                        })
+                    }
+
                     // Get newHistory, parse past one
-                    let parsedHistory = JSON.parse(history);
+                    let parsedHistory = JSON.parse(history.history);
                     let newHistory = [
                         ...transformPrompts("system", config.instructions),
                         ...parsedHistory,
@@ -169,32 +177,38 @@ function apiApplication(config) {
 
                         // 4TH param is callback function that works as chunk is received
                         async (chunk, response, isDone) => {
-                            if (!isDone) {
-                                socket.emit("chunk", { content: chunk });
-                            } else if (isDone) {
-                                gpt_response = response;
+                            if (!isDone) socket.emit("chunk", { content: chunk });
+                            else if (isDone) {
 
                                 // Notify frontend when message is completed
                                 socket.emit("fully_received");
 
                                 // Save a prompt and response to history
-                                await axios
+                                const isSaved = await axios
                                     .put(
                                         `${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`,
                                         {
                                             id: id,
                                             prompt: value,
-                                            gpt_response: gpt_response,
+                                            gpt_response: response,
                                         },
                                     )
-                                    .catch((err) => {
-                                        socket.emit("err", {
-                                            code: 500,
-                                            display:
-                                                locale.errors.failed_to_save,
-                                            data: err,
+                                        .then(res => res.data)
+                                        .catch(error => {
+                                            logging.error(error)
+                                            socket.emit("err", {
+                                                code: 500,
+                                                display: locale.errors.failed_to_save,
+                                                message: err,
+                                            });
                                         });
-                                    });
+
+                                if (isSaved.error) socket.emit("err", {
+                                    code: isSaved.error.code,
+                                    display: isSaved.error.display,
+                                    message: isSaved.error.message
+                                })
+
                             }
                         },
                     );
@@ -224,22 +238,30 @@ function apiApplication(config) {
 
                 // Delete conversation from DB
                 if (config.delete_restarted_conversations) {
-                    await axios
+                    const isDeleted = await axios
                         .post(
                             `${process.env.API_IP}:${process.env.API_PORT}/chat/delete`,
                             {
                                 id: data.id,
                             },
                         )
-                        .then((res) => res.data.gpt_response)
-                        .catch((error) => {
-                            socket.emit("err", {
-                                code: 500,
-                                display: locale.errors.unexpected_error,
-                                data: error,
+                            .then(res => res.data)
+                            .catch(error => {
+                                logging.error(error);
+                                socket.emit("err", {
+                                    code: 500,
+                                    display: locale.errors.unexpected_error,
+                                    message: error,
+                                });
                             });
-                            logging.error(error);
-                        });
+                    
+                    if(isDeleted.error) {
+                        socket.emit("err", {
+                            code: isDeleted.error.code,
+                            display: isDeleted.error.display,
+                            message: isDeleted.error.message,
+                        })
+                    }
                 }
             });
 
@@ -263,17 +285,16 @@ function apiApplication(config) {
                     } else {
                         socket.emit("err", {
                             code: 400,
-                            display: locale.errors.cant_stop,
-                            data: {},
+                            display: locale.errors.cant_stop
                         });
                     }
-                } catch (e) {
+                } catch (err) {
                     socket.emit("err", {
                         code: 500,
                         display: locale.errors.unexpected_error,
-                        data: error,
+                        message: err,
                     });
-                    logging.error(error);
+                    logging.error(err);
                 }
             });
         });
