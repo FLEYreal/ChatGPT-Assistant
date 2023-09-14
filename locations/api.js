@@ -16,6 +16,12 @@ import { transformPrompts } from "../utils/transform_prompts.js";
 
 import chatRoute from "./routes/chat.js";
 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 // Configs
 dotenv.config();
 
@@ -27,6 +33,7 @@ const io = new Server(server);
 sqlite3.verbose();
 
 function apiApplication(config) {
+
     // Checks if it's off in config
     if (!config.locations.api) {
         return;

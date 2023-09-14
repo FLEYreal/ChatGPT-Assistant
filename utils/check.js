@@ -1,8 +1,7 @@
 import { logging } from "./logging.js";
+
 // Basics
 import fs from "fs";
-
-fs.promises;
 
 // Function to check file existence
 async function check_file(
@@ -10,7 +9,7 @@ async function check_file(
     message = "This file is important for the script!",
 ) {
     try {
-        await fs.access(source, fs.constants.F_OK);
+        await fs.promises.access(source, fs.constants.F_OK);
     } catch (error) {
         // Log that the file doesn't exist
         logging.exitWithError(
@@ -26,7 +25,7 @@ async function check_api_file(
     message = "This file is important for the script!",
 ) {
     try {
-        await fs.access(source, fs.constants.F_OK);
+        await fs.promises.access(source, fs.constants.F_OK);
     } catch (error) {
         // This error parameter is only important if the user will be using the interface
         if (config.locations.api) {
@@ -63,7 +62,7 @@ async function check() {
     );
 
     // Config
-    const config = require("../config");
+    const config = (await import("../config.js")).default;
 
     // Check files important to api
     await check_api_file(

@@ -1,7 +1,7 @@
-import { logging } from "./logging";
+import { logging } from "./logging.js";
 import dotenv from "dotenv";
 
-import config from "../config";
+import config from "../config.js";
 
 // Configs
 dotenv.config();

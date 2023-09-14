@@ -19,7 +19,7 @@ async function main() {
     // Config
 
     // Display logs to console
-    require("./utils/display_logs");
+    await import ("./utils/display_logs.js");
 
     // API routes
     apiApplication(config);
@@ -28,7 +28,7 @@ async function main() {
     discordBot(config);
 
     // Telegram bot
-    require("./locations/telegram");
+    await import ("./locations/telegram.js");
 
     // Console application
     consoleApplication(config);
