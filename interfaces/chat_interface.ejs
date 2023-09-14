@@ -119,7 +119,12 @@
             </section>
 
             <!-- Form to send message to chatGPT -->
-            <form class="send-message-form">
+            <form class="send-message-form" 
+                style="
+                    background-color: <%= config_style.input.color.background %>;
+                    box-shadow: <%= config_style.input.shadow %>;
+                    border-radius: <%= config_style.input.rounding %>;
+            ">
 
                 <!-- Text area to make a request to GPT -->
                 <textarea 
@@ -128,7 +133,9 @@
                     required 
                     autofocus
                     class="send-message-input" 
-                    placeholder="<%= locale.interface.send_message %>"></textarea>
+                    placeholder="<%= locale.interface.send_message %>"
+                    style="color: <%= config_style.input.color.font %>;"
+                ></textarea>
 
                 <!-- Button to send message -->
                 <button class="send-message-button"><img src="/icons/send_icon.svg" alt="send-icon"/></button>

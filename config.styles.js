@@ -58,17 +58,17 @@ export default {
         // Settings for the color
         color: {
             // Settings for color of the backround of the input
-            background: "",
+            background: "#3F414E",
 
             // Settings for color of the font of the input
-            font: "",
+            font: "#999999",
         },
 
         // Shadow settings, if you don't know CSS, use box-shadow CSS generators
-        shadow: "",
+        shadow: "0px 0px 24px 3px rgba(0, 0, 0, 0.15)",
 
         // Rounding in pixels (px)
-        rounding: "",
+        rounding: ".75rem",
     },
 
     // Settings of the buttons in action bar (buttons above input)
