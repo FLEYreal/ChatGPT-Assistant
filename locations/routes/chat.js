@@ -302,7 +302,7 @@ router.post("/get-history", check_lang, async (req, res) => {
                 },
             });
         }
-
+      
         const history = JSON.parse(row[0].history);
 
         // Return result

@@ -1,9 +1,11 @@
 // Configs
 import dotenv from "dotenv";
+
 // Basics
 import readline from "readline";
 
 import { getGPTResponse } from "../utils/ask.js";
+
 // Utils
 import { transformPrompts } from "../utils/transform_prompts.js";
 
