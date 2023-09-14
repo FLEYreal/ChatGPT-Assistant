@@ -107,7 +107,14 @@ function streamingMessage(chunk) {
 
 // Function to copy code
 function handleCopy(e) {
-    console.log('clicked!', e.target.textContent)
+    navigator.clipboard.writeText(e.currentTarget.textContent)
+    .catch(function (err) {
+        socket.emit('err', lang === 'ru' ? 'Не удалось скопировать содержимое!' : {
+            code: null,
+            display: 'Failed to copy content',
+            data: err
+        });
+    });
 }
 
 // Works when message to GPT submitted
@@ -194,7 +201,7 @@ function handleRestart(e) {
 function displayError(error) {
 
     // Display error in console
-    console.error('Additional Error data: ', error)
+    console.error('Additional Error data: ', error.data)
 
     // Display error
     error_box.textContent = error.display
