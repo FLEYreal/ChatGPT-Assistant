@@ -1,6 +1,4 @@
-"use strict";
-
-const chalk = require("chalk");
+import chalk from "chalk";
 
 class Logging {
     static on(message = "", ...args) {
@@ -35,6 +33,4 @@ class Logging {
     }
 }
 
-module.exports = {
-    logging: Logging,
-};
+export { Logging as logging };

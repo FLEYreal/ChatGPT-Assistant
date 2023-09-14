@@ -1,9 +1,8 @@
-"use strict";
-
-const { logging } = require("./logging");
-
+import { logging } from "./logging.js";
 // Basics
-const fs = require("fs").promises;
+import fs from "fs";
+
+fs.promises;
 
 // Function to check file existence
 async function check_file(
@@ -156,8 +155,4 @@ async function check() {
 }
 
 // Export everything needed
-module.exports = {
-    check: check,
-    check_file: check_file,
-    check_api_file: check_api_file,
-};
+export { check, check_file, check_api_file };

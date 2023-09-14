@@ -1,5 +1,5 @@
 // Configs
-const config_lang = require("./config.language");
+import config_lang from "./config.language.js";
 
 // Function to check lang query for endpoints [MIDDLEWARE]
 function check_lang(req, res, next) {
@@ -22,7 +22,4 @@ function check_lang(req, res, next) {
 function check_id(req, res, next) {}
 
 // Export middlewares
-module.exports = {
-    check_lang,
-    check_id,
-};
+export { check_lang, check_id };

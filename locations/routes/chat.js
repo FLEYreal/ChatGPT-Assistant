@@ -1,22 +1,29 @@
-// Configs
-require("dotenv").config();
-const config = require("../../config");
-const config_style = require("../../config.styles");
-const config_lang = require("../../config.language");
+// Utils
+import axios from "axios";
+// Libraries
+import crypto from "crypto";
+import dotenv from "dotenv";
+import express from "express";
+import path from "path";
+// Database SQLite
+import sqlite3 from "sqlite3";
 
-// Basics
-const path = require("path");
-const express = require("express");
-const router = express.Router();
+import config from "../../config.js";
+import config_style from "../../config.styles.js";
 
 // Utils
-const createUUID = require("../../utils/uuid");
+import createUUID from "../../utils/uuid.js";
 
-// Libraries
-const crypto = require("crypto");
+// Middlewares
+import { check_lang, check_id } from "../../middlewares.js";
 
-// Database SQLite
-const sqlite3 = require("sqlite3").verbose();
+// Configs
+dotenv.config();
+
+// Basics
+const router = express.Router();
+
+sqlite3.verbose();
 
 // Connect to SQLite
 const db = new sqlite3.Database(
@@ -27,12 +34,6 @@ const db = new sqlite3.Database(
             console.error("[\u001b[1;31mERROR\u001b[0m] :", error.message);
     },
 );
-
-// Utils
-const axios = require("axios");
-
-// Middlewares
-const { check_lang, check_id } = require("../../middlewares");
 
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get("/create", check_lang, async (req, res) => {
@@ -301,14 +302,8 @@ router.post("/get-history", check_lang, async (req, res) => {
                 },
             });
         }
-
-        const history = JSON.parse(row[0].history).map((i) => ({
-            role: i.role,
-            content:
-                i.role === "assistant"
-                    ? i.content.split(/\[BACK-SLASH-N\]/)
-                    : i.content,
-        }));
+      
+        const history = JSON.parse(row[0].history);
 
         // Return result
         return res.status(200).json({ history: JSON.stringify(history) });
@@ -627,4 +622,4 @@ router.get("/interface", check_lang, async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

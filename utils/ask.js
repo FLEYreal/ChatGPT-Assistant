@@ -1,13 +1,19 @@
 // Configs
-require("dotenv").config();
-const config = require("../config");
-const config_lang = require("../config.language");
+import dotenv from "dotenv";
+
+import config from "../config.js";
+import config_lang from "../config.language.js";
+
+dotenv.config();
 
 // Utils
 const decoder = new TextDecoder();
 
 // Function to get full GPT response instantly
-async function getGPTResponse(history, controller, lang = "en") {
+async function getGPTResponse(history, controller = null, lang = "en") {
+    // If controller isn't defined
+    if (controller === null) controller = new AbortController();
+
     // Make a POST request to the OpenAI API to get chat completions
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -49,10 +55,13 @@ async function getGPTResponse(history, controller, lang = "en") {
 // Function to get GPT response bit by bit in real time
 async function getStreamingGPTResponse(
     history,
-    controller,
+    controller = null,
     lang = "en",
     onChunk,
 ) {
+    // If controller isn't defined
+    if (controller === null) controller = new AbortController();
+
     // Entire gpt response
     let gpt_response = "";
 
@@ -130,7 +139,4 @@ async function getStreamingGPTResponse(
     };
 }
 
-module.exports = {
-    getGPTResponse,
-    getStreamingGPTResponse,
-};
+export { getGPTResponse, getStreamingGPTResponse };
