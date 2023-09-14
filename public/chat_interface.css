@@ -193,14 +193,6 @@ body {
 }
 
 .chat-button {
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    -ms-border-radius: 5px;
-    -o-border-radius: 5px;
-    border: 1px solid rgba(86, 88, 105);
-    background-color: rgba(53, 53, 65, 1);
-    color: #d9d9e3;
     font-size: 15px;
     font-style: normal;
     font-weight: 400;
@@ -239,7 +231,7 @@ body {
 }
 
 .chat-button:hover {
-    background-color: #40414f;
+    background-color: #40414f !important;
 }
 
 .chunk-appearance {
