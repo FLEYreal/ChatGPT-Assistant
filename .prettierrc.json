@@ -3,11 +3,12 @@
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
     "interface",
-    "(?=content|api)",
     "context/",
     "mock/",
     "config",
     "utils/",
+    "routes/",
+    "locations/",
     "hooks/",
     "(components/|./index)",
     ".svg",
