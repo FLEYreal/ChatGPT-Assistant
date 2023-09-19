@@ -1,34 +1,39 @@
-const fs = require("fs");
+import axios from "axios";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import { createServer } from "http";
+import path from "path";
+import { Server } from "socket.io";
+import sqlite3 from "sqlite3";
+
+import config_lang from "../config.language.js";
+import configRoute from "./routes/config.js";
+
+import { getStreamingGPTResponse } from "../utils/ask.js";
+import { transformPrompts } from "../utils/transform_prompts.js";
+
+import chatRoute from "./routes/chat.js";
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Configs
-require("dotenv").config();
-const config_lang = require("../config.language");
+dotenv.config();
 
-// Basics
-const path = require("path");
-const express = require("express");
 const app = express();
-
-// Libraries
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-
-const server = require("http").createServer(app);
-const io = require("socket.io")(server);
-
-// Routes
-const chatRoute = require("./routes/chat");
-const configRoute = require("./routes/config");
+const server = createServer(app);
+const io = new Server(server);
 
 // Database SQLite
-const sqlite3 = require("sqlite3").verbose();
-
-// Utils
-const axios = require("axios");
-const { transformPrompts } = require("../utils/transform_prompts");
-const { getStreamingGPTResponse } = require("../utils/ask");
+sqlite3.verbose();
 
 function apiApplication(config) {
+
     // Checks if it's off in config
     if (!config.locations.api) {
         return;
@@ -290,6 +295,4 @@ function apiApplication(config) {
     }
 }
 
-module.exports = {
-    apiApplication,
-};
+export { apiApplication };

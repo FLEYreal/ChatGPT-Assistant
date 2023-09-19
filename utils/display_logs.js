@@ -1,9 +1,10 @@
-"use strict";
+import { logging } from "./logging.js";
+import dotenv from "dotenv";
+
+import config from "../config.js";
 
 // Configs
-require("dotenv").config();
-const config = require("../config");
-const { logging } = require("./logging");
+dotenv.config();
 
 if (config.display_startup_logs) {
     // Display console logs

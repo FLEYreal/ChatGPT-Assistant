@@ -24,7 +24,4 @@ function transformHistory(history) {
     return history;
 }
 
-module.exports = {
-    transformPrompts,
-    transformHistory,
-};
+export { transformPrompts };

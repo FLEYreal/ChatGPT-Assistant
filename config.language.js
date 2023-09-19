@@ -1,7 +1,7 @@
-const config = require("./config");
+import config from "./config.js";
 
 // You can easily add your own languages with own signs!
-module.exports = {
+export default {
     // English language / Английский язык
     en: {
         // All interface's translations

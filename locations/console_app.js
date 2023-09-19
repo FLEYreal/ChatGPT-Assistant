@@ -1,19 +1,15 @@
 // Configs
-require("dotenv").config();
-
-// OpenAI
-const OpenAIApi = require("openai");
-
-// Utils
-const { transformPrompts } = require("../utils/transform_prompts");
+import dotenv from "dotenv";
 
 // Basics
-const readline = require("readline");
+import readline from "readline";
 
-// Initializing openai class
-const openAi = new OpenAIApi({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+import { getGPTResponse } from "../utils/ask.js";
+
+// Utils
+import { transformPrompts } from "../utils/transform_prompts.js";
+
+dotenv.config();
 
 function consoleApplication(config) {
     // Checks if it's off in config
@@ -42,11 +38,7 @@ function consoleApplication(config) {
             history.push({ role: "user", content: line });
 
             // Get a response from ChatGPT
-            const response = await openAi.chat.completions.create({
-                model: config.gpt_version,
-                messages: history,
-                max_tokens: config.max_tokens,
-            });
+            const response = await getGPTResponse(history);
 
             // Send response in console
             console.log(
@@ -61,6 +53,4 @@ function consoleApplication(config) {
     }
 }
 
-module.exports = {
-    consoleApplication: consoleApplication,
-};
+export { consoleApplication };

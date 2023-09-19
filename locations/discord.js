@@ -1,11 +1,11 @@
-"use strict";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
+import dotenv from "dotenv";
 
-require("dotenv").config();
-const { transformPrompt } = require("../utils/transform_prompts");
-const { Client, GatewayIntentBits, Partials } = require("discord.js");
-const { logging } = require("../utils/logging");
-const { getGPTResponse } = require("../utils/ask");
-const config = require("../config");
+import config from "../config.js";
+
+import { logging } from "../utils/logging.js";
+
+dotenv.config();
 
 const commandMap = [
     {
@@ -155,6 +155,4 @@ async function chatWithGPT(prompt) {
     return data.choices[0].message.content;
 }
 
-module.exports = {
-    discordBot,
-};
+export { discordBot };

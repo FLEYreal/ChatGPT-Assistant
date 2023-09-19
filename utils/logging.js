@@ -1,6 +1,4 @@
-"use strict";
-
-const chalk = require("chalk");
+import chalk from "chalk";
 
 const transformMessage = (message) =>
     typeof message === "object" && message !== null
@@ -56,6 +54,4 @@ class Logging {
     }
 }
 
-module.exports = {
-    logging: Logging,
-};
+export { Logging as logging };

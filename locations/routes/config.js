@@ -1,11 +1,14 @@
+import dotenv from "dotenv";
+import express from "express";
+
+import config from "../../config.js";
+import config_lang from "../../config.language.js";
+import config_style from "../../config.styles.js";
+
 // Configs
-require("dotenv").config();
-const config_style = require("../../config.styles");
-const config_lang = require("../../config.language");
-const config = require("../../config");
+dotenv.config();
 
 // Basics
-const express = require("express");
 const router = express.Router();
 
 router.get("/language", async (req, res) => {
@@ -66,4 +69,4 @@ router.get("/styles", async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
