@@ -1,7 +1,6 @@
-"use strict";
+import { logging } from "./logging.js";
 
-const { logging } = require("./logging");
-const config = require("../config");
+import config from "../config.js";
 
 function transformPrompts(role, prompts) {
     const filteredPrompts = prompts.filter((prompt) => prompt.length > 0);
