@@ -1,6 +1,6 @@
 // Function to create UUID
 
-module.exports = function createUUID() {
+export default function createUUID() {
     const table = "0123456789abcdef".split();
 
     let uuid = "";
@@ -47,4 +47,4 @@ module.exports = function createUUID() {
     localStorage.setItem("uuid", uuid);
 
     return uuid;
-};
+}
