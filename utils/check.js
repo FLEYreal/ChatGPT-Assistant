@@ -1,5 +1,4 @@
 import { logging } from "./logging.js";
-
 // Basics
 import fs from "fs";
 
