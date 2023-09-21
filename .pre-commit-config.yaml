@@ -10,3 +10,6 @@ repos:
     rev: "" # Use the sha or tag you want to point at
     hooks:
       - id: prettier
+        additional_dependencies:
+          - "prettier@3.0.3"
+          - "@trivago/prettier-plugin-sort-imports@4.2.0"
