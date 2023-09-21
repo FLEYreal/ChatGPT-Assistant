@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 import config from "../config.js";
 import config_lang from "../config.language.js";
+import { logging } from "./logging.js";
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
         })
             .then((res) => res.json())
             .catch((err) => {
-                console.error("[\u001b[1;31mERROR\u001b[0m] :", err);
+                logging.error(err);
                 return {
                     error: err,
                 };
@@ -52,7 +53,7 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
                 },
             };
 
-        return response;
+        return response.choices[0].message.content;
 
     } catch (e) {
         console.error("[\u001b[1;31mERROR\u001b[0m] :", e);
