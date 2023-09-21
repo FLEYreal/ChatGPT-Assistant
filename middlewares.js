@@ -1,6 +1,9 @@
 // Configs
 import config_lang from "./config.language.js";
 
+// List of Endpoints
+import endpoints from './endpoints.json' assert { type: 'json' }
+
 // Database SQLite
 import sqlite3 from "sqlite3";
 
@@ -119,5 +122,23 @@ async function check_id(req, res, next) {
 
 }
 
+async function check_endpoint(req, res, next) {
+    const params = {
+        method: req.method,
+        url: req.url
+    }
+
+    const result = endpoints.filter(i => i.method === params.method && i.url === params.url)
+
+    result.length >= 1 ? next() : res.json({
+        code: 404,
+        display: 'Failed to find such endpoint!'
+    })
+
+    return;
+}
+
+// URL exists
+
 // Export middlewares
-export { check_lang, check_id };
+export { check_lang, check_id, check_endpoint };

@@ -22,6 +22,7 @@ import sqlite3 from "sqlite3";
 import { getStreamingGPTResponse } from "../utils/ask.js";
 import { transformPrompts } from "../utils/transform_prompts.js";
 import { logging } from "../utils/logging.js";
+import { check_endpoint } from '../middlewares.js'
 
 // File system
 import { fileURLToPath } from 'url';
@@ -69,6 +70,7 @@ function apiApplication(config) {
         app.use(cookieParser());
         app.use(cors());
         app.use(express.static("public"));
+        app.use(check_endpoint)
 
         // Setup routes
         app.use("/chat", chatRoute);
