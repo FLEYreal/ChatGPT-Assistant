@@ -5,6 +5,8 @@ import config from "../config.js";
 
 import { logging } from "../utils/logging.js";
 
+import { getGPTResponse } from "../utils/ask.js";
+
 dotenv.config();
 
 const commandMap = [
@@ -85,8 +87,7 @@ function discordBot(config) {
 
         if (commandName === "chat") {
             const prompt = options.getString("prompt");
-            update_history(prompt);
-            const res = await getGPTResponse(history);
+            const res = await getGPTResponse([{role: "user", content: prompt}]);
             interaction.reply(res);
         }
     });
@@ -123,6 +124,7 @@ function discordBot(config) {
     client.login(process.env.DISCORD_TOKEN);
 }
 
+// for depracation
 async function chatWithGPT(prompt) {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",

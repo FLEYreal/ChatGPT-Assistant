@@ -1,3 +1,3 @@
 # ChatGPT-Assistant
 
-This Repository is currently in Development and not recommended to use in any case!
+This repository lets you to use ChatGPT on web-interface or in discord. Script contains config to easily setup the bot.
