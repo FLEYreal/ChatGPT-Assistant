@@ -1,9 +1,10 @@
 // Configs
+import { logging } from "./logging.js";
+import { updateHistory } from "./transform_prompts.js";
 import dotenv from "dotenv";
 
 import config from "../config.js";
 import config_lang from "../config.language.js";
-import { logging } from "./logging.js";
 
 dotenv.config();
 
@@ -11,10 +12,17 @@ dotenv.config();
 const decoder = new TextDecoder();
 
 // Function to get full GPT response instantly
-async function getGPTResponse(history, controller = null, lang = "en") {
+async function getGPTResponse(
+    _history,
+    prompt,
+    controller = null,
+    lang = "en",
+) {
     try {
         // If controller isn't defined
         if (controller === null) controller = new AbortController();
+
+        const history = updateHistory(_history, prompt);
 
         // Make a POST request to the OpenAI API to get chat completions
         const response = await fetch(

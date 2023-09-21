@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 
 import config from "../config.js";
 
-import { logging } from "../utils/logging.js";
-
 import { getGPTResponse } from "../utils/ask.js";
+import { logging } from "../utils/logging.js";
+import { updateHistory } from "../utils/transform_prompts.js";
 
 dotenv.config();
 
@@ -24,20 +24,7 @@ const commandMap = [
     },
 ];
 
-const summarizePrompt = {
-    role: "user",
-    content: "Summarize in one sentence with a max of 50 characters.",
-};
-
 let history = [];
-
-function update_history(prompt) {
-    const _i = history.indexOf(summarizePrompt);
-    const message = { role: "user", content: prompt };
-
-    if (_i === -1) history.push(summarizePrompt, message);
-    else history.push(message);
-}
 
 function discordBot(config) {
     if (!config.locations.discord) return;
@@ -87,7 +74,7 @@ function discordBot(config) {
 
         if (commandName === "chat") {
             const prompt = options.getString("prompt");
-            const res = await getGPTResponse([{role: "user", content: prompt}]);
+            const res = await getGPTResponse(history, prompt);
             interaction.reply(res);
         }
     });
