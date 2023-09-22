@@ -1,9 +1,10 @@
 // Configs
 import dotenv from "dotenv";
+import { logging } from "./logging.js";
+import { transformHistory } from "./transform_prompts.js";
 
 import config from "../config.js";
 import config_lang from "../config.language.js";
-import { logging } from "./logging.js";
 
 dotenv.config();
 
@@ -11,31 +12,34 @@ dotenv.config();
 const decoder = new TextDecoder();
 
 // Function to get full GPT response instantly
-async function getGPTResponse(history, controller = null, lang = 'en') {
-
+async function getGPTResponse(prompt, controller = null, lang = "en") {
     try {
-
         // If controller isn't defined
-        if (controller === null) controller = new AbortController()
+        if (controller === null) controller = new AbortController();
+
+        const history = transformHistory(prompt);
 
         // Make a POST request to the OpenAI API to get chat completions
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                messages: history,
-                temperature: 0.1,
-                model: config.gpt_version,
-                max_tokens: config.max_tokens,
-                stream: false,
-            }),
+        const response = await fetch(
+            "https://api.openai.com/v1/chat/completions",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                },
+                body: JSON.stringify({
+                    messages: history,
+                    temperature: 0.1,
+                    model: config.gpt_version,
+                    max_tokens: config.max_tokens,
+                    stream: false,
+                }),
 
-            // Use the AbortController's signal to allow aborting the request
-            signal: controller.signal,
-        })
+                // Use the AbortController's signal to allow aborting the request
+                signal: controller.signal,
+            },
+        )
             .then((res) => res.json())
             .catch((err) => {
                 logging.error(err);
@@ -54,7 +58,6 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
             };
 
         return response.choices[0].message.content;
-
     } catch (e) {
         console.error("[\u001b[1;31mERROR\u001b[0m] :", e);
         return {
@@ -62,39 +65,46 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
                 code: 500,
                 display: config_lang[lang].errors.unexpected_error,
                 data: e,
-            }
-        }
+            },
+        };
     }
 }
 
 // Function to get GPT response bit by bit in real time
-async function getStreamingGPTResponse(history, controller = null, lang = 'en', onChunk) {
-
+async function getStreamingGPTResponse(
+    history,
+    controller = null,
+    lang = "en",
+    onChunk,
+) {
     try {
         // If controller isn't defined
-        if (controller === null) controller = new AbortController()
+        if (controller === null) controller = new AbortController();
 
         // Entire gpt response
         let gpt_response = "";
 
         // Make a POST request to the OpenAI API to get chat completions
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                messages: history,
-                temperature: 0.1,
-                model: config.gpt_version,
-                max_tokens: config.max_tokens,
-                stream: true,
-            }),
+        const response = await fetch(
+            "https://api.openai.com/v1/chat/completions",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                },
+                body: JSON.stringify({
+                    messages: history,
+                    temperature: 0.1,
+                    model: config.gpt_version,
+                    max_tokens: config.max_tokens,
+                    stream: true,
+                }),
 
-            // Use the AbortController's signal to allow aborting the request
-            signal: controller.signal,
-        }).catch((err) => {
+                // Use the AbortController's signal to allow aborting the request
+                signal: controller.signal,
+            },
+        ).catch((err) => {
             console.error("[\u001b[1;31mERROR\u001b[0m] :", err);
             return {
                 error: err,
@@ -156,8 +166,8 @@ async function getStreamingGPTResponse(history, controller = null, lang = 'en', 
                 code: 500,
                 display: config_lang[lang].errors.unexpected_error,
                 data: e,
-            }
-        }
+            },
+        };
     }
 }
 

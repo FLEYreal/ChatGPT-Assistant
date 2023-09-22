@@ -1,16 +1,19 @@
+import config from "../config.js";
+
 function transformPrompts(role, prompts) {
-    const filteredPrompts = prompts.filter((i) => i.length > 0);
+    const filteredPrompts = prompts.filter((prompt) => prompt.length > 0);
 
     // Transformation
-    const result = filteredPrompts.map((i) => {
-        return {
-            role: role,
-            content: i,
-        };
+    return filteredPrompts.map((prompt) => {
+        return { role: role, content: prompt };
     });
-
-    // Return result
-    return result;
 }
 
-export { transformPrompts };
+const systemPrompt = [...transformPrompts("system", config.instructions)];
+
+function transformHistory(prompt = "") {
+    const userPrompt = { role: "user", content: prompt };
+    return [...systemPrompt, userPrompt];
+}
+
+export { transformHistory, transformPrompts };

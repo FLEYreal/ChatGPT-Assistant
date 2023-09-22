@@ -25,9 +25,9 @@
     <span id="lang" style="display: none;">
         <%= JSON.stringify(lang) %>
     </span>
-    <section class="component" 
+    <section class="component"
         style="
-            width: <%= config_style.width %>; 
+            width: <%= config_style.width %>;
             height: <%= config_style.height %>;
             background-color: <%= config_style.background_color %>;
             font-family: <%= config_style.font_family %>;
@@ -35,11 +35,11 @@
 
         <!-- Container to display errors -->
         <section class="error_box none">
-            
+
         </section>
 
         <!-- Header of the page -->
-        <header class="header" 
+        <header class="header"
         style="
             color: <%= config_style.header.color.font %>;
             background-color: <%= config_style.header.color.background %>;
@@ -55,7 +55,7 @@
         </header>
 
         <!-- Section with a chat -->
-        <section class="chat" 
+        <section class="chat"
         style="
             height: calc(<%= config_style.height %> - (<%= config_style.header.hide === true ? '0px' : '75px' %> + 110px));
             margin-top: <%= config_style.header.hide === true ? '0px' : '75px' %>;
@@ -87,7 +87,7 @@
         </section>
 
         <!-- Bottom menu of the chat -->
-        <section class="bottom-menu" 
+        <section class="bottom-menu"
         style="
             background-color: <%= config_style.background_color %>;
             box-shadow: 0px 0px 50px 50px <%= config_style.background_color %>;
@@ -122,12 +122,12 @@
             <form class="send-message-form">
 
                 <!-- Text area to make a request to GPT -->
-                <textarea 
+                <textarea
                     autocomplete="off"
-                    autocorrect="on" 
-                    required 
+                    autocorrect="on"
+                    required
                     autofocus
-                    class="send-message-input" 
+                    class="send-message-input"
                     placeholder="<%= locale.interface.send_message %>"></textarea>
 
                 <!-- Button to send message -->

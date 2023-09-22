@@ -1,28 +1,26 @@
 // Utils
-
 import axios from "axios";
-
 // Libraries
 import crypto from "crypto";
 import dotenv from "dotenv";
 import express from "express";
-import path from "path";
-
+import { marked } from "marked";
+import path, { dirname } from "path";
 // Database SQLite
 import sqlite3 from "sqlite3";
-
-// Utils
-import createUUID from "../../utils/uuid.js";
-import { marked } from 'marked';
-
-// Middlewares
-import { check_lang, check_id } from "../../middlewares.js";
-
-// Configs
-dotenv.config();
+import { fileURLToPath } from "url";
 
 import config from "../../config.js";
 import config_style from "../../config.styles.js";
+
+// Utils
+import createUUID from "../../utils/uuid.js";
+
+// Middlewares
+import { check_lang } from "../../middlewares.js";
+
+// Configs
+dotenv.config();
 
 // Basics
 const router = express.Router();
@@ -37,12 +35,8 @@ const db = new sqlite3.Database(
     },
 );
 
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 
 // Create Chat ID and save to db. Database will store all the history of conversation
 router.get("/create", check_lang, async (req, res) => {
@@ -311,7 +305,7 @@ router.post("/get-history", check_lang, async (req, res) => {
                 },
             });
         }
-      
+
         const history = JSON.parse(row[0].history);
 
         // Return result
@@ -624,7 +618,7 @@ router.get("/interface", check_lang, async (req, res) => {
                 lang: req.lang,
 
                 // Function to transform text into markdown
-                marked
+                marked,
             },
         );
     } catch (error) {

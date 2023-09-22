@@ -4,9 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
-import path from "path";
+import path, { dirname } from "path";
 import { Server } from "socket.io";
 import sqlite3 from "sqlite3";
+import { fileURLToPath } from "url";
 
 import config_lang from "../config.language.js";
 import configRoute from "./routes/config.js";
@@ -15,9 +16,6 @@ import { getStreamingGPTResponse } from "../utils/ask.js";
 import { transformPrompts } from "../utils/transform_prompts.js";
 
 import chatRoute from "./routes/chat.js";
-
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,7 +31,6 @@ const io = new Server(server);
 sqlite3.verbose();
 
 function apiApplication(config) {
-
     // Checks if it's off in config
     if (!config.locations.api) {
         return;

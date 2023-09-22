@@ -7,9 +7,9 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "" # Use the sha or tag you want to point at
+    rev: "v3.0.3" # Use the sha or tag you want to point at
     hooks:
       - id: prettier
         additional_dependencies:
           - "prettier@3.0.3"
-          - "@trivago/prettier-plugin-sort-imports@4.2.0"
+          - "prettier-plugin-organize-imports@^3.2.3"

@@ -1,5 +1,5 @@
-import { logging } from "./logging.js";
 import dotenv from "dotenv";
+import { logging } from "./logging.js";
 
 import config from "../config.js";
 
