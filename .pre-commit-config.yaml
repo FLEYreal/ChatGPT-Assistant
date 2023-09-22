@@ -12,4 +12,4 @@ repos:
       - id: prettier
         additional_dependencies:
           - "prettier@3.0.3"
-          - "@trivago/prettier-plugin-sort-imports@4.2.0"
+          - "prettier-plugin-organize-imports@^3.2.3"

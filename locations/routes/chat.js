@@ -5,8 +5,7 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import express from "express";
 import { marked } from "marked";
-import path from "path";
-import { dirname } from "path";
+import path, { dirname } from "path";
 // Database SQLite
 import sqlite3 from "sqlite3";
 import { fileURLToPath } from "url";
@@ -18,7 +17,7 @@ import config_style from "../../config.styles.js";
 import createUUID from "../../utils/uuid.js";
 
 // Middlewares
-import { check_lang, check_id } from "../../middlewares.js";
+import { check_lang } from "../../middlewares.js";
 
 // Configs
 dotenv.config();

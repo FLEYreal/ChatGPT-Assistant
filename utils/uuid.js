@@ -1,5 +1,4 @@
 // Function to create UUID
-
 export default function createUUID() {
     const table = "0123456789abcdef".split();
 

@@ -5,7 +5,6 @@ import config from "../config.js";
 
 import { getGPTResponse } from "../utils/ask.js";
 import { logging } from "../utils/logging.js";
-import { updateHistory } from "../utils/transform_prompts.js";
 
 dotenv.config();
 
@@ -23,8 +22,6 @@ const commandMap = [
         ],
     },
 ];
-
-let history = [];
 
 function discordBot(config) {
     if (!config.locations.discord) return;
@@ -74,7 +71,7 @@ function discordBot(config) {
 
         if (commandName === "chat") {
             const prompt = options.getString("prompt");
-            const res = await getGPTResponse(history, prompt);
+            const res = await getGPTResponse(prompt);
             interaction.reply(res);
         }
     });

@@ -153,4 +153,4 @@ async function check() {
 }
 
 // Export everything needed
-export { check, check_file, check_api_file };
+export { check, check_api_file, check_file };

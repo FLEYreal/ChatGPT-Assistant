@@ -1,10 +1,7 @@
-// Configs
 import dotenv from "dotenv";
-// Basics
 import readline from "readline";
 
 import { getGPTResponse } from "../utils/ask.js";
-// Utils
 import { transformPrompts } from "../utils/transform_prompts.js";
 
 dotenv.config();
@@ -15,7 +12,7 @@ function consoleApplication(config) {
         return;
     } else {
         // A Conversation History
-        const history = [];
+        let history = [];
 
         // Messages from system so GPT understood the context and what it needs to do
         history.push(...transformPrompts("system", config.instructions));
@@ -41,7 +38,7 @@ function consoleApplication(config) {
             // Send response in console
             console.log(
                 `\n\u001b[1;32m${config.gpt_name || "ChatGPT"} >`,
-                response.choices[0].message.content,
+                response,
                 "\u001b[0m",
             );
 

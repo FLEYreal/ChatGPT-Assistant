@@ -22,4 +22,4 @@ function check_lang(req, res, next) {
 function check_id(req, res, next) {}
 
 // Export middlewares
-export { check_lang, check_id };
+export { check_id, check_lang };
