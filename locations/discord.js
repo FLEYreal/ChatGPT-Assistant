@@ -1,8 +1,6 @@
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import dotenv from "dotenv";
 
-import config from "../config.js";
-
 import { getGPTResponse } from "../utils/ask.js";
 import { logging } from "../utils/logging.js";
 
@@ -89,7 +87,7 @@ function discordBot(config) {
         // Direct message
         if (!message.guild) {
             const prompt = message.content;
-            const res = await chatWithGPT(prompt);
+            const res = await getGPTResponse(prompt);
             message.author.send(res);
         }
 
@@ -100,45 +98,12 @@ function discordBot(config) {
             message.mentions.users.has(botId)
         ) {
             const prompt = message.content.slice(botId.length + 4);
-            const res = await chatWithGPT(prompt);
+            const res = await getGPTResponse(prompt);
             message.reply(res);
         }
     });
 
     client.login(process.env.DISCORD_TOKEN);
-}
-
-// for depracation
-async function chatWithGPT(prompt) {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-            messages: [
-                {
-                    role: "user",
-                    content:
-                        "Summarize in one sentence with a max of 50 characters.",
-                },
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
-            temperature: 0.1,
-            model: config.gpt_version,
-            max_tokens: config.max_tokens,
-        }),
-    }).catch((err) => {
-        logging.error("Error calling ChatGPT API: ", err.message);
-        return "An error occurred while processing your request";
-    });
-
-    const data = await res.json();
-    return data.choices[0].message.content;
 }
 
 export { discordBot };
