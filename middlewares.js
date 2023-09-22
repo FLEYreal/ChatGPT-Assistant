@@ -131,7 +131,7 @@ async function check_endpoint(req, res, next) {
     const result = endpoints.filter(i => i.method === params.method && i.url === params.url)
 
     result.length >= 1 ? next() : res.json({
-        code: 404,
+        code: 405,
         display: 'Failed to find such endpoint!'
     })
 
