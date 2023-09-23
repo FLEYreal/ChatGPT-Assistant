@@ -97,20 +97,36 @@
             <section class="button-bar">
 
                 <!-- Button to stop gpt's answer generation -->
-                <button class="stop-chat-button chat-button none">
+                <button class="stop-chat-button chat-button none" 
+                    style="
+                        background-color: <%= config_style.buttons.color.background %>;
+                        color: <%= config_style.buttons.color.font %>;
+                        border: <%= config_style.buttons.color.border %>;
+                        border-radius: <%= config_style.buttons.rounding %>;
+                    ">
 
                     <!-- Icon for the button -->
-                    <img src="/icons/stop_icon.svg" alt="stop-icon"/>
+                    <% if(config_style.buttons.displayIcons) { %>
+                        <img src="<%= config_style.buttons.stopButtonIconUrl %>" alt="stop-icon"/>
+                    <% } %>
 
                     <%= locale.interface.stop_generating %>
 
                 </button>
 
                 <!-- Button to restart conversation -->
-                <button class="restart-chat-button chat-button">
+                <button class="restart-chat-button chat-button"
+                style="
+                    background-color: <%= config_style.buttons.color.background %> <%= config_style.buttons.color.hoverEffect ? '' : '!important' %>;
+                    color: <%= config_style.buttons.color.font %>;
+                    border: <%= config_style.buttons.color.border %>;
+                    border-radius: <%= config_style.buttons.rounding %>;
+                ">
 
                     <!-- Icon for the button -->
-                    <img src="/icons/restart_icon.svg" alt="restart-icon"/>
+                    <% if(config_style.buttons.displayIcons) { %>
+                        <img src="<%= config_style.buttons.restartButtonIconUrl %>" alt="restart-icon"/>
+                    <% } %>
 
                     <%= locale.interface.restart_conversation %>
 
@@ -119,7 +135,12 @@
             </section>
 
             <!-- Form to send message to chatGPT -->
-            <form class="send-message-form">
+            <form class="send-message-form" 
+                style="
+                    background-color: <%= config_style.input.color.background %>;
+                    box-shadow: <%= config_style.input.shadow %>;
+                    border-radius: <%= config_style.input.rounding %>;
+            ">
 
                 <!-- Text area to make a request to GPT -->
                 <textarea 
@@ -128,7 +149,9 @@
                     required 
                     autofocus
                     class="send-message-input" 
-                    placeholder="<%= locale.interface.send_message %>"></textarea>
+                    placeholder="<%= locale.interface.send_message %>"
+                    style="color: <%= config_style.input.color.font %>;"
+                ></textarea>
 
                 <!-- Button to send message -->
                 <button class="send-message-button"><img src="/icons/send_icon.svg" alt="send-icon"/></button>

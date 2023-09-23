@@ -201,7 +201,7 @@ function handleRestart(e) {
 function displayError(error) {
 
     // Display error in console
-    console.error('Additional Error data: ', error.data)
+    if(error.message) console.error('Additional Error data: ', error.message)
 
     // Display error
     error_box.textContent = error.display
@@ -244,6 +244,8 @@ function handleStop(e) {
 
     // Triggers event on the backend to stop generating
     socket.emit('stop_generating', { sendMessage: sendMessage, lang: lang })
+
+    sendMessage = true;
 }
 
 // Replace html entities with valid keys

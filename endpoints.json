@@ -1,0 +1,30 @@
+[
+    {
+        "method": "GET",
+        "url": "/chat/create"
+    },
+    {
+        "method": "POST",
+        "url": "/chat/delete"
+    },
+    {
+        "method": "POST",
+        "url": "/chat/get-history"
+    },
+    {
+        "method": "PUT",
+        "url": "/chat/save-history"
+    },
+    {
+        "method": "GET",
+        "url": "/chat/interface"
+    },
+    {
+        "method": "GET",
+        "url": "/config/language"
+    },
+    {
+        "method": "GET",
+        "url": "/config/styles"
+    }
+]

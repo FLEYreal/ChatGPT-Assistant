@@ -60,4 +60,7 @@ export default {
 
     // Support email, might be displayed in errors
     contact_email: "borisov.nikita.off@gmail.com",
+
+    // Do delete entire conversation's database after each reload
+    reload_history_cleanup: false
 };

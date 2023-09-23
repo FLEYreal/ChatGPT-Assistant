@@ -62,7 +62,7 @@ function discordBot(config) {
                     options: command.options,
                 });
 
-            if (_command) logging.info(`"/${command.name}" registered!`);
+            if (_command) logging.info(`"/${command.name}" discord application command registered!`);
         }
     });
 

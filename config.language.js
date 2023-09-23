@@ -31,12 +31,17 @@ export default {
             promise_failed_to_find: `Promise didn\'t return row! Contact us if you think this error is important! Email: ${config.contact_email}`,
             row_not_found: "Row not found!",
             cant_stop: `Can't stop generating response!`,
+            no_vars: "No variables to check!",
 
             history_not_defined: `History is not defined! Try later or contact support on ${config.contact_email}`,
             config_style_not_defined: `Style Config is not defined! Try later or contact support on ${config.contact_email}`,
             display_gpt_name_not_defined: `Name of chatGPT is not defined! Try later or contact support on ${config.contact_email}`,
             api_ip_not_defined: `IP of API is not defined! Try later or contact support on ${config.contact_email}`,
             api_port_not_defined: `PORT of API is not defined! Try later or contact support on ${config.contact_email}`,
+
+            prompt_field_not_found: "\'prompt\' field is not defined!",
+            gpt_response_field_not_found: "\'gpt_response\' field is not defined!",
+
         },
 
         messages: {
@@ -80,6 +85,10 @@ export default {
             display_gpt_name_not_defined: `Имя для chatGPT не найдено! Попробуйте позже или свяжитесь с нами: ${config.contact_email}`,
             api_ip_not_defined: `IP для API не найдено! Попробуйте позже или свяжитесь с нами: ${config.contact_email}`,
             api_port_not_defined: `PORT для API не найден! Попробуйте позже или свяжитесь с нами: ${config.contact_email}`,
+
+            prompt_field_not_found: "Поле \'prompt\' не найдено!",
+            gpt_response_field_not_found: "Поле \'gpt_response\' не найдено!",
+
         },
 
         messages: {

@@ -1,21 +1,30 @@
+// Basics
+import { createServer } from "http";
+import path from "path";
+
+// Libraries
+import dotenv from "dotenv";
 import axios from "axios";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-import { createServer } from "http";
-import path from "path";
 import { Server } from "socket.io";
-import sqlite3 from "sqlite3";
 
+// Configs
 import config_lang from "../config.language.js";
+
+// Routes
 import configRoute from "./routes/config.js";
-
-import { getStreamingGPTResponse } from "../utils/ask.js";
-import { transformPrompts } from "../utils/transform_prompts.js";
-
 import chatRoute from "./routes/chat.js";
 
+// Utils
+import sqlite3 from "sqlite3";
+import { getStreamingGPTResponse } from "../utils/ask.js";
+import { transformPrompts } from "../utils/transform_prompts.js";
+import { logging } from "../utils/logging.js";
+import { check_endpoint } from '../middlewares.js'
+
+// File system
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -38,9 +47,7 @@ function apiApplication(config) {
     if (!config.locations.api) {
         return;
     } else if (config.locations.console) {
-        console.log(
-            "[\u001b[1;31mERROR\u001b[0m] : API cannot work when Console Application is on!",
-        );
+        logging.error('API cannot work when Console Application is on!')
         return;
     } else {
         // Connect to SQLite
@@ -49,23 +56,24 @@ function apiApplication(config) {
             sqlite3.OPEN_READWRITE,
             (error) => {
                 if (error)
-                    console.error(
-                        "[\u001b[1;31mERROR\u001b[0m] :",
-                        error.message,
-                    );
+                    logging.error(error.message)
             },
         );
 
-        // Create a table if not exists
-        const create_table =
-            "CREATE TABLE IF NOT EXISTS conversations( id CHAR(36) PRIMARY KEY, history JSON DEFAULT [] )";
+        // SQL commands to run, create table & delete everything if allowed
+        const create_table = "CREATE TABLE IF NOT EXISTS conversations( id CHAR(36) PRIMARY KEY, history JSON DEFAULT [] )";
+        const clean_history = "DELETE FROM conversations"
+
+        // Run sql commands, create table & delete everything if allowed
         db.run(create_table);
+        if(config.reload_history_cleanup) db.run(clean_history)
 
         // Middlewares
         app.use(express.json());
         app.use(cookieParser());
         app.use(cors());
         app.use(express.static("public"));
+        app.use(check_endpoint)
 
         // Setup routes
         app.use("/chat", chatRoute);
@@ -79,8 +87,7 @@ function apiApplication(config) {
         let connections = [];
         io.sockets.on("connection", (socket) => {
             // Display log when user is connected to the interface
-            if (config.display_info_logs)
-                console.log("[\u001b[1;36mINFO\u001b[0m] : User connected");
+            if (config.display_info_logs) logging.info("User connected");
 
             // Add connection to the array
             connections.push(socket);
@@ -89,10 +96,7 @@ function apiApplication(config) {
             socket.on("disconnect", () => {
                 // Delete from the array + log to console
                 connections.splice(connections.indexOf(socket), 1);
-                if (config.display_info_logs)
-                    console.log(
-                        "[\u001b[1;36mINFO\u001b[0m] : Used disconnected",
-                    );
+                if (config.display_info_logs) logging.info("Used disconnected")
             });
 
             // When prompt to chatGPT is sent
@@ -103,6 +107,7 @@ function apiApplication(config) {
 
                     // If language wasn't found
                     if (!lang) lang = "en";
+
                     // If selected language doesn't exist in config.language.js
                     else if (!config_lang[lang]) lang = "en";
 
@@ -116,18 +121,14 @@ function apiApplication(config) {
                     socket.controller = controller;
 
                     // Get all variables
-                    let gpt_response = "";
                     let { value, id } = data;
 
                     // If id is undefined
                     if (!id) {
-                        console.log(
-                            "[\u001b[1;31mERROR\u001b[0m] : No ID / CUC-ID found",
-                        );
+                        logging.error("No ID / CUC-ID found")
                         socket.emit("err", {
                             code: 404,
-                            display: locale.errors.id_not_found,
-                            data: error,
+                            display: locale.errors.id_not_found
                         });
                     }
 
@@ -135,21 +136,28 @@ function apiApplication(config) {
                     let history = await axios
                         .post(
                             `${process.env.API_IP}:${process.env.API_PORT}/chat/get-history`,
-                            {
-                                id: id,
-                            },
+                            { id: id },
                         )
-                        .then((res) => res.data.history)
-                        .catch((err) => {
+                        .then(res => res.data)
+                        .catch(error => {
+                            logging.error(error)
                             socket.emit("err", {
                                 code: 500,
                                 display: locale.errors.failed_to_get_history,
-                                data: err,
+                                message: error,
                             });
                         });
 
+                    if (history.error) {
+                        socket.emit('err', {
+                            code: history.error.code,
+                            display: history.error.display,
+                            message: history.error.message
+                        })
+                    }
+
                     // Get newHistory, parse past one
-                    let parsedHistory = JSON.parse(history);
+                    let parsedHistory = JSON.parse(history.history);
                     let newHistory = [
                         ...transformPrompts("system", config.instructions),
                         ...parsedHistory,
@@ -174,32 +182,38 @@ function apiApplication(config) {
 
                         // 4TH param is callback function that works as chunk is received
                         async (chunk, response, isDone) => {
-                            if (!isDone) {
-                                socket.emit("chunk", { content: chunk });
-                            } else if (isDone) {
-                                gpt_response = response;
+                            if (!isDone) socket.emit("chunk", { content: chunk });
+                            else if (isDone) {
 
                                 // Notify frontend when message is completed
                                 socket.emit("fully_received");
 
                                 // Save a prompt and response to history
-                                await axios
+                                const isSaved = await axios
                                     .put(
                                         `${process.env.API_IP}:${process.env.API_PORT}/chat/save-history`,
                                         {
                                             id: id,
                                             prompt: value,
-                                            gpt_response: gpt_response,
+                                            gpt_response: response,
                                         },
                                     )
-                                    .catch((err) => {
-                                        socket.emit("err", {
-                                            code: 500,
-                                            display:
-                                                locale.errors.failed_to_save,
-                                            data: err,
+                                        .then(res => res.data)
+                                        .catch(error => {
+                                            logging.error(error)
+                                            socket.emit("err", {
+                                                code: 500,
+                                                display: locale.errors.failed_to_save,
+                                                message: err,
+                                            });
                                         });
-                                    });
+
+                                if (isSaved.error) socket.emit("err", {
+                                    code: isSaved.error.code,
+                                    display: isSaved.error.display,
+                                    message: isSaved.error.message
+                                })
+
                             }
                         },
                     );
@@ -209,10 +223,7 @@ function apiApplication(config) {
                             ...gpt.error,
                         });
                 } catch (error) {
-                    console.error(
-                        "[\u001b[1;31mERROR\u001b[0m] : (Might Be just a Request Abort, Nothing to worry)",
-                        error,
-                    );
+                    logging.error(`(Might Be just a Request Abort, Nothing to worry) ${error}`);
                 }
             });
 
@@ -223,6 +234,7 @@ function apiApplication(config) {
 
                 // If language wasn't found
                 if (!lang) lang = "en";
+
                 // If selected language doesn't exist in config.language.js
                 else if (!config_lang[lang]) lang = "en";
 
@@ -231,25 +243,30 @@ function apiApplication(config) {
 
                 // Delete conversation from DB
                 if (config.delete_restarted_conversations) {
-                    await axios
+                    const isDeleted = await axios
                         .post(
                             `${process.env.API_IP}:${process.env.API_PORT}/chat/delete`,
                             {
                                 id: data.id,
                             },
                         )
-                        .then((res) => res.data.gpt_response)
-                        .catch((error) => {
-                            socket.emit("err", {
-                                code: 500,
-                                display: locale.errors.unexpected_error,
-                                data: error,
+                            .then(res => res.data)
+                            .catch(error => {
+                                logging.error(error);
+                                socket.emit("err", {
+                                    code: 500,
+                                    display: locale.errors.unexpected_error,
+                                    message: error,
+                                });
                             });
-                            console.log(
-                                "[\u001b[1;31mERROR\u001b[0m] :",
-                                error,
-                            );
-                        });
+                    
+                    if(isDeleted.error) {
+                        socket.emit("err", {
+                            code: isDeleted.error.code,
+                            display: isDeleted.error.display,
+                            message: isDeleted.error.message,
+                        })
+                    }
                 }
             });
 
@@ -273,24 +290,22 @@ function apiApplication(config) {
                     } else {
                         socket.emit("err", {
                             code: 400,
-                            display: locale.errors.cant_stop,
-                            data: {},
+                            display: locale.errors.cant_stop
                         });
                     }
-                } catch (e) {
+                } catch (err) {
                     socket.emit("err", {
                         code: 500,
                         display: locale.errors.unexpected_error,
-                        data: error,
+                        message: err,
                     });
-                    console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
+                    logging.error(err);
                 }
             });
         });
 
         server.listen(process.env.API_PORT | 3000, () => {
-            if (config.display_info_logs)
-                console.log("[\u001b[1;36mINFO\u001b[0m] : API Server is ON");
+            if (config.display_info_logs) logging.info("API Server is ON");
         });
     }
 }

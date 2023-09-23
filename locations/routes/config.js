@@ -5,6 +5,8 @@ import config from "../../config.js";
 import config_lang from "../../config.language.js";
 import config_style from "../../config.styles.js";
 
+import { logging } from "../../utils/logging.js";
+
 // Configs
 dotenv.config();
 
@@ -15,9 +17,7 @@ router.get("/language", async (req, res) => {
     try {
         // Log that route worked
         if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/config/language" worked',
-            );
+            logging.info(`Route /config/"${req.url}" worked`);
 
         // Get language from query
         const { lang } = req.query;
@@ -45,10 +45,16 @@ router.get("/language", async (req, res) => {
 
         // Send Response
         res.json(config_lang[lang]);
-    } catch (error) {
+    } catch (err) {
         // Display caught error
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
-        return res.status(500).json({ error: error });
+        logging.error(err);
+        return res.json({
+            error: {
+                code: 500,
+                display: 'Unexpected error happened!',
+                message: err
+            }
+        });
     }
 });
 
@@ -56,16 +62,20 @@ router.get("/styles", async (req, res) => {
     try {
         // Log that route worked
         if (config.display_info_logs)
-            console.log(
-                '[\u001b[1;36mINFO\u001b[0m] : Route "/config/styles" worked',
-            );
+            logging.info(`Route /config/"${req.url}" worked`);
 
         // Send Response
         res.json(config_style);
-    } catch (error) {
+    } catch (err) {
         // Display caught error
-        console.error("[\u001b[1;31mERROR\u001b[0m] :", error);
-        return res.status(500).json({ error: error });
+        logging.error(err);
+        return res.json({
+            error: {
+                code: 500,
+                display: 'Unexpected error happened!',
+                message: err
+            }
+        });
     }
 });
 

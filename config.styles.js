@@ -58,17 +58,17 @@ export default {
         // Settings for the color
         color: {
             // Settings for color of the backround of the input
-            background: "",
+            background: "#3F414E",
 
             // Settings for color of the font of the input
-            font: "",
+            font: "#999999",
         },
 
         // Shadow settings, if you don't know CSS, use box-shadow CSS generators
-        shadow: "",
+        shadow: "0px 0px 24px 3px rgba(0, 0, 0, 0.15)",
 
         // Rounding in pixels (px)
-        rounding: "",
+        rounding: "12px",
     },
 
     // Settings of the buttons in action bar (buttons above input)
@@ -76,34 +76,26 @@ export default {
         // Settings for the color
         color: {
             // Settings for color of the backround of the buttons
-            background: "",
+            background: "#353541",
+
+            // Do default hover effect works (when your mouse is on the button, it lights up)
+            hoverEffect: true,
 
             // Settings for color of the font of the buttons
-            font: "",
+            font: "#d9d9e3",
 
             // Settings for color of the border of the buttons
-            border: "",
+            border: "1px solid rgba(86, 88, 105)",
         },
 
         // Rounding in pixels (px)
-        rounding: "",
-    },
+        rounding: "5px",
 
-    // Settings for error wrapper that appears when error happened
-    error: {
-        // Settings for the color
-        color: {
-            // Settings for color of the backround of the error wrapper
-            background: "",
+        // The source of the icon to display relatively "public" folder!
+        restartButtonIconUrl: '/icons/restart_icon.svg',
+        stopButtonIconUrl: '/icons/stop_icon.svg',
 
-            // Settings for color of the font of the error wrapper
-            font: "",
-
-            // Settings for color of the border of the error wrapper
-            border: "",
-        },
-
-        // Rounding in pixels (px)
-        rounding: "",
-    },
+        // Defines either icons displayed
+        displayIcons: true
+    }
 };
