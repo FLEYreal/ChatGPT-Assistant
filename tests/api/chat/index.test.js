@@ -34,7 +34,7 @@ describe('Endpoint \"/chat/create\" tests', () => {
 
     })
 
-    test('received ID tests', async () => {
+    test('Entire test processing', async () => {
         const response = await fetch(full_url)
         const data = await response.json()
 
@@ -72,7 +72,7 @@ describe('Endpoint \"/chat/delete\" tests', () => {
         // Define Endpoint vairables
         url = `${process.env.API_IP}:${process.env.API_PORT}`
         endpoint = endpoint = {
-            method: 'GET',
+            method: 'POST',
             url: `/chat/delete`
         }
         full_url = url + endpoint.url
@@ -83,7 +83,7 @@ describe('Endpoint \"/chat/delete\" tests', () => {
 
     })
 
-    test('received ID tests', async () => {
+    test('Entire test processing', async () => {
 
         const testErrorEndpoints = new TestErrorEndpoints()
 
@@ -101,7 +101,7 @@ describe('Endpoint \"/chat/delete\" tests', () => {
 
         // Test of the endpoint itself
         const response = await fetch(full_url, {
-            method: 'POST',
+            method: endpoint.method,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -130,7 +130,7 @@ describe('Endpoint \"/chat/delete\" tests', () => {
         expect(new_row.length).toBe(0)
 
         const response_err = await fetch(full_url, {
-            method: 'POST',
+            method: endpoint.method,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -156,7 +156,7 @@ describe('Endpoint \"/chat/get-history\" tests', () => {
         // Define Endpoint vairables
         url = `${process.env.API_IP}:${process.env.API_PORT}`
         endpoint = endpoint = {
-            method: 'GET',
+            method: 'POST',
             url: `/chat/get-history`
         }
         full_url = url + endpoint.url
@@ -167,18 +167,59 @@ describe('Endpoint \"/chat/get-history\" tests', () => {
 
     })
 
-    test('All tests to endpoint', async () => {
+    test('Entire test processing', async () => {
 
-        let result = await fetch(full_url, {
-            method: 'POST',
+        const testErrorEndpoints = new TestErrorEndpoints()
+
+        // Test of correct scenario
+        let response = await fetch(full_url, {
+            method: endpoint.method,
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-
+                id
             })
         })
+        let data = await response.json()
+
+        expect(data).toBeDefined()
+        expect(typeof data).toBe('object')
+
+        expect(data.history).toBeDefined()
+        expect(typeof data.history).toBe('string')
+        expect(JSON.parse(data.history)).toEqual([])
+
+        // Test of error scenario
+        let response_err = await fetch(full_url, {
+            method: endpoint.method
+        })
+        let data_err = await response_err.json()
+
+        testErrorEndpoints.basicError(data_err)
 
     })
 
 })
+
+// describe('Endpoint \"/chat/save-history\" tests', () => {
+
+//     let url;
+//     let endpoint;
+
+//     beforeEach(async () => {
+
+//         // Define Endpoint vairables
+//         url = `${process.env.API_IP}:${process.env.API_PORT}`
+//         endpoint = endpoint = {
+//             method: 'PUT',
+//             url: `/chat/save-history`
+//         }
+//         full_url = url + endpoint.url
+
+//         // Create new ID
+//         let result = await fetch(`${url}/chat/create`).then(res => res.json())
+//         id = result.id
+
+//     })
+// })

@@ -19,6 +19,7 @@ describe('Endpoints common test', () => {
 
     endpoints.forEach(endpoint => {
 
+        // Implement classes for testing endpoints
         let testEndpoints = new TestEndpoints(url, endpoint)
         let testErrorEndpoints = new TestErrorEndpoints(url, endpoint)
 

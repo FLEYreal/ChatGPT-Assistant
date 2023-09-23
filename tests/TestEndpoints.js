@@ -1,6 +1,9 @@
 // Configs
 require('dotenv').config()
 
+// Endpoints
+const endpoints = require('../endpoints.json')
+
 class TestEndpoints {
 
     constructor(url = `${process.env.API_IP}:${process.env.API_PORT}` || 'http://localhost:3000', endpoint = {}) {
@@ -88,21 +91,26 @@ class TestErrorEndpoints extends TestEndpoints {
 
     // Check if wrong method is used
     async wrongMethodError() {
-        const method = this.endpoint.method === 'POST' ? 'PUT' : 'POST';
-        const response = await fetch(`${this.url}${this.endpoint.url}`, {
-            method
-        });
-        const data = await response.json();
 
-        // Check response object
-        expect(response).toBeDefined();
-        expect(typeof response).toBe('object');
-        expect(response.status).toEqual(200);
+        const allMethods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'CONNECT', 'TRACE', 'PATCH'];
+        const allowedMethods = allMethods.filter(method => !endpoints.some(endpoint => endpoint.url === this.endpoint.url && endpoint.method === method));
 
-        // Check received data
-        expect(data).toBeDefined();
-        expect(data.code).toEqual(405);
-        expect(data.display).toEqual('Failed to find such endpoint!');
+        if (allowedMethods.length > 0) {
+            const response = await fetch(`${this.url}${this.endpoint.url}`, {
+                method: allowedMethods[0]
+            });
+            const data = await response.json();
+
+            // Check response object
+            expect(response).toBeDefined();
+            expect(typeof response).toBe('object');
+            expect(response.status).toEqual(200);
+
+            // Check received data
+            expect(data).toBeDefined();
+            expect(data.code).toEqual(405);
+            expect(data.display).toEqual('Failed to find such endpoint!');
+        }
     }
 
 }
