@@ -202,24 +202,31 @@ describe('Endpoint \"/chat/get-history\" tests', () => {
 
 })
 
-// describe('Endpoint \"/chat/save-history\" tests', () => {
+describe('Endpoint \"/chat/save-history\" tests', () => {
 
-//     let url;
-//     let endpoint;
+    let url;
+    let endpoint;
 
-//     beforeEach(async () => {
+    beforeEach(async () => {
 
-//         // Define Endpoint vairables
-//         url = `${process.env.API_IP}:${process.env.API_PORT}`
-//         endpoint = endpoint = {
-//             method: 'PUT',
-//             url: `/chat/save-history`
-//         }
-//         full_url = url + endpoint.url
+        // Define Endpoint vairables
+        url = `${process.env.API_IP}:${process.env.API_PORT}`
+        endpoint = endpoint = {
+            method: 'PUT',
+            url: `/chat/save-history`
+        }
+        full_url = url + endpoint.url
 
-//         // Create new ID
-//         let result = await fetch(`${url}/chat/create`).then(res => res.json())
-//         id = result.id
+        // Create new ID
+        let result = await fetch(`${url}/chat/create`).then(res => res.json())
+        id = result.id
 
-//     })
-// })
+    })
+
+    test('Entire test processing', () => {
+
+        
+
+    })
+
+})

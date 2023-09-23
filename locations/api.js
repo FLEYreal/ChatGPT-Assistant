@@ -60,10 +60,13 @@ function apiApplication(config) {
             },
         );
 
-        // Create a table if not exists
-        const create_table =
-            "CREATE TABLE IF NOT EXISTS conversations( id CHAR(36) PRIMARY KEY, history JSON DEFAULT [] )";
+        // SQL commands to run, create table & delete everything if allowed
+        const create_table = "CREATE TABLE IF NOT EXISTS conversations( id CHAR(36) PRIMARY KEY, history JSON DEFAULT [] )";
+        const clean_history = "DELETE FROM conversations"
+
+        // Run sql commands, create table & delete everything if allowed
         db.run(create_table);
+        if(config.reload_history_cleanup) db.run(clean_history)
 
         // Middlewares
         app.use(express.json());
