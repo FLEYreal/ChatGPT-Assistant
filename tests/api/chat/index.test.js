@@ -4,6 +4,9 @@ require('dotenv').config()
 // Database SQLite
 const sqlite3 = require("sqlite3");
 
+// Export helpful test utils
+const { TestErrorEndpoints } = require('../../TestEndpoints.test')
+
 // Connect to SQLite
 const db = new sqlite3.Database(
     "./conversations.db",
@@ -13,38 +16,21 @@ const db = new sqlite3.Database(
     },
 );
 
-function error_received(data) {
-
-    expect(data).toBeDefined()
-    expect(data.error).toBeDefined()
-
-    expect(typeof data).toBe('object')
-    expect(typeof data.error).toBe('object')
-
-    if (data.error.hasOwnProperty('message')) {
-        expect(data.error).toMatchObject({
-            code: expect.any(Number),
-            display: expect.any(String),
-            message: expect.anything()
-        })
-    } else {
-        expect(data.error).toMatchObject({
-            code: expect.any(Number),
-            display: expect.any(String)
-        })
-    }
-}
-
 describe('Endpoint \"/chat/create\" tests', () => {
 
+    // Define variables globally
     let url;
     let endpoint;
 
     beforeEach(() => {
 
+        // Define Endpoint vairables
         url = `${process.env.API_IP}:${process.env.API_PORT}`
-        endpoint = `/chat/create`
-        full_url = url + endpoint
+        endpoint = {
+            method: 'GET',
+            url: `/chat/create`
+        }
+        full_url = url + endpoint.url
 
     })
 
@@ -76,20 +62,30 @@ describe('Endpoint \"/chat/create\" tests', () => {
 
 describe('Endpoint \"/chat/delete\" tests', () => {
 
+    // Define variables globally
     let url;
     let endpoint;
+    let id;
 
-    beforeEach(() => {
+    beforeEach(async () => {
 
+        // Define Endpoint vairables
         url = `${process.env.API_IP}:${process.env.API_PORT}`
-        endpoint = `/chat/delete`
-        full_url = url + endpoint
+        endpoint = endpoint = {
+            method: 'GET',
+            url: `/chat/delete`
+        }
+        full_url = url + endpoint.url
+
+        // Create new ID
+        let result = await fetch(`${url}/chat/create`).then(res => res.json())
+        id = result.id
 
     })
 
     test('received ID tests', async () => {
-        // Create new ID
-        const { id } = await fetch(`${url}/chat/create`).then(res => res.json())
+
+        const testErrorEndpoints = new TestErrorEndpoints()
 
         // Request to DB
         const row = await new Promise((resolve) => {
@@ -133,7 +129,6 @@ describe('Endpoint \"/chat/delete\" tests', () => {
 
         expect(new_row.length).toBe(0)
 
-        // Test of the endpoint itself
         const response_err = await fetch(full_url, {
             method: 'POST',
             headers: {
@@ -145,11 +140,45 @@ describe('Endpoint \"/chat/delete\" tests', () => {
         })
         const data_err = await response_err.json()
 
-        error_received(data_err)
+        testErrorEndpoints.basicError(data_err)
+
     })
 
 })
 
 describe('Endpoint \"/chat/get-history\" tests', () => {
-    
+
+    let url;
+    let endpoint;
+
+    beforeEach(async () => {
+
+        // Define Endpoint vairables
+        url = `${process.env.API_IP}:${process.env.API_PORT}`
+        endpoint = endpoint = {
+            method: 'GET',
+            url: `/chat/get-history`
+        }
+        full_url = url + endpoint.url
+
+        // Create new ID
+        let result = await fetch(`${url}/chat/create`).then(res => res.json())
+        id = result.id
+
+    })
+
+    test('All tests to endpoint', async () => {
+
+        let result = await fetch(full_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+
+            })
+        })
+
+    })
+
 })
