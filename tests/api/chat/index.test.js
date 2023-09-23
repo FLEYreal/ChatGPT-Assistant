@@ -1,8 +1,6 @@
 // Configs
 require('dotenv').config()
 
-// Utils
-
 // Database SQLite
 const sqlite3 = require("sqlite3");
 
@@ -14,6 +12,28 @@ const db = new sqlite3.Database(
         if (error) logging.error(error.message);
     },
 );
+
+function error_received(data) {
+
+    expect(data).toBeDefined()
+    expect(data.error).toBeDefined()
+
+    expect(typeof data).toBe('object')
+    expect(typeof data.error).toBe('object')
+
+    if (data.error.hasOwnProperty('message')) {
+        expect(data.error).toMatchObject({
+            code: expect.any(Number),
+            display: expect.any(String),
+            message: expect.anything()
+        })
+    } else {
+        expect(data.error).toMatchObject({
+            code: expect.any(Number),
+            display: expect.any(String)
+        })
+    }
+}
 
 describe('Endpoint \"/chat/create\" tests', () => {
 
@@ -86,20 +106,22 @@ describe('Endpoint \"/chat/delete\" tests', () => {
         // Test of the endpoint itself
         const response = await fetch(full_url, {
             method: 'POST',
-            body: {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
                 id: id
-            }
+            })
         })
         const data = await response.json()
-
-        expect(response).toBeDefined()
-        expect(response.status).toEqual(200)
 
         expect(data).toBeDefined()
         expect(data.message).toBeDefined()
 
         expect(typeof data).toBe('object')
         expect(typeof data.message).toBe('string')
+
+        expect(data.message).toBe('Row successfully deleted')
 
         // New Request to DB to define either row is deleted
         const new_row = await new Promise((resolve) => {
@@ -111,6 +133,23 @@ describe('Endpoint \"/chat/delete\" tests', () => {
 
         expect(new_row.length).toBe(0)
 
+        // Test of the endpoint itself
+        const response_err = await fetch(full_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id
+            })
+        })
+        const data_err = await response_err.json()
+
+        error_received(data_err)
     })
 
+})
+
+describe('Endpoint \"/chat/get-history\" tests', () => {
+    
 })
