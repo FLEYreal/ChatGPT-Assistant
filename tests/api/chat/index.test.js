@@ -38,6 +38,9 @@ describe('Endpoint \"/chat/create\" tests', () => {
         const response = await fetch(full_url)
         const data = await response.json()
 
+        expect(response).toBeDefined()
+        expect(response.status).toBe(200)
+
         expect(data).toBeDefined()
         expect(data.id).toBeDefined()
 
@@ -111,6 +114,9 @@ describe('Endpoint \"/chat/delete\" tests', () => {
         })
         const data = await response.json()
 
+        expect(response).toBeDefined()
+        expect(response.status).toBe(200)
+
         expect(data).toBeDefined()
         expect(data.message).toBeDefined()
 
@@ -183,6 +189,9 @@ describe('Endpoint \"/chat/get-history\" tests', () => {
         })
         let data = await response.json()
 
+        expect(response).toBeDefined()
+        expect(response.status).toBe(200)
+
         expect(data).toBeDefined()
         expect(typeof data).toBe('object')
 
@@ -223,9 +232,77 @@ describe('Endpoint \"/chat/save-history\" tests', () => {
 
     })
 
-    test('Entire test processing', () => {
+    test('Entire test processing', async () => {
 
-        
+        const testErrorEndpoints = new TestErrorEndpoints()
+
+        // Tests related to saving history
+        let response = await fetch(full_url, {
+            method: endpoint.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: 'Hello!',
+                gpt_response: 'Hello! How can I help you today?',
+                id: id
+            })
+        })
+        let data = await response.json()
+
+        expect(response).toBeDefined()
+        expect(response.status).toBe(200)
+
+        expect(data).toBeDefined()
+        expect(typeof data).toBe('object')
+
+        expect(data.message).toBeDefined()
+        expect(typeof data.message).toBe('string')
+
+        // Get and test if it's saved
+        let history_response = await fetch(`${url}/chat/get-history`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id
+            })
+        })
+        let history = await history_response.json()
+
+        expect(response).toBeDefined()
+        expect(response.status).toBe(200)
+
+        expect(history).toBeDefined()
+        expect(typeof history).toBe('object')
+
+        expect(history.history).toBeDefined()
+        expect(typeof history.history).toBe('string')
+        expect(JSON.parse(history.history)).toEqual([
+            {
+                role: 'user',
+                content: 'Hello!'
+            },
+            {
+                role: 'assistant',
+                content: 'Hello! How can I help you today?'
+            }
+        ])
+
+        // Tests related to saving history
+        let response_err = await fetch(full_url, {
+            method: endpoint.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id
+            })
+        })
+        let data_err = await response_err.json()
+
+        testErrorEndpoints.basicError(data_err)
 
     })
 
