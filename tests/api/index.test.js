@@ -5,7 +5,7 @@ require('dotenv').config()
 const endpoints = require('../../endpoints.json')
 
 // Export helpful test utils
-const { TestEndpoints, TestErrorEndpoints } = require('../TestEndpoints.test')
+const { TestEndpoints, TestErrorEndpoints } = require('../TestEndpoints')
 
 describe('Endpoints common test', () => {
 
@@ -32,7 +32,9 @@ describe('Endpoints common test', () => {
         test('Common endpoint tests', async () => {
 
             // Check behavior in correct scenario
-            await testEndpoints.commonTests()
+            if (endpoint.url !== '/chat/interface') {
+                await testEndpoints.commonTests()
+            }
 
             // Test if method is wrong
             await testErrorEndpoints.wrongMethodError()

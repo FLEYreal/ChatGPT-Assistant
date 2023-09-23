@@ -51,7 +51,7 @@ router.get("/create", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs) logging.info('Route "/chat/create" worked');
+        if (config.display_info_logs) logging.info(`Route /chat/"${req.url}" worked`);
 
         // Get unique ID
         const id = crypto.randomUUID() || createUUID();
@@ -108,7 +108,7 @@ router.post("/delete", check_lang, check_id, async (req, res) => {
     try {
         // Log that route worked
         if (config.display_info_logs)
-            logging.info('Route "/chat/create" worked');
+            logging.info(`Route /chat/"${req.url}" worked`);
 
         const id = req.id
 
@@ -161,7 +161,8 @@ router.post("/get-history", check_lang, check_id, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs) logging.info('Route "/chat/get-history" worked');
+        if (config.display_info_logs) 
+            logging.info(`Route /chat/"${req.url}" worked`);
 
         const history = req.history;
 
@@ -190,7 +191,8 @@ router.put("/save-history", check_lang, check_id, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs) logging.info('Route "/chat/save-history" worked');
+        if (config.display_info_logs) 
+            logging.info(`Route /chat/"${req.url}" worked`);
 
         let { prompt, gpt_response } = req.body;
         const id = req.id
@@ -266,7 +268,8 @@ router.get("/interface", check_lang, async (req, res) => {
 
     try {
         // Log that route worked
-        if (config.display_info_logs) logging.info('Route "/chat/interface" worked');
+        if (config.display_info_logs) 
+            logging.info(`Route /chat/"${req.url}" worked`);
 
         // Get ID from request body
         let { id } = req.body;

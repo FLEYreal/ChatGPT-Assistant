@@ -3,28 +3,23 @@ require('dotenv').config()
 
 class TestEndpoints {
 
-    constructor(url = `${process.env.API_IP}${process.env.API_PORT}` || 'http://localhost:3000', endpoint = {}) {
+    constructor(url = `${process.env.API_IP}:${process.env.API_PORT}` || 'http://localhost:3000', endpoint = {}) {
         this.endpoint = endpoint;
         this.url = url;
     }
 
     // Common tests to endpoints
     async commonTests() {
-        try {
-            const response = await fetch(`${this.url}${this.endpoint.url}`, {
-                method: this.endpoint.method
-            })
-            const data = await response.json()
+        const response = await fetch(`${this.url}${this.endpoint.url}`, {
+            method: this.endpoint.method
+        })
+        const data = await response.json()
 
-            // Tests to response of URL
-            expect(data).toBeDefined()
-            expect(typeof data).toBe('object')
-            expect(response.status).toEqual(200)
-        }
+        // Tests to response of URL
+        expect(data).toBeDefined()
+        expect(typeof data).toBe('object')
+        expect(response.status).toEqual(200)
 
-        catch (e) {
-            expect(e).toBeNull();
-        }
     }
 
     // Common tests to URL
@@ -40,8 +35,8 @@ class TestEndpoints {
         // Tests to URL
         expect(this.url).toBeDefined()
         expect(typeof this.url).toBe('string')
-        expect(url).toBe(`${process.env.API_IP}${process.env.API_PORT}` || 'http://localhost:3000')
-        expect(url).toStrictEqual(`${process.env.API_IP}${process.env.API_PORT}` || 'http://localhost:3000')
+        expect(this.url).toBe(`${process.env.API_IP}:${process.env.API_PORT}` || 'http://localhost:3000')
+        expect(this.url).toStrictEqual(`${process.env.API_IP}:${process.env.API_PORT}` || 'http://localhost:3000')
 
     }
 
@@ -56,15 +51,15 @@ class TestEndpoints {
             url: expect.any(String)
         })
 
-        if(fit) expect(this.endpoint.url).toBe(fit)
-        if(method) expect(thos.endpoint.method).toBe(method)
+        if (fit) expect(this.endpoint.url).toBe(fit)
+        if (method) expect(this.endpoint.method).toBe(method)
     }
 
 }
 
 class TestErrorEndpoints extends TestEndpoints {
 
-    constructor(url = `${process.env.API_IP}${process.env.API_PORT}` || 'http://localhost:3000', endpoint = {}) {
+    constructor(url = `${process.env.API_IP}:${process.env.API_PORT}` || 'http://localhost:3000', endpoint = {}) {
         super(url, endpoint)
     }
 
@@ -93,25 +88,21 @@ class TestErrorEndpoints extends TestEndpoints {
 
     // Check if wrong method is used
     async wrongMethodError() {
-        try {
-            const method = this.endpoint.method === 'POST' ? 'PUT' : 'POST';
-            const response = await fetch(`${this.url}${this.endpoint.url}`, {
-                method
-            });
-            const data = await response.json();
+        const method = this.endpoint.method === 'POST' ? 'PUT' : 'POST';
+        const response = await fetch(`${this.url}${this.endpoint.url}`, {
+            method
+        });
+        const data = await response.json();
 
-            // Check response object
-            expect(response).toBeDefined();
-            expect(typeof response).toBe('object');
-            expect(response.status).toEqual(200);
+        // Check response object
+        expect(response).toBeDefined();
+        expect(typeof response).toBe('object');
+        expect(response.status).toEqual(200);
 
-            // Check received data
-            expect(data).toBeDefined();
-            expect(data.code).toEqual(405);
-            expect(data.display).toEqual('Failed to find such endpoint!');
-        } catch (e) {
-            expect(e).toBeNull();
-        }
+        // Check received data
+        expect(data).toBeDefined();
+        expect(data.code).toEqual(405);
+        expect(data.display).toEqual('Failed to find such endpoint!');
     }
 
 }

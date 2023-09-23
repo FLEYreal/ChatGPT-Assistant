@@ -5,7 +5,7 @@ require('dotenv').config()
 const sqlite3 = require("sqlite3");
 
 // Export helpful test utils
-const { TestErrorEndpoints } = require('../../TestEndpoints.test')
+const { TestErrorEndpoints } = require('../../TestEndpoints')
 
 // Connect to SQLite
 const db = new sqlite3.Database(
