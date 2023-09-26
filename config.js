@@ -5,13 +5,13 @@ export default {
     // Locations where GPT will work
     locations: {
         // In console
-        console: false,
+        console: true,
 
         // With API, lets you access chat in browser or add it to your existing website
-        api: true,
+        api: false,
 
         // Discord bot
-        discord: true,
+        discord: false,
 
         // Telegram bot
         telegram: false,
@@ -32,14 +32,14 @@ export default {
     // Short name for chatGPT to use it on profile picture (example)
     short_gpt_name: "", // Default Value is "GPT"
 
-    // Max amount of tokens per conversation
-    max_tokens: 120,
+    // Max amount of tokens per message
+    max_tokens: 200,
 
     // Type what you need chatGPT to know and what chatGPT needs to do
     instructions: [
         // The list of the messages, by comma
-        "Ты находишься в дискорд сервере StormShop, который продаёт подписки на разные сервисы, которые заблокированы из-за санкций в России на момент 2023 года!",
-        "Ты выполняешь роль тех.поддержки, которая помогает русскоговорящим клиентам. Ты не отвечаешь на отстраненные от темы вопросы!",
+        "",
+        "",
         "",
     ],
 
@@ -59,7 +59,7 @@ export default {
     delete_restarted_conversations: true,
 
     // Support email, might be displayed in errors
-    contact_email: "borisov.nikita.off@gmail.com",
+    contact_email: "undefined.email@example.com",
 
     // Do delete entire conversation's database after each reload
     reload_history_cleanup: false

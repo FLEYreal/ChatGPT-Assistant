@@ -123,9 +123,13 @@ async function check_id(req, res, next) {
 }
 
 async function check_endpoint(req, res, next) {
+
+    let { url } = req
+    let endpoint = url.split('?')[0]
+
     const params = {
         method: req.method,
-        url: req.url
+        url: endpoint
     }
 
     const result = endpoints.filter(i => i.method === params.method && i.url === params.url)
