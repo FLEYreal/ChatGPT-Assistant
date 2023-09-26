@@ -102,4 +102,82 @@ Config has a lot of values to fill, most of them can stay untouched but for bett
     contact_email: "borisov.nikita.off@gmail.com",
 ```
 
+## Interface
+After setting up the config.js we're moving to interface. This section is for users want to use chatGPT on their websites. When application is online and API is on locations (config.js), you can access the interface (if you're doing it locally) with this link: "http://localhost:3000/chat/interface?lang=en". If you want to implement it to your website, you this html code:
+
+### React:
+```html
+<iframe src="http://localhost:3000/chat/interface?lang=en" width="600px" height="900px" style={{borderRadius: '8px', border: 'none'}}></iframe>
+```
+### Vanila HTML
+```html
+<iframe src="http://localhost:3000/chat/interface?lang=en" width="600px" height="900px" style="border-radius: 8px; border: none"></iframe>
+```
+
+There's width and height defined in pixels, you can setup your own. In "style" attribute we define some basic styles, you can also remove the attribute if you don't want basic styles to be applied
+
+ ## Config.styles.js
+This file is also only for interface. This file configures styles for the interface, colors, shadows and else. All the values are used in the way it's used in CSS. If you don't know CSS. You can use google to find out what values to use in what places.
+Most of the information about this config is pointed right in the comments in the file.
+
+## Config.language.js
+This file is for localization. There's already 2 languages. Russian (ru) and English (en). You can add your own languages like Spanish or Hindi.
+You can also correct the existing translations if you believe they're wrong!
+
+### How to Add own language
+This file has it's structure:
+```
+file
+|
+-- en
+|   |
+|   -- interface
+|   |   |
+|   |   -- values
+|   |   -- values
+|   |   -- values
+|   |
+|   -- errors
+|       |
+|       -- values
+|       -- values
+|       -- values
+|
+-- ru
+|   |
+|   -- interface
+|   |   |
+|   |   -- values
+|   |   -- values
+|   |   -- values
+|   |
+|   -- errors
+|       |
+|       -- values
+|       -- values
+|       -- values
+|
+
+```
+And the first "ru" and "en" are the titles, you can add your own set with translations and own name like "ja".
+The structure of the insides has to be the same all the time, if it's not the same, it might cause troubles in the future.
+
+# FAQ
+
+Q: Do interface supports code displaying?
+A: Yes, it's displaying the code.
+
+Q: Do I pay for chatGPT
+A: You do pay for tokens. Than more advanced model you're using, than more expensive the cost per 1000 tokens!
+
+Q: Can I use it for enterprice projects?
+A: Your freedom to do whatever you want with this script but the creators of this script aren't responsible for anything you do with it!
+
+Q: I found out the bug / error / crash. What do I do?
+A: Definetely message the creator. You can contact him with information in "Notation" section
+
+
+
+
+
 
