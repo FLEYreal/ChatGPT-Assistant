@@ -1,7 +1,12 @@
 # ChatGPT-Assistant
 
-### Description
+### About
 This repository lets you to use ChatGPT on your website, telegram or in discord. Script contains config to easily setup the script!
+
+### Notation
+If you are interested in collaboration, message here:
+Telegram: @Nikita1264
+Discord: fley0609
 
 ## How to Start
 
@@ -31,3 +36,70 @@ npm install
 node index.js
 ```
 9. To Stop the application, you need yo use "ctrl + C" keys.
+
+# A little Documentation
+This is a little documentation to basics of using this script. 
+
+## Config.js
+Config has a lot of values to fill, most of them can stay untouched but for better experience I recommend to setup most important values:
+
+### 1. Locations
+   This property defines locations where it's going to work, it's recommended to disable (false) locations, where GPT won't be or not used at a moment, otherwise it might cause troubles.
+   If you enable chatGPT in console, other locations won't work as they can't work together because other locations require logs to be displayed in console
+```js
+    // Locations where GPT will work
+    locations: {
+        // In console
+        console: false,
+
+        // With API, lets you access chat in browser or add it to your existing website
+        api: true,
+
+        // Discord bot
+        discord: true,
+
+        // Telegram bot
+        telegram: false,
+    }
+```
+
+### 2. GPT Version
+  By default it's "gpt-3.5-turbo" which is chatGPT 3.5. To use other version of chatGPT, you need to use the special names. You can find them in OpenAI documentation. There might appear new or disappear old versions so in the future default version might not work anymore!
+```js
+    // Version of chatGPT
+    gpt_version: "gpt-3.5-turbo",
+```
+
+### 3. Names
+  There are names of chatGPT and User, that can be displayed in various of places and if you planning on making the bot with your own name - set your names up here, if not, do not touch it. Default name of chatGPT will be used.
+  Short version of name will be used in the places where it's full name won't fit, recommended not to make morethan 4 symbols in the short name.
+```js
+    // Name for user
+    user_name: "", // Default Value is "User"
+
+    // Short name for user to use it on profile picture (example)
+    short_user_name: "", // Default Value is "User"
+
+    // Name for chatGPT
+    gpt_name: "", // Default Value is "ChatGPT <version>"
+
+    // Short name for chatGPT to use it on profile picture (example)
+    short_gpt_name: "", // Default Value is "GPT"
+```
+
+### 4. Tokens
+  Tokens define amount of words chatGPT can use per message. 1 Token isn't 1 word but it's about it (Something like 1 Token = 1.5 Word). Also tokens worth a lot of money so if you don't want your users to make poems - set the limit.
+  Also, each version of chatGPT (3, 3.5, 4) have their maximum limit and chatGPT won't answer more than their limit so there's no reason to setup more than 100.000 tokens per message yet.
+```js
+    // Max amount of tokens per message
+    max_tokens: 120,
+```
+
+### 5. Contact Email
+  This is the email that might be displayed in error messages. We're really recommending you to setup your own email to let your users message you when they caught an error.
+```js
+    // Support email, might be displayed in errors
+    contact_email: "borisov.nikita.off@gmail.com",
+```
+
+
