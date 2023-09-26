@@ -59,7 +59,7 @@ export default {
     delete_restarted_conversations: true,
 
     // Support email, might be displayed in errors
-    contact_email: "borisov.nikita.off@gmail.com",
+    contact_email: "undefined.email@example.com",
 
     // Do delete entire conversation's database after each reload
     reload_history_cleanup: false
