@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 import config from "../config.js";
 import config_lang from "../config.language.js";
+import { logging } from "./logging.js";
 
 dotenv.config();
 
@@ -53,7 +54,7 @@ async function getGPTResponse(history, controller = null, lang = 'en') {
                 },
             };
 
-        return response;
+        return response.choices[0].message.content;
 
     } catch (err) {
         logging.error(err);
