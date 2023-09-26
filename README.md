@@ -126,6 +126,8 @@ You can also correct the existing translations if you believe they're wrong!
 
 ### How to Add own language
 This file has it's structure:
+
+(This is just an illustration!)
 ```
 file
 |
@@ -159,8 +161,22 @@ file
 |
 
 ```
-And the first "ru" and "en" are the titles, you can add your own set with translations and own name like "ja".
+The first "ru" and "en" are the titles, you can add your own set with translations and own name like "ja".
 The structure of the insides has to be the same all the time, if it's not the same, it might cause troubles in the future.
+You can just copy the way already existing "ru" or "en" structure. It's not recommended to try to type all the structure by hand, just copy it!
+
+### More about structure
+1. "en" is the name of the language, it might be anything you want, it has no restriction but to stick to one style, recommended to use 2 letter code of your country.
+1. "interface" contains all translations related to interface like names of buttons.
+2. "error" contains all translations of errors.
+
+### How do I translate my interface?
+If you read about interface, you might remember the link used to display interface, there's a defined parameter "lang=en".
+```
+http://localhost:3000/chat/interface?lang=en
+```
+Instead of typing "en", you can use any name that exists in 'config.language.js' ("en" and "ru" by default).
+When you change it in the link, it has to start working right after you reload the page!
 
 # FAQ
 
