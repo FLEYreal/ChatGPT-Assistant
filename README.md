@@ -204,7 +204,7 @@ A: Your freedom to do whatever you want with this script but the creators of thi
 Q: I found out the bug / error / crash. What do I do?
 A: Definetely message the creator. You can contact him with information in "Notation" section
 
-
+If there any other questions left, you can ask us! Use telegram or discord. I left that in "Notations" section for you
 
 
 
