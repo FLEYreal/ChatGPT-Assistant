@@ -95,7 +95,19 @@ Config has a lot of values to fill, most of them can stay untouched but for bett
     max_tokens: 120,
 ```
 
-### 5. Contact Email
+### 5. Instructions
+   Probably the most important setting for enterprice project. It's the place where you tell chatGPT what he has to do and what he needs to say.
+   Example:
+```js
+    instructions: [
+        "You're the helpful bot, that helps people to fix their bugs in the code.",
+        "The only language you're helping with is Python. You deny any request to fix the code in any other language. In fact you have to deny any request unrelated to helping with fixing bugs in your code",
+        "Your name is Jerry, your age is 25, you pretend not to be a bot but the real person.",
+    ],
+```
+Just paste your own instructions to chatGPT. It's not limited by 3 instructions. In fact you're able to add infinite amount of instructions to it, just use comma between each instruction and each instuction has to be instide of quotes!
+
+### 6. Contact Email
   This is the email that might be displayed in error messages. We're really recommending you to setup your own email to let your users message you when they caught an error.
 ```js
     // Support email, might be displayed in errors
@@ -146,19 +158,19 @@ file
 |       -- values
 |
 -- ru
-|   |
-|   -- interface
-|   |   |
-|   |   -- values
-|   |   -- values
-|   |   -- values
-|   |
-|   -- errors
-|       |
-|       -- values
-|       -- values
-|       -- values
-|
+    |
+    -- interface
+    |   |
+    |   -- values
+    |   -- values
+    |   -- values
+    |
+    -- errors
+        |
+        -- values
+        -- values
+        -- values
+
 
 ```
 The first "ru" and "en" are the titles, you can add your own set with translations and own name like "ja".
