@@ -193,16 +193,24 @@ When you change it in the link, it has to start working right after you reload t
 # FAQ
 
 Q: Do interface supports code displaying?
-A: Yes, it's displaying the code.
 
-Q: Do I pay for chatGPT
+A: Yes, it's displaying the code.
+<hr/>
+
+Q: Do I pay for chatGPT?
+
 A: You do pay for tokens. Than more advanced model you're using, than more expensive the cost per 1000 tokens!
+<hr/>
 
 Q: Can I use it for enterprice projects?
+
 A: Your freedom to do whatever you want with this script but the creators of this script aren't responsible for anything you do with it!
+<hr/>
 
 Q: I found out the bug / error / crash. What do I do?
+
 A: Definetely message the creator. You can contact him with information in "Notation" section
+<hr/>
 
 If there any other questions left, you can ask us! Use telegram or discord. I left that in "Notations" section for you
 
