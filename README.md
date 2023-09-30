@@ -5,8 +5,8 @@ This repository lets you to use ChatGPT on your website, telegram or in discord.
 
 ### Notation
 If you are interested in collaboration, message here:
-Telegram: @Nikita1264
-Discord: fley0609
+<p>Telegram: @Nikita1264</p>
+<p>Discord: fley0609</p>
 
 ## How to Start
 
